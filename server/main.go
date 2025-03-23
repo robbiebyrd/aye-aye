@@ -224,5 +224,5 @@ func main() {
 		//s.Write(data)
 	})
 
-	http.ListenAndServe(":5002", nil)
+	http.ListenAndServeTLS(":5002", "/etc/letsencrypt/live/aye-aye.robbiebyrd.com/fullchain.pem", "/etc/letsencrypt/live/aye-aye.robbiebyrd.com/privkey.pem", nil)
 }
