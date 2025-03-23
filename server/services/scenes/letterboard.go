@@ -116,7 +116,7 @@ func (s *LetterBoardScene) HandleMessage(msg []byte, gameId string, playerId str
 				s.GameRepo.UpdateGame(*g)
 				data, _ := json.Marshal(g)
 				m.Broadcast(data)
-				
+
 				finish <- true
 			},
 			OnTick: func(passed, remained time.Duration) {
@@ -136,37 +136,6 @@ func (s *LetterBoardScene) HandleMessage(msg []byte, gameId string, playerId str
 
 		// start in goroutine to prevent blocking of current
 		go t.Run()
-
-		go func() {
-			//time.Sleep(100 * time.Millisecond)
-			//t.Pause()
-			//time.Sleep(100 * time.Millisecond)
-			t.Run()
-		}()
-
-		select {
-		case <-finish:
-		}
-
-		//ticker := time.NewTicker(1 * time.Second)
-		//go func() {
-		//	for {
-		//		select {
-		//		case <-ticker.C:
-		//			g := s.GameRepo.GetGame(gameId)
-		//			g.SceneData.Timer -= 1
-		//			fmt.Print(g.SceneData.Timer)
-		//			s.GameRepo.UpdateGame(*g)
-		//			data, _ := json.Marshal(g)
-		//			m.Broadcast(data)
-		//
-		//			if game.SceneData.Timer < 0 {
-		//				ticker.Stop()
-		//				return
-		//			}
-		//		}
-		//	}
-		//}()
 		break
 	case "draw":
 		s.drawLetter(game, messageDecoded["type"].(string))

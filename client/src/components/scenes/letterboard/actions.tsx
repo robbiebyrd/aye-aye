@@ -14,6 +14,7 @@ const Actions: React.FC<LetterboardProps> = ({gameId, playerId, inputEnabled, ws
     const sceneId = "letterBoard"
     const [inputValue, setInputValue] = useState('')
     const [showTimer, setShowTimer] = useState<boolean>(true)
+    const [showSolver, setShowSolver] = useState<boolean>(true)
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value)
@@ -28,6 +29,7 @@ const Actions: React.FC<LetterboardProps> = ({gameId, playerId, inputEnabled, ws
         }
         ws?.send(JSON.stringify(submission))
         setShowTimer(true)
+        setShowSolver(true)
         setInputValue("")
     }
 
@@ -38,6 +40,7 @@ const Actions: React.FC<LetterboardProps> = ({gameId, playerId, inputEnabled, ws
             sceneId,
             action: "solve",
         }
+        setShowSolver(false)
         ws?.send(JSON.stringify(submission))
     }
 
@@ -77,9 +80,9 @@ const Actions: React.FC<LetterboardProps> = ({gameId, playerId, inputEnabled, ws
 
     return show && (
         <div className="flex w-full  bottom-2">
-            <TimerControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer}/>
+            <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer}/>
             <div className="flex-grow"></div>
-            {showTimer && <TimerControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer}/> }
+            {showTimer && <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer}/> }
             {timer > 0 &&
                 <form id="form" onSubmit={preventSubmit}>
                     <div className="flex flex-col items-center p-5 bg-white">
@@ -89,31 +92,19 @@ const Actions: React.FC<LetterboardProps> = ({gameId, playerId, inputEnabled, ws
                 </form>
             }
             <div className="flex-grow"></div>
-            <TimerControllerButton label={'Solve'} onClickFunc={solve} timer={timer}/>
+            {showSolver && <TimedControllerButton label={'Solve'} onClickFunc={solve} timer={timer}/>}
         </div>
     )
 }
 
 export default Actions
 
-
-export type TimerButtonProps = {
-    label: string
-    onClickFunc?: () => void
-    showTimer?: boolean
-    timer: number
-}
-
-const TimerButton: React.FC<TimerButtonProps> = ({label, onClickFunc, showTimer, timer}) => {
-    return timer < 0 && showTimer && <Button label={label} onClickFunc={onClickFunc}/>
-}
-
-export type TimerControllerButtonProps = {
+export type TimedControllerButtonProps = {
     label: string
     onClickFunc?: () => void
     timer: number
 }
 
-const TimerControllerButton: React.FC<TimerControllerButtonProps> = ({label, onClickFunc, timer}) => {
+const TimedControllerButton: React.FC<TimedControllerButtonProps> = ({label, onClickFunc, timer}) => {
     return timer < 0 && <Button label={label} onClickFunc={onClickFunc}/>
 }
