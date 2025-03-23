@@ -1,4 +1,5 @@
 import buttonStyles from "./button.module.scss"
+
 export type ButtonProps = {
     label: string
     onClickFunc?: () => void

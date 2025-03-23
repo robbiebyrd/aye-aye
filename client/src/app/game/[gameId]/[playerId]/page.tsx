@@ -1,6 +1,6 @@
 "use client"
 
-import {use, useEffect, useMemo, useState} from "react"
+import {use, useMemo, useState} from "react"
 import {GameData, Player} from "@/models/letterboard"
 import Letters from "@/components/scenes/letterboard/letters"
 import Actions from "@/components/scenes/letterboard/actions"
@@ -15,8 +15,8 @@ export default function Page({params}: {
     const {playerId, gameId} = use(params)
     invariant(playerId, `A Player ID must be provided.`)
     invariant(gameId, `A Game ID must be provided.`)
-    const websocketHost = "10.10.0.54"
-    const websocketPort = 5002
+    const websocketHost = process.env.SERVER_HOST || "localhost"
+    const websocketPort = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 5002
 
     const [gameData, setGameData] = useState<GameData>()
 
@@ -83,16 +83,27 @@ export default function Page({params}: {
                             )}
                             <div className="flex flex-col items-center justify-center flex-grow">
                                 <div
-                                    className={'h-[10em] aspect-square mb-0 items-center content-center text-center justify-center'}
+                                    className={'h-[10em] relative aspect-square mb-0 items-center content-center text-center justify-center'}
                                     style={{
                                         backgroundImage: "url('/img/clock.png')",
                                         backgroundSize: "contain",
                                         backgroundRepeat: "no-repeat",
                                         backgroundPosition: "center"
                                     }}>
+                                    <img src={'/img/clock-arm.svg'} className={''} style={{
+                                        transform: `rotate(${gameData.sceneData.timer >= 0 ? gameData.sceneData.timer * 6 : 0}deg)`
+                                    }}/>
                                     {gameData.sceneData.timer >= 0 ?
-                                        <span className={'text-8xl font-bold'}> {gameData.sceneData.timer}</span> :
-                                        <img className={'w-1/2 m-auto'} src={'/img/lembers.svg'}/>
+                                        <div className={'font-bold'}
+                                             style={{
+                                                 fontSize: '5em',
+                                                 position: "relative",
+                                                 top: "-90%",
+                                             }}>{gameData.sceneData.timer}</div> :
+                                        <img className={'w-1/2 m-auto'} style={{
+                                            position: "relative",
+                                            top: "-75%",
+                                        }} src={'/img/lembers.svg'}/>
                                     }
                                 </div>
                             </div>
@@ -123,7 +134,8 @@ export default function Page({params}: {
                         {/*</div>*/}
                         <Letters letters={gameData?.sceneData.board}/>
                         <Draw gameId={gameId} playerId={playerId} ws={ws} show={canDraw}/>
-                        <Actions gameId={gameId} playerId={playerId} ws={ws} inputEnabled={canInput} show={!canDraw} timer={gameData.sceneData.timer}/>
+                        <Actions gameId={gameId} playerId={playerId} ws={ws} inputEnabled={canInput} show={!canDraw}
+                                 timer={gameData.sceneData.timer}/>
                     </>
                 )}
             </main>

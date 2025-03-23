@@ -1,33 +1,33 @@
 .button {
+  font-weight: bold;
   height: 6em;
   text-transform: uppercase;
-  font-weight: bold;
 }
 
 .buttonCenter {
-  height: 6em;
-  background-image: url('/img/buttoncenter.png');
-  background-size: contain;
-  background-repeat: repeat-x;
-  text-align: center;
   align-content: center;
+  height: 6em;
+  text-align: center;
+  background-image: url('/img/buttoncenter.png');
+  background-repeat: repeat-x;
+  background-size: contain;
 }
 
 .button:before {
-  height: 6em;
   width: 3em;
+  height: 6em;
   content: ' ';
   background-image: url('/img/buttonleft.png');
-  background-size: contain;
   background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .button:after {
-  height: 6em;
   width: 3em;
+  height: 6em;
   content: ' ';
   background-image: url('/img/buttonright.png');
-  background-size: contain;
   background-repeat: no-repeat;
+  background-size: contain;
 }
 
