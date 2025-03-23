@@ -88,7 +88,7 @@ func (s *LetterBoardScene) HandleMessage(msg []byte, gameId string, playerId str
 
 	switch messageDecoded["action"].(string) {
 	case "start":
-		game.SceneData.Timer = 6
+		game.SceneData.Timer = 31
 		s.GameRepo.UpdateGame(*game)
 		data, _ := json.Marshal(game)
 		m.Broadcast(data)
@@ -96,18 +96,10 @@ func (s *LetterBoardScene) HandleMessage(msg []byte, gameId string, playerId str
 		var finish = make(chan bool, 1)
 
 		t := timer.New(timer.Options{
-			Duration:       5 * time.Second,
+			Duration:       30 * time.Second,
 			TickerInternal: 1 * time.Second,
-			OnRun: func(started bool) {
-				if started {
-					log.Printf("started: %v", time.Now())
-				} else {
-					log.Printf("resumed: %v", time.Now())
-				}
-			},
-			OnPaused: func(passed, remained time.Duration) {
-				log.Printf("paused (passed=%v, remaining=%v)", passed, remained)
-			},
+			OnRun:          func(started bool) {},
+			OnPaused:       func(passed, remained time.Duration) {},
 			OnDone: func(stopped bool) {
 				log.Printf("finish: %v (stopped=%v)", time.Now(), stopped)
 				g := s.GameRepo.GetGame(gameId)

@@ -1,6 +1,6 @@
 import {letters} from "@/models/letterboard";
 import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import {useGSAP} from '@gsap/react';
 import {useRef} from "react";
 
 export type LetterboardProps = {
@@ -14,7 +14,7 @@ const Letters: React.FC<LetterboardProps> = ({letters}) => {
                 {letters?.map((letterRow, index) => (
                     <div className="grid grid-cols-9 grid-rows-1 w-full" key={index}>
                         {letterRow.map((letter, i) => (
-                            <Letter key={i} letter={letter} />
+                            <Letter key={i} letter={letter}/>
                         ))}
                     </div>
                 ))}
@@ -23,7 +23,7 @@ const Letters: React.FC<LetterboardProps> = ({letters}) => {
     )
 }
 
-const Letter: React.FC<{letter: string}> = ({letter}) => {
+const Letter: React.FC<{ letter: string }> = ({letter}) => {
     const boxRef = useRef<HTMLDivElement>(null)
 
     useGSAP(() => {
@@ -39,8 +39,10 @@ const Letter: React.FC<{letter: string}> = ({letter}) => {
     }, [letter])
 
     return (
-        <div ref={boxRef}  className="border-sherwood-green-500 border-4 border-solid aspect-square bg-white  flex items-center justify-center">
-            <h1 className="text-burnham-500 text-9xl text-center m-h[2rem] uppercase font-bold">{letter == " " ? <span>&nbsp;</span> : letter}</h1>
+        <div ref={boxRef}
+             className="border-sherwood-green-500 border-4 border-solid aspect-square bg-white  flex items-center justify-center">
+            <h1 className="text-burnham-500 text-9xl text-center m-h[2rem] uppercase font-bold">{letter == " " ?
+                <span>&nbsp;</span> : letter}</h1>
         </div>
     )
 }

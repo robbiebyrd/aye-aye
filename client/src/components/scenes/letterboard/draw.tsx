@@ -1,7 +1,6 @@
-import {useGSAP} from "@gsap/react";
-import gsap from "gsap";
 import {useRef} from "react";
 import {Button} from "@/components/button";
+
 export type DrawProps = {
     gameId: string
     playerId: string

@@ -12,7 +12,7 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, colors, posit
     const updatedPlayers = players.filter(obj => Object.keys(obj).length > 0);
     const teamScore = updatedPlayers.reduce((accumulator, player) => accumulator + player.score, 0);
 
-    return  (
+    return (
         <div key={teamName} className={"flex flex-col border-solid border-4"} style={{
             background: colors[0],
             borderColor: colors[1],
@@ -27,17 +27,15 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, colors, posit
                      style={{backgroundColor: colors[2]}}>{teamScore}
                 </div>
             </div>
-            <>
-                {players?.map((player: Player) => (
-                    <div className={'flex w-full h-1/3 ' + (position === 'left' ? 'flex-row' :
-                        'flex-row-reverse')}
-                         style={{ backgroundColor: colors[3]}}>
-                        <h1 className={' text-4xl font-bold p-2'}>{player.name}</h1>
-                        <div className={'flex-grow'}></div>
-                        <div className={' text-4xl  p-2'}>{player.score}</div>
-                    </div>
-                ))}
-            </>
+            {players?.map((player: Player) => (
+                <div key={player.id} className={'flex w-full h-1/3 ' + (position === 'left' ? 'flex-row' :
+                    'flex-row-reverse')}
+                     style={{backgroundColor: colors[3]}}>
+                    <h1 className={' text-4xl font-bold p-2'}>{player.name}</h1>
+                    <div className={'flex-grow'}></div>
+                    <div className={' text-4xl  p-2'}>{player.score}</div>
+                </div>
+            ))}
             {/*<div className={'flex w-full h-1/3 ' + (position === 'left' ? 'flex-row' :*/}
             {/*    'flex-row-reverse')}*/}
             {/*     style={{ backgroundColor: colors[4]}}>*/}
