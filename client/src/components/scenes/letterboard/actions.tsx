@@ -87,7 +87,7 @@ const Actions: React.FC<LetterboardProps> = ({gameId, playerId, inputEnabled, ws
                     <div className="flex flex-col items-center p-5 bg-white">
                         <h1 className=" text-xl text-center text-burnham-500">Type Your Answer Here: </h1>
                         <input
-                            className="text-4xl border-4 border-sherwood-green-500 border-solid flex items-center p-2 uppercase"
+                            className="text-center text-4xl border-4 border-sherwood-green-500 border-solid flex items-center p-2 uppercase"
                             name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
                             value={inputValue}/>
                     </div>
