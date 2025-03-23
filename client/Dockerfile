@@ -13,6 +13,9 @@ RUN npm install
 # Copy the rest of your app
 COPY . .
 
+# Copy the .env file from the example if no .env file exists
+RUN mv .env.example .env 2>/dev/null
+
 # Build the Next.js app
 RUN npm run build
 
