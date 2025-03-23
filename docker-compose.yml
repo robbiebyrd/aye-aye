@@ -10,16 +10,16 @@ services:
     ports:
       - '6379:6379'
 
-  server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    ports:
-      - '5002:5002'
-
-  client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    ports:
-      - '3000:3000'
+#  server:
+#    build:
+#      context: ./server
+#      dockerfile: Dockerfile
+#    ports:
+#      - '5002:5002'
+#
+#  client:
+#    build:
+#      context: ./client
+#      dockerfile: Dockerfile
+#    ports:
+#      - '3000:3000'
