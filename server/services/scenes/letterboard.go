@@ -76,7 +76,7 @@ func (s *LetterBoardScene) drawLetters(game *models.CountdownGameData) {
 	s.GameRepo.UpdateGame(*game)
 }
 
-func (s *LetterBoardScene) HandleMessage(msg []byte, gameId string, playerId string, wordsService *services.WordsService, m *melody.Melody) {
+func (s *LetterBoardScene) HandleMessage(msg []byte, gameId string, playerId string, wordsService *services.WordsService, m *melody.Melody, session *melody.Session) {
 	game := s.GameRepo.GetGame(gameId)
 
 	var messageDecoded map[string]interface{}
@@ -116,6 +116,7 @@ func (s *LetterBoardScene) HandleMessage(msg []byte, gameId string, playerId str
 				s.GameRepo.UpdateGame(*g)
 				data, _ := json.Marshal(g)
 				m.Broadcast(data)
+				
 				finish <- true
 			},
 			OnTick: func(passed, remained time.Duration) {

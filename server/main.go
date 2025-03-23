@@ -171,7 +171,7 @@ func main() {
 
 		switch la["sceneId"].(string) {
 		case "letterBoard":
-			letterboardScene.HandleMessage(msg, gameId, playerId, wordsService, m)
+			letterboardScene.HandleMessage(msg, gameId, playerId, wordsService, m, s)
 		}
 
 		game := gameRepo.GetGame(gameId)

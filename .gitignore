@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.idea
+.next
+.yarn
+/client/.yarnrc.yml
+/client/codealike.json
+/client/node_modules
+codealike.json
