@@ -7,6 +7,8 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/robbiebyrd/gameserve/models"
 	"log"
+	"net"
+	"os"
 )
 
 var EmptyLetters = []string{" ", " ", " ", " ", " ", " ", " ", " ", " "}
@@ -17,13 +19,25 @@ type GameRepo struct {
 }
 
 func NewGameRepo() *GameRepo {
+	dialer := &net.Dialer{
+		DualStack: false, // Disable dual-stack, forces IPv4 if possible
+	}
+	ips, err := net.LookupIP("redis")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not get IPs: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("IPs: %v\n", ips)
+
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr: ips[0].String() + ":6379",
+		DB:   0,
+		Dialer: func(ctx context.Context, network, address string) (net.Conn, error) {
+			return dialer.DialContext(ctx, "tcp4", address) // force tcp4
+		},
 	})
 
-	err := rdb.Ping(context.Background()).Err()
+	err = rdb.Ping(context.Background()).Err()
 	if err != nil {
 		panic(err)
 	}

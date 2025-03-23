@@ -67,7 +67,7 @@ export default function Page({params}: {
                 {gameData?.activeSceneId == "letterBoard" && (
                     <>
                         <div className="flex justify-center w-full min-h-[15vh]">
-                            {teams?.at(0)?.at(0) && (
+                            {teams?.at(0)?.at(0) ? (
                                 <TeamPlacard
                                     teamName={String(teams?.at(0)?.at(0))}
                                     players={teams?.at(0)?.at(1) as Player[]}
@@ -80,7 +80,10 @@ export default function Page({params}: {
                                     ]}
                                     position={'left'}
                                 />
-                            )}
+                            ) : <div className={"flex flex-col"} style={{
+                                aspectRatio: "2 / 1",
+                                height: "11em"
+                            }}/>}
                             <div className="flex flex-col items-center justify-center flex-grow">
                                 <div
                                     className={'h-[10em] relative aspect-square mb-0 items-center content-center text-center justify-center'}
@@ -110,7 +113,7 @@ export default function Page({params}: {
                             {/*<div className="flex flex-col items-center justify-center">*/}
                             {/*    <p className="font-bold text-center">{gameData?.gameId}</p>*/}
                             {/*</div>*/}
-                            {teams?.at(1)?.at(0) && (
+                            {teams?.at(1)?.at(0) ? (
                                 <TeamPlacard
                                     teamName={String(teams?.at(1)?.at(0))}
                                     players={teams?.at(1)?.at(1) as Player[]}
@@ -122,12 +125,15 @@ export default function Page({params}: {
                                         "#CCCCCC"
                                     ]}
                                     position={'right'}/>
-                            )}
+                            ) : <div className={"flex flex-col"} style={{
+                                aspectRatio: "2 / 1",
+                                height: "11em"
+                            }}/>}
                         </div>
-                        {/*<div className="">*/}
-                        {/*    <ul>*/}
-                        {/*        {gameData?.sceneData.submissions?.map((submission) => {*/}
-                        {/*            return (*/}
+                            {/*<div className="">*/}
+                            {/*    <ul>*/}
+                            {/*        {gameData?.sceneData.submissions?.map((submission) => {*/}
+                            {/*            return (*/}
                         {/*                <li key={submission.playerId}>{submission.playerId} | {submission.correct ? "Correct" : "Incorrect"}</li>)*/}
                         {/*        })}*/}
                         {/*    </ul>*/}
