@@ -1,0 +1,33 @@
+.button {
+  height: 6em;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.buttonCenter {
+  height: 6em;
+  background-image: url('/img/buttoncenter.png');
+  background-size: contain;
+  background-repeat: repeat-x;
+  text-align: center;
+  align-content: center;
+}
+
+.button:before {
+  height: 6em;
+  width: 3em;
+  content: ' ';
+  background-image: url('/img/buttonleft.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.button:after {
+  height: 6em;
+  width: 3em;
+  content: ' ';
+  background-image: url('/img/buttonright.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
