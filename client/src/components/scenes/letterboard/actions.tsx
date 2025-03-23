@@ -66,7 +66,6 @@ const Actions: React.FC<LetterboardProps> = ({gameId, playerId, inputEnabled, ws
         ws?.send(JSON.stringify(submission))
     }
 
-
     const preventSubmit = (event: FormEvent) => {
         event.preventDefault();
     };

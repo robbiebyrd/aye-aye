@@ -121,6 +121,7 @@ func (s *GameRepo) ResetGame(id string) *models.CountdownGameData {
 	game.SceneData.Board = [][]string{EmptyLetters, EmptyLetters}
 	game.SceneData.Submissions = []models.CountdownGameDataSceneSubmissions{}
 	game.SceneData.ShowInput = true
+	game.SceneData.FoundWords = []string{}
 	s.UpdateGame(*game)
 	return game
 }
