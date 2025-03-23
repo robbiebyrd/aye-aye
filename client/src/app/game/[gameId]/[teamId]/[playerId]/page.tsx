@@ -10,12 +10,13 @@ import {TeamPlacard} from "@/components/team-placard"
 
 
 export default function Page({params}: {
-    params: Promise<{ gameId: string, playerId: string }>
+    params: Promise<{ gameId: string, teamId: string; playerId: string }>
 }) {
-    const {playerId, gameId} = use(params)
+    const { gameId, teamId, playerId} = use(params)
     invariant(playerId, `A Player ID must be provided.`)
+    invariant(teamId, `A Team ID must be provided.`)
     invariant(gameId, `A Game ID must be provided.`)
-    const websocketHost = process.env.SERVER_HOST || "localhost"
+    const websocketHost = process.env.SERVER_HOST || "aye-aye.robbiebyrd.com"
     const websocketPort = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 5002
 
     const [gameData, setGameData] = useState<GameData>()

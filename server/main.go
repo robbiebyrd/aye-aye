@@ -10,7 +10,6 @@ import (
 	"github.com/robbiebyrd/gameserve/services/scenes"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 type CountdownGameDataKeys map[string]any
@@ -47,48 +46,44 @@ func main() {
 
 	m := melody.New()
 
-	http.HandleFunc("/game", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "index.html")
-	})
-
-	fs := http.FileServer(http.Dir("./web"))
-	http.Handle("/", fs)
-
-	http.HandleFunc("/ws/{gameId}/{playerId}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/ws/{gameId}/{teamId}/{playerId}", func(w http.ResponseWriter, r *http.Request) {
 		keys := make(CountdownGameDataKeys)
 		keys["gameId"] = r.PathValue("gameId")
 		keys["playerId"] = r.PathValue("playerId")
+		keys["teamId"] = r.PathValue("teamId")
 		m.HandleRequestWithKeys(w, r, keys)
 		return
 	})
 
-	http.HandleFunc("/api/{gameId}/reset", func(w http.ResponseWriter, r *http.Request) {
-		gameId := r.PathValue("gameId")
-		game := gameRepo.ResetGame(gameId)
-		data, _ := json.Marshal(game)
-		m.Broadcast(data)
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusAccepted)
-	})
-
-	http.HandleFunc("/api/{gameId}/solveLetters", func(w http.ResponseWriter, r *http.Request) {
-		gameId := r.PathValue("gameId")
-		game := games[gameId]
-		game.SceneData.FoundWords = wordsService.GetMatchingWordsOfLengths(strings.Join(game.SceneData.Letters, ""), 2, 9)
-		var firstLine []string = strings.Split(fmt.Sprintf("%-9s", game.SceneData.FoundWords[0]), "")
-		var secondLine []string = strings.Split(fmt.Sprintf("%-9s", game.SceneData.FoundWords[1]), "")
-		var board [][]string = [][]string{firstLine, secondLine}
-		game.SceneData.Board = board
-		data, _ := json.Marshal(game)
-		m.Broadcast(data)
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusAccepted)
-	})
+	//http.HandleFunc("/api/{gameId}/reset", func(w http.ResponseWriter, r *http.Request) {
+	//	gameId := r.PathValue("gameId")
+	//	game := gameRepo.ResetGame(gameId)
+	//	data, _ := json.Marshal(game)
+	//	m.Broadcast(data)
+	//	w.Header().Set("Content-Type", "application/json")
+	//	w.WriteHeader(http.StatusAccepted)
+	//})
+	//
+	//http.HandleFunc("/api/{gameId}/solveLetters", func(w http.ResponseWriter, r *http.Request) {
+	//	gameId := r.PathValue("gameId")
+	//	game := games[gameId]
+	//	game.SceneData.FoundWords = wordsService.GetMatchingWordsOfLengths(strings.Join(game.SceneData.Letters, ""), 2, 9)
+	//	var firstLine []string = strings.Split(fmt.Sprintf("%-9s", game.SceneData.FoundWords[0]), "")
+	//	var secondLine []string = strings.Split(fmt.Sprintf("%-9s", game.SceneData.FoundWords[1]), "")
+	//	var board [][]string = [][]string{firstLine, secondLine}
+	//	game.SceneData.Board = board
+	//	data, _ := json.Marshal(game)
+	//	m.Broadcast(data)
+	//	w.Header().Set("Content-Type", "application/json")
+	//	w.WriteHeader(http.StatusAccepted)
+	//})
 
 	m.HandleConnect(func(s *melody.Session) {
 		keyGameId, _ := s.Get("gameId")
+		keyTeamId, _ := s.Get("teamId")
 		keyPlayerId, _ := s.Get("playerId")
 		gameId := keyGameId.(string)
+		teamId := keyTeamId.(string)
 		playerId := keyPlayerId.(string)
 
 		var game *models.CountdownGameData
@@ -121,6 +116,7 @@ func main() {
 				ID:   playerId,
 				Name: &playerId,
 				Host: host,
+				Team: &teamId,
 			})
 		} else {
 			for i, player := range game.Players {
