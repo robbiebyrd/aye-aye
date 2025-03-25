@@ -197,7 +197,7 @@ func dropShortWords(words []string, length int) []string {
 // dropLongWords removes words with spaces or hyphenated words
 func dropMultiwords(words []string) []string {
 	var updatedWords []string
-	charsToFind := []string{" ", "-"}
+	charsToFind := []string{" ", "-", "'"}
 
 	for _, word := range words {
 		found := false

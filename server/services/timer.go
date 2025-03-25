@@ -1,4 +1,4 @@
-package timer
+package services
 
 import (
 	"time"
@@ -14,6 +14,9 @@ type Options struct {
 	OnTick         func(passed, remained time.Duration)
 	OnRun          func(started bool)
 }
+
+// Duration represent duration for countdown.
+type Duration time.Duration
 
 // Timer represents timer with pause/resume features.
 type Timer struct {
