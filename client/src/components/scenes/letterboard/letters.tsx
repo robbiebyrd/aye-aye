@@ -9,7 +9,7 @@ export type LetterboardProps = {
 
 const Letters: React.FC<LetterboardProps> = ({letters}) => {
     return (
-        <div className="w-full flex">
+        <div className="w-full flex my-8">
             <div className="flex-grow">
                 {letters?.map((letterRow, index) => (
                     <div className="grid grid-cols-9 grid-rows-1 w-full" key={index}>
