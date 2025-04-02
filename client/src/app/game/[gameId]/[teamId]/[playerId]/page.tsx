@@ -17,7 +17,7 @@ export default function Page({params}: {
     invariant(teamId, `A Team ID must be provided.`)
     invariant(gameId, `A Game ID must be provided.`)
     const websocketHost = process.env.SERVER_HOST || "aye-aye.robbiebyrd.com"
-    const websocketPort = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 80
+    const websocketPort = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 443
 
     const [gameData, setGameData] = useState<GameData>()
 
