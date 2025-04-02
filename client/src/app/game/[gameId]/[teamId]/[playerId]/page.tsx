@@ -22,7 +22,7 @@ export default function Page({params}: {
     const [gameData, setGameData] = useState<GameData>()
 
     const ws = useMemo(() => {
-        const ws = new WebSocket(`wss://${websocketHost}:${websocketPort}/ws/${gameId}/${teamId}/${playerId}`)
+        const ws = new WebSocket(`ws://${websocketHost}:${websocketPort}/ws/${gameId}/${teamId}/${playerId}`)
         ws.onmessage = function (event) {
             const json = JSON.parse(event.data) as GameData
             try {
