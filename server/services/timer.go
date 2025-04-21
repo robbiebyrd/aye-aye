@@ -4,8 +4,7 @@ import (
 	"time"
 )
 
-// Options represents configuration for timer.
-type Options struct {
+type CountdownerOptions struct {
 	Duration       time.Duration
 	Passed         time.Duration
 	TickerInternal time.Duration
@@ -15,34 +14,35 @@ type Options struct {
 	OnRun          func(started bool)
 }
 
-// Duration represent duration for countdown.
-type Duration time.Duration
-
-// Timer represents timer with pause/resume features.
-type Timer struct {
-	options  Options
+type Countdowner struct {
+	options  CountdownerOptions
 	ticker   *time.Ticker
 	started  bool
 	passed   time.Duration
 	lastTick time.Time
 }
 
-// Passed returns how much done is already passed.
-func (c Timer) Passed() time.Duration {
+// NewCountdowner creates instance of a new Countdown Timer.
+func NewCountdowner(options CountdownerOptions) *Countdowner {
+	return &Countdowner{
+		options: options,
+	}
+}
+
+func (c *Countdowner) Passed() time.Duration {
 	return c.passed
 }
 
-// Remaining returns how much time is left to end.
-func (c Timer) Remaining() time.Duration {
+func (c *Countdowner) Remaining() time.Duration {
 	return c.options.Duration - c.Passed()
 }
 
-func (t Timer) timeFromLastTick() time.Duration {
-	return time.Now().Sub(t.lastTick)
+func (c *Countdowner) timeFromLastTick() time.Duration {
+	return time.Now().Sub(c.lastTick)
 }
 
 // Run starts just created timer and resumes paused.
-func (c *Timer) Run() {
+func (c *Countdowner) Run() {
 	//c.active = true
 	c.ticker = time.NewTicker(c.options.TickerInternal)
 	c.lastTick = time.Now()
@@ -71,7 +71,7 @@ func (c *Timer) Run() {
 }
 
 // Pause temporarily pauses active timer.
-func (c *Timer) Pause() {
+func (c *Countdowner) Pause() {
 	c.ticker.Stop()
 	c.passed += time.Now().Sub(c.lastTick)
 	c.lastTick = time.Now()
@@ -79,14 +79,7 @@ func (c *Timer) Pause() {
 }
 
 // Stop finishes the timer.
-func (c *Timer) Stop() {
+func (c *Countdowner) Stop() {
 	c.ticker.Stop()
 	c.options.OnDone(true)
-}
-
-// New creates instance of timer.
-func New(options Options) *Timer {
-	return &Timer{
-		options: options,
-	}
 }

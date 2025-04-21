@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/olahol/melody"
 	"github.com/robbiebyrd/gameserve/models"
 	"github.com/robbiebyrd/gameserve/repo"
@@ -22,9 +23,7 @@ func getStandardKeys(s *melody.Session) (string, string, string) {
 	return gameId, teamId, playerId
 }
 
-func main() {
-	m := melody.New()
-
+func serve(m *melody.Melody) {
 	http.HandleFunc("/ws/{gameId}/{teamId}/{playerId}", func(w http.ResponseWriter, r *http.Request) {
 		keys := make(CountdownGameDataKeys)
 		keys["gameId"] = r.PathValue("gameId")
@@ -33,91 +32,114 @@ func main() {
 		m.HandleRequestWithKeys(w, r, keys)
 		return
 	})
+}
 
-	wordsService := services.NewWordsService("./data/words.txt")
+func disconnect(s *melody.Session, m *melody.Melody, gameRepo repo.GameRepo) {
+	gameId, _, playerId := getStandardKeys(s)
+
+	game := gameRepo.GetGame(gameId)
+	previousData, _ := json.Marshal(game)
+
+	for i, player := range game.Players {
+		if player.ID == playerId {
+			game.Players[i].Disconnected = true
+		}
+	}
+
+	gameRepo.UpdateGame(*game)
+	newData, _ := json.Marshal(game)
+	fmt.Println(services.GetPatch(previousData, newData))
+	m.Broadcast(newData)
+}
+
+func connect(s *melody.Session, m *melody.Melody, gameRepo repo.GameRepo) {
+	var game *models.CountdownGameData
+
+	gameId, teamId, playerId := getStandardKeys(s)
+
+	if gameRepo.CheckGame(gameId) {
+		game = gameRepo.GetGame(gameId)
+	} else {
+		game = gameRepo.NewGame(gameId)
+	}
+
+	if !gameRepo.CheckGamePlayer(gameId, playerId) {
+		host := false
+		if !gameRepo.CheckGameForHost(gameId) {
+			host = true
+		}
+
+		game.Players = append(game.Players, models.CountdownGameDataPlayer{
+			ID:   playerId,
+			Name: &playerId,
+			Host: host,
+			Team: &teamId,
+		})
+	} else {
+		for i, player := range game.Players {
+			if player.ID == playerId {
+				game.Players[i].Disconnected = false
+			}
+		}
+	}
+
+	gameRepo.UpdateGame(*game)
+
+	s.Set("gameId", gameId)
+	data, _ := json.Marshal(game)
+	fmt.Println(services.GetPatch(nil, data))
+
+	m.Broadcast(data)
+}
+
+func main() {
+	m := melody.New()
+	serve(m)
+
 	gameRepo := repo.NewGameRepo()
 	letterboardScene := scenes.NewLetterBoardScene()
+	conundrumScene := scenes.NewConundrumScene()
 
 	m.HandleConnect(func(s *melody.Session) {
-		gameId, teamId, playerId := getStandardKeys(s)
-
-		var game *models.CountdownGameData
-
-		gameExists := gameRepo.CheckGame(gameId)
-
-		if gameExists {
-			game = gameRepo.GetGame(gameId)
-		} else {
-			game = gameRepo.NewGame(gameId)
-		}
-
-		playerExists := gameRepo.CheckGamePlayer(gameId, playerId)
-
-		if !playerExists {
-			host := false
-			if !gameRepo.CheckGameForHost(gameId) {
-				host = true
-			}
-
-			game.Players = append(game.Players, models.CountdownGameDataPlayer{
-				ID:   playerId,
-				Name: &playerId,
-				Host: host,
-				Team: &teamId,
-			})
-		} else {
-			for i, player := range game.Players {
-				if player.ID == playerId {
-					game.Players[i].Disconnected = false
-				}
-			}
-		}
-
-		gameRepo.UpdateGame(*game)
-
-		s.Set("gameId", gameId)
-		data, _ := json.Marshal(game)
-
-		m.Broadcast(data)
+		connect(s, m, *gameRepo)
 	})
 
 	m.HandleDisconnect(func(s *melody.Session) {
-		gameId, _, playerId := getStandardKeys(s)
-
-		game := gameRepo.GetGame(gameId)
-
-		for i, player := range game.Players {
-			if player.ID == playerId {
-				game.Players[i].Disconnected = true
-			}
-		}
-
-		gameRepo.UpdateGame(*game)
-		data, _ := json.Marshal(game)
-		m.Broadcast(data)
+		disconnect(s, m, *gameRepo)
 	})
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
 		gameId, _, playerId := getStandardKeys(s)
 
-		var la map[string]interface{}
-		_ = json.Unmarshal(msg, &la)
+		var inputMessage map[string]interface{}
+		_ = json.Unmarshal(msg, &inputMessage)
 
-		if la["sceneId"] == nil {
+		if inputMessage["sceneId"] == nil {
 			return
 		}
 
-		switch la["sceneId"].(string) {
+		game := gameRepo.GetGame(gameId)
+		dataBefore, _ := json.Marshal(game)
 
-		case "letterBoard":
-			letterboardScene.HandleMessage(msg, gameId, playerId, wordsService, m, s)
+		switch inputMessage["sceneId"].(string) {
+		case "sceneChange":
+			fmt.Println("sceneChange")
+			g := gameRepo.GetGame(gameId)
+			g.ActiveSceneID = inputMessage["action"].(string)
+			gameRepo.UpdateGame(*g)
+		case "letterboard":
+			letterboardScene.HandleMessage(msg, gameId, playerId, m, s)
+		case "conundrum":
+			conundrumScene.HandleConundrumMessage(msg, gameId, playerId, m, s)
 		}
 
-		game := gameRepo.GetGame(gameId)
-		data, _ := json.Marshal(game)
-		m.Broadcast(data)
+		game = gameRepo.GetGame(gameId)
+		dataAfter, _ := json.Marshal(game)
 
-		return
+		patch := services.GetPatch(dataBefore, dataAfter)
+		fmt.Println(patch)
+
+		m.Broadcast(dataAfter)
 	})
 
 	http.ListenAndServe(":5002", nil)

@@ -3,13 +3,10 @@ package repo
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/redis/go-redis/v9"
 	"github.com/robbiebyrd/gameserve/models"
 	"log"
 )
-
-var EmptyLetters = []string{" ", " ", " ", " ", " ", " ", " ", " ", " "}
 
 type GameRepo struct {
 	Client *redis.Client
@@ -59,7 +56,6 @@ func (s *GameRepo) GetGame(id string) *models.CountdownGameData {
 
 func (s *GameRepo) CheckGame(id string) bool {
 	exists, err := s.Client.Exists(s.Ctx, id).Result()
-	fmt.Println(exists, err)
 	if err != nil {
 		panic(err)
 	}
@@ -84,14 +80,18 @@ func (s *GameRepo) UpdateGame(game models.CountdownGameData) {
 }
 
 func (s *GameRepo) NewGame(id string) *models.CountdownGameData {
+	controllingTeam := "team1"
 	game := models.CountdownGameData{
-		GameID:        id,
-		ActiveSceneID: "letterBoard",
+		GameID:          id,
+		ActiveSceneID:   "lobby",
+		CurrentRound:    "Round 1",
+		ControllingTeam: &controllingTeam,
+		Rounds:          []string{"Round 1", "Round 2", "Round 3"},
 		SceneData: models.CountdownSceneData{
-			Name:        "letterBoard",
+			Name:        "letterboard",
 			Timer:       -1,
-			Letters:     []string{},
-			Board:       [][]string{EmptyLetters, EmptyLetters},
+			Letters:     models.EmptyLetters,
+			Board:       [][]string{models.EmptyLetters, models.EmptyLetters},
 			Submissions: []models.CountdownGameDataSceneSubmissions{},
 			ShowInput:   true,
 		},
@@ -103,12 +103,16 @@ func (s *GameRepo) NewGame(id string) *models.CountdownGameData {
 func (s *GameRepo) ResetGame(id string) *models.CountdownGameData {
 	game := s.GetGame(id)
 	game.SceneData.Timer = -1
-	game.SceneData.Letters = EmptyLetters
-	game.SceneData.Board = [][]string{EmptyLetters, EmptyLetters}
-	game.SceneData.Submissions = []models.CountdownGameDataSceneSubmissions{}
-	game.SceneData.ShowInput = true
+	game.SceneData.Submissions = make([]models.CountdownGameDataSceneSubmissions, 0)
+	game.SceneData.Letters = models.EmptyLetters
+	game.SceneData.Board = [][]string{models.EmptyLetters, models.EmptyLetters}
 	game.SceneData.FoundWords = []string{}
-	s.UpdateGame(*game)
+	game.SceneData.Numbers = []int{}
+	game.SceneData.TargetNumber = 0
+	game.SceneData.Word = models.EmptyLetters
+	game.SceneData.Jumbled = models.EmptyLetters
+	game.SceneData.Clue = ""
+	game.SceneData.ShowInput = true
 	return game
 }
 

@@ -5,14 +5,12 @@ import (
 	"os"
 	"sort"
 	"strings"
-	"sync"
 )
 
 type LetterFrequency map[rune]int
 
 type WordsService struct {
-	Words            []string
-	WordsFrequencies []LetterFrequency
+	Words []string
 }
 
 func NewWordsService(dictionaryPath string) *WordsService {
@@ -25,21 +23,34 @@ func NewWordsService(dictionaryPath string) *WordsService {
 	words = dropLongWords(words, 9)
 	words = dropMultiwords(words)
 
-	var wg sync.WaitGroup
-	wordFrequencies := make([]LetterFrequency, len(words))
-	for i, word := range words {
-		wg.Add(1)
-		go func(i int, param string) {
-			defer wg.Done()
-			wordFrequencies[i] = countLetterFrequency(word)
-		}(i, word)
-	}
-	wg.Wait()
-
 	return &WordsService{
-		Words:            words,
-		WordsFrequencies: wordFrequencies,
+		Words: words,
 	}
+}
+
+func (s *WordsService) GetMatchingWords(letters string) []string {
+	letters = strings.ToLower(letters)
+	letterCounts := getLetterCounts(letters)
+
+	var matchingWords []string
+
+	for _, word := range s.Words {
+		if isValidWord(word, letterCounts) {
+			matchingWords = append(matchingWords, word)
+		}
+	}
+
+	return sortWordLists(matchingWords)
+}
+
+func (s *WordsService) GetMatchingWordsOfLengths(letters string, minimumLength int, maximumLength int) []string {
+	var matchingWords []string
+
+	for wordLength := minimumLength; wordLength <= maximumLength; wordLength++ {
+		matchingWords = append(matchingWords, s.GetMatchingWords(letters[:wordLength])...)
+	}
+
+	return sortWordLists(matchingWords)
 }
 
 func sortWordLists(words []string) []string {
@@ -63,51 +74,6 @@ func removeWordListDuplicates(arr []string) []string {
 		}
 	}
 	return result
-}
-
-func (s *WordsService) GetMatchingWords(letters string) []string {
-	letters = strings.ToLower(letters)
-	letterCounts := getLetterCounts(letters)
-
-	var matchingWords []string
-
-	for _, word := range s.Words {
-		if isValidWord(word, letterCounts) {
-			matchingWords = append(matchingWords, word)
-		}
-	}
-
-	return sortWordLists(matchingWords)
-}
-
-func (s *WordsService) GetMatchingWordsOfLengths(letters string, minimumLength int, maximumLength int) []string {
-	var matchingWords []string
-
-	for wordLength := minimumLength; wordLength <= maximumLength; wordLength++ {
-		matchingWords = append(matchingWords, s.GetMatchingWords(letters[:wordLength])...)
-
-	}
-
-	return sortWordLists(matchingWords)
-}
-
-func (s *WordsService) CompareAnagrams(string1, string2 string) bool {
-	map1 := countLetterFrequency(string1)
-	map2 := countLetterFrequency(string2)
-	if len(map1) != len(map2) {
-		return false
-	}
-	for key, val1 := range map1 {
-		val2, ok := map2[key]
-		if !ok || val1 != val2 {
-			return false
-		}
-	}
-	return true
-}
-
-func (s *WordsService) GetDataCount() int {
-	return 1
 }
 
 // getLetterCounts returns a frequency map of letters in a string.
@@ -143,9 +109,7 @@ func loadWords(filename string) ([]string, error) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		word := strings.TrimSpace(scanner.Text())
-		if len(word) >= 3 && len(word) <= 9 { // Filter words to relevant lengths
-			words = append(words, word)
-		}
+		words = append(words, word)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -155,12 +119,11 @@ func loadWords(filename string) ([]string, error) {
 	return words, nil
 }
 
-// countLetterFreqyency computes and returns the number of times each letter appears in a word
+// countLetterFrequency computes and returns the number of times each letter appears in a word
 func countLetterFrequency(checkString string) LetterFrequency {
 	frequencyMap := make(LetterFrequency)
-	lowercaseString := strings.ToLower(checkString)
 
-	for _, char := range lowercaseString {
+	for _, char := range strings.ToLower(checkString) {
 		if char >= 'a' && char <= 'z' {
 			frequencyMap[char]++
 		}
@@ -181,7 +144,7 @@ func dropLongWords(words []string, length int) []string {
 	return updatedWords
 }
 
-// dropLongWords removes words under a specific length
+// dropShortWords removes words less than a specific length
 func dropShortWords(words []string, length int) []string {
 	var updatedWords []string
 
@@ -194,7 +157,7 @@ func dropShortWords(words []string, length int) []string {
 	return updatedWords
 }
 
-// dropLongWords removes words with spaces or hyphenated words
+// dropMultiwords removes words with spaces or hyphenated words
 func dropMultiwords(words []string) []string {
 	var updatedWords []string
 	charsToFind := []string{" ", "-", "'"}

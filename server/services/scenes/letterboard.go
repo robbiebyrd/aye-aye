@@ -7,23 +7,26 @@ import (
 	"github.com/robbiebyrd/gameserve/models"
 	"github.com/robbiebyrd/gameserve/repo"
 	"github.com/robbiebyrd/gameserve/services"
-	"log"
 	"slices"
 	"strings"
 	"time"
 )
 
+var timerLength = 5
+
 type LetterboardScene struct {
 	GameRepo       *repo.GameRepo
-	PlayerRepo     *repo.PlayerRepo
 	LettersService *services.LettersService
+	TimerChannels  map[string]*services.Countdowner
+	WordsService   *services.WordsService
 }
 
 func NewLetterBoardScene() *LetterboardScene {
 	return &LetterboardScene{
 		GameRepo:       repo.NewGameRepo(),
-		PlayerRepo:     repo.NewPlayerRepo(),
 		LettersService: services.NewLettersService(),
+		TimerChannels:  make(map[string]*services.Countdowner),
+		WordsService:   services.NewWordsService("./data/words.txt"),
 	}
 }
 
@@ -37,47 +40,50 @@ func removeMatchingStrings(slice []string, match string) []string {
 	return result
 }
 
-func (s *LetterboardScene) startScene(game *models.CountdownGameData, session *melody.Session, m *melody.Melody) {
-	game.SceneData.Timer = 31
+func (s *LetterboardScene) cancelTimer(gameId string) {
+
+	if s.TimerChannels[gameId] != nil {
+		s.TimerChannels[gameId].Stop()
+	}
+	g := s.GameRepo.GetGame(gameId)
+	g.SceneData.Timer = -1
+	s.GameRepo.UpdateGame(*g)
+}
+
+func (s *LetterboardScene) startTimer(game *models.CountdownGameData, m *melody.Melody) {
+	previousData, _ := json.Marshal(game)
+	game.SceneData.Timer = timerLength + 1
 	s.GameRepo.UpdateGame(*game)
-	data, _ := json.Marshal(game)
-	m.Broadcast(data)
+	newData, _ := json.Marshal(game)
+	fmt.Println(services.GetPatch(previousData, newData))
+	m.Broadcast(newData)
 
-	var finish = make(chan bool, 1)
-
-	t := services.New(services.Options{
-		Duration:       30 * time.Second,
+	s.TimerChannels[game.GameID] = services.NewCountdowner(services.CountdownerOptions{
+		Duration:       time.Duration(timerLength) * time.Second,
 		TickerInternal: 1 * time.Second,
 		OnRun:          func(started bool) {},
 		OnPaused:       func(passed, remained time.Duration) {},
 		OnDone: func(stopped bool) {
-			log.Printf("finish: %v (stopped=%v)", time.Now(), stopped)
 			g := s.GameRepo.GetGame(game.GameID)
+			previousData, _ := json.Marshal(g)
 			g.SceneData.Timer -= 1
-			fmt.Print(g.SceneData.Timer)
 			s.GameRepo.UpdateGame(*g)
-			data, _ := json.Marshal(g)
-			m.Broadcast(data)
-
-			finish <- true
+			newData, _ := json.Marshal(g)
+			fmt.Println(services.GetPatch(previousData, newData))
+			m.Broadcast(newData)
 		},
 		OnTick: func(passed, remained time.Duration) {
 			g := s.GameRepo.GetGame(game.GameID)
+			previousData, _ := json.Marshal(g)
 			g.SceneData.Timer -= 1
-			fmt.Print(g.SceneData.Timer)
 			s.GameRepo.UpdateGame(*g)
-			data, _ := json.Marshal(g)
-			m.Broadcast(data)
-
-			if game.SceneData.Timer < 0 {
-				finish <- true
-			}
-
+			newData, _ := json.Marshal(g)
+			fmt.Println(services.GetPatch(previousData, newData))
+			m.Broadcast(newData)
 		},
 	})
 
-	// startScene in goroutine to prevent blocking of current
-	go t.Run()
+	go s.TimerChannels[game.GameID].Run()
 	return
 
 }
@@ -105,7 +111,6 @@ func (s *LetterboardScene) drawLetter(game *models.CountdownGameData, letterType
 	game.SceneData.Letters = letters
 	game.SceneData.Board = [][]string{game.SceneData.Letters, models.EmptyLetters}
 	s.GameRepo.UpdateGame(*game)
-
 }
 
 func (s *LetterboardScene) drawLetters(game *models.CountdownGameData) {
@@ -120,12 +125,14 @@ func (s *LetterboardScene) drawLetters(game *models.CountdownGameData) {
 	s.GameRepo.UpdateGame(*game)
 }
 
-func (s *LetterboardScene) resetGame(game *models.CountdownGameData) {
-	s.GameRepo.ResetGame(game.GameID)
+func (s *LetterboardScene) resetGame(gameId string) {
+	s.cancelTimer(gameId)
+	resetGame := s.GameRepo.ResetGame(gameId)
+	s.GameRepo.UpdateGame(*resetGame)
 }
 
-func (s *LetterboardScene) solveScene(game *models.CountdownGameData, wordsService *services.WordsService) {
-	game.SceneData.FoundWords = wordsService.GetMatchingWordsOfLengths(strings.Join(game.SceneData.Letters, ""), 2, 9)
+func (s *LetterboardScene) solveScene(game *models.CountdownGameData) {
+	game.SceneData.FoundWords = s.WordsService.GetMatchingWordsOfLengths(strings.Join(game.SceneData.Letters, ""), 2, 9)
 	firstLine := strings.Split(fmt.Sprintf("%-9s", game.SceneData.FoundWords[0]), "")
 	secondLine := strings.Split(fmt.Sprintf("%-9s", game.SceneData.FoundWords[1]), "")
 	board := [][]string{firstLine, secondLine}
@@ -133,54 +140,48 @@ func (s *LetterboardScene) solveScene(game *models.CountdownGameData, wordsServi
 	s.GameRepo.UpdateGame(*game)
 }
 
-func (s *LetterboardScene) submit(game *models.CountdownGameData, submissionText string, playerId string, wordsService *services.WordsService) {
-	submissionIndex := -1
-
-	submission := models.CountdownGameDataSceneSubmissions{
-		PlayerId: playerId,
-		Entry:    "",
-		Total:    "",
+func (s *LetterboardScene) submit(game *models.CountdownGameData, submissionText string, playerId string) {
+	if game.SceneData.Submissions == nil {
+		game.SceneData.Submissions = make([]models.CountdownGameDataSceneSubmissions, 0)
 	}
 
-	for i, p := range game.SceneData.Submissions {
-		if p.PlayerId == playerId {
-			submissionIndex = i
-			submission = game.SceneData.Submissions[submissionIndex]
-			break
+	for i, sub := range game.SceneData.Submissions {
+		if sub.PlayerId == playerId && sub.Entry != "" {
+			return // Player already submitted
 		}
-	}
+		if sub.PlayerId == playerId {
+			foundWords := s.WordsService.GetMatchingWords(strings.Join(game.SceneData.Letters, ""))
+			isCorrect := slices.Contains(foundWords, strings.ToLower(submissionText))
 
-	submission.Entry = submissionText
-
-	foundWords := wordsService.GetMatchingWords(strings.Join(game.SceneData.Letters, ""))
-	submission.Correct = slices.Contains(foundWords, submissionText)
-
-	if submission.Correct {
-		for i, p := range game.Players {
-			if p.ID == playerId {
-				length := len(submission.Entry)
-				if p.Score == nil {
-					s := 0
-					p.Score = &s
-				}
-
-				score := *p.Score + length
-				p.Score = &score
-				game.Players[i] = p
+			game.SceneData.Submissions[i] = models.CountdownGameDataSceneSubmissions{
+				PlayerId: playerId,
+				Entry:    submissionText,
+				Total:    "",
+				Correct:  &isCorrect,
 			}
+
+			if isCorrect {
+				for j, p := range game.Players {
+					if p.ID == playerId {
+						score := 0
+						if p.Score != nil {
+							score = *p.Score
+						}
+						submissionLength := score + len(submissionText)
+						game.Players[j].Score = &submissionLength
+						break
+					}
+				}
+			}
+			s.GameRepo.UpdateGame(*game)
+
+			return
 		}
-	}
 
-	if submissionIndex == -1 {
-		game.SceneData.Submissions = append(game.SceneData.Submissions, submission)
-	} else {
-		game.SceneData.Submissions[submissionIndex] = submission
 	}
-	s.GameRepo.UpdateGame(*game)
-
 }
 
-func (s *LetterboardScene) HandleMessage(msg []byte, gameId string, playerId string, wordsService *services.WordsService, m *melody.Melody, session *melody.Session) {
+func (s *LetterboardScene) HandleMessage(msg []byte, gameId string, playerId string, m *melody.Melody, session *melody.Session) {
 	game := s.GameRepo.GetGame(gameId)
 
 	var messageDecoded map[string]interface{}
@@ -192,8 +193,10 @@ func (s *LetterboardScene) HandleMessage(msg []byte, gameId string, playerId str
 
 	switch messageDecoded["action"].(string) {
 	case "start":
-		s.startScene(game, session, m)
+		s.startTimer(game, m)
 		break
+	case "cancel":
+		s.cancelTimer(game.GameID)
 	case "draw":
 		s.drawLetter(game, messageDecoded["type"].(string))
 		break
@@ -201,17 +204,17 @@ func (s *LetterboardScene) HandleMessage(msg []byte, gameId string, playerId str
 		s.drawLetters(game)
 		break
 	case "reset":
-		s.resetGame(game)
+		s.resetGame(game.GameID)
 		break
 	case "submit":
 		if messageDecoded["submission"] == nil {
 
 			return
 		}
-		s.submit(game, messageDecoded["submission"].(string), playerId, wordsService)
+		s.submit(game, messageDecoded["submission"].(string), playerId)
 		break
 	case "solve":
-		s.solveScene(game, wordsService)
+		s.solveScene(game)
 		break
 	default:
 		break

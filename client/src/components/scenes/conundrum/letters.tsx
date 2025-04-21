@@ -3,19 +3,22 @@ import {useGSAP} from '@gsap/react';
 import {useRef} from "react";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 
-type LettersProps = Pick<LetterboardProps, 'letters'>
+type ConundrumLettersProps = Pick<LetterboardProps, 'jumbled' | 'word'>
 
-const Letters: React.FC<LettersProps> = ({letters}) => {
+const ConundrumLetters: React.FC<ConundrumLettersProps> = ({jumbled, word}) => {
     return (
         <div className="w-full flex my-8">
             <div className="flex-grow">
-                {letters?.map((letterRow, index) => (
-                    <div className="grid grid-cols-9 grid-rows-1 w-full" key={index}>
-                        {letterRow.map((letter, i) => (
-                            <Letter key={i} letter={letter}/>
-                        ))}
-                    </div>
-                ))}
+                <div className="grid grid-cols-9 grid-rows-1 w-full" style={{marginBottom: "1em"}}>
+                    {jumbled?.map((letter, i) => (
+                        <Letter key={i} letter={letter}/>
+                    ))}
+                </div>
+                <div className="grid grid-cols-9 grid-rows-1 w-full" style={{marginBottom: "1em"}}>
+                    {word?.map((letter, i) => (
+                        <Letter key={i} letter={letter}/>
+                    ))}
+                </div>
             </div>
         </div>
     )
@@ -44,4 +47,4 @@ const Letter: React.FC<{ letter: string }> = ({letter}) => {
     )
 }
 
-export default Letters
+export default ConundrumLetters

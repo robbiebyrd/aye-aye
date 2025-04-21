@@ -1,14 +1,13 @@
 export type letterRow = [string, string, string, string, string, string, string, string, string]
 export type letters = [letterRow, letterRow]
 
-export const emptyLetterRow = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
-export const emptyLetterBoard = [emptyLetterRow, emptyLetterRow] as letters
-
 export interface GameData {
     gameId: string
     activeSceneId: string
     sceneData: SceneData
     players: Player[]
+    currentRound: string
+    rounds: string[]
 }
 
 export interface SceneData {
@@ -20,8 +19,8 @@ export interface SceneData {
     foundWord?: string[]
     numbers?: number[]
     targetNumber?: number
-    word?: string[]
-    jumbled?: string[]
+    word?: letterRow
+    jumbled?: letterRow
     showInput?: boolean
 }
 
@@ -29,7 +28,7 @@ export interface SceneSubmissions {
     playerId: string
     entry: string
     total: string
-    correct: boolean
+    correct?: boolean
 }
 
 export interface Player {

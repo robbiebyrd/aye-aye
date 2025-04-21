@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"math/rand"
 	"sort"
 	"strings"
@@ -118,7 +117,6 @@ func (s *LettersService) createDeck(gameId string) {
 	for letter, frequency := range s.VowelFrequencies {
 		vowelDeck = vowelDeck + strings.Repeat(letter, frequency)
 	}
-	fmt.Println(strings.Split(vowelDeck, ""))
 	s.VowelDecks[gameId] = strings.Split(vowelDeck, "")
 
 	var consonantDeck string
@@ -130,8 +128,6 @@ func (s *LettersService) createDeck(gameId string) {
 }
 
 func (s *LettersService) drawLetterFromListAtRandom(letters []string) (string, int) {
-	fmt.Println("len(letters)")
-	fmt.Println(len(letters))
 	position := rand.Intn(len(letters))
 	return letters[position], position
 }
@@ -204,7 +200,7 @@ func (s *LettersService) DrawRandomLetters(numberOfLetters int, gameId *string) 
 }
 
 func (s *LettersService) DrawConsonantOrVowels() LetterType {
-	if s.Rng.Int()*s.LetterTypeFrequencies["consonants"] >= s.Rng.Int()*s.LetterTypeFrequencies["vowels"] {
+	if s.Rng.Int()*s.LetterTypeFrequencies["consonants"] <= s.Rng.Int()*s.LetterTypeFrequencies["vowels"] {
 		return Consonant
 	}
 	return Vowel
