@@ -15,9 +15,9 @@ export default function Page({params}: {
     invariant(playerId, 'A Player ID must be provided.')
     invariant(teamId, 'A Team ID must be provided.')
     invariant(gameId, 'A Game ID must be provided.')
-    const wsHost = process.env.SERVER_HOST || "localhost"
+    const wsHost = process.env.SERVER_HOST || "aye-aye.robbiebyrd.com"
     const wsPort = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 5002
-    const wsProtocol = process.env.SERVER_PROTOCOL || "ws"
+    const wsProtocol = process.env.SERVER_PROTOCOL || "wss"
     const [gameData, setGameData] = useState<GameData>()
 
     const ws = useMemo(() => {
