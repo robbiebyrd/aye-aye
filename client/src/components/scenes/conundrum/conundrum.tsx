@@ -21,7 +21,7 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
             return
         }
 
-        const result: Record<string, (Player & {playerId: string})[]> = {}
+        const result: Record<string, (Player & { playerId: string })[]> = {}
         Object.entries(gameData.players).forEach(([playerId, player]) => {
             const key = String(player.team)
             if (!result[key]) {
@@ -61,7 +61,12 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
                     height: "11em"
                 }}/>}
                 <div className="flex flex-col items-center justify-center content-center flex-grow">
-                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4"} style={{borderRadius: ".5em", borderTop: "none", padding: "1em .5em .25rem .5em", marginTop: "-2em"}} >
+                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4"} style={{
+                        borderRadius: ".5em",
+                        borderTop: "none",
+                        padding: "1em .5em .25rem .5em",
+                        marginTop: "-2em"
+                    }}>
                         <h1 className=" text-xl text-center text-white">Conundrum {gameData.currentScene}</h1>
                     </div>
                     <div
@@ -82,10 +87,6 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
                                     top: "10%",
                                     position: "absolute",
                                 }}>{gameData.scenes[gameData.currentScene].timer}</h1> :
-                            // <img className={'w-1/2 m-auto'} style={{
-                            //     position: "relative",
-                            //     top: "-75%",
-                            // }} src={'/img/lembers.svg'}/>
                             <QRCode
                                 style={{
                                     height: "50%",
@@ -93,14 +94,11 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
                                     top: "25%"
                                 }}
                                 className={"w-full h-8 m-auto aspect-square absolute"}
-                                value={`http://localhost:3000/?game=${encodeURIComponent(gameId)}`}
+                                value={`${process.env.SERVER_PROTOCOL}://${process.env.SERVER_HOST}:${process.env.SERVER_PRT}/?game=${encodeURIComponent(gameId)}`}
                             />
                         }
                     </div>
                 </div>
-                {/*<div className="flex flex-col items-center justify-center">*/}
-                {/*    <p className="font-bold text-center">{gameData?.gameId}</p>*/}
-                {/*</div>*/}
                 {teams?.at(1)?.at(0) ? (
                     <TeamPlacard
                         playerId={playerId}
@@ -128,7 +126,8 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
                     })}
                 </ul>
             </div>
-            <ConundrumLetters jumbled={gameData.scenes[gameData.currentScene].jumbled} word={gameData.scenes[gameData.currentScene].word}/>
+            <ConundrumLetters jumbled={gameData.scenes[gameData.currentScene].jumbled}
+                              word={gameData.scenes[gameData.currentScene].word}/>
             <ConundrumActions gameId={gameId} playerId={playerId} ws={ws} inputEnabled={canInput} show={true}
                               timer={gameData.scenes[gameData.currentScene].timer}/>
             <div className="flex flex-col items-center justify-center content-center flex-grow">

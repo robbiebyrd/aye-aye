@@ -18,7 +18,7 @@ export const Button: React.FC<ButtonProps> = ({onClickFunc, label, type = "butto
     )
 }
 
-export const ButtonWrapper: React.FC<{children: ReactNode}> = ({children}) => {
+export const ButtonWrapper: React.FC<{ children: ReactNode }> = ({children}) => {
     return (
         <div className={" flex items-center p-5 " + buttonStyles.button}>
             <div className={buttonStyles.buttonCenter}>

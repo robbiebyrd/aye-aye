@@ -91,7 +91,12 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
                     <div className={"col-start-3 col-span-4 flex align-middle justify-center"}>
                         <form id="form" onSubmit={preventSubmit}>
                             <div className="flex flex-col items-center p-5">
-                                <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{borderRadius: ".5em", borderBottom: "none", padding: ".25em .5em 1.25rem .5em", marginBottom: "-1rem"}} >
+                                <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{
+                                    borderRadius: ".5em",
+                                    borderBottom: "none",
+                                    padding: ".25em .5em 1.25rem .5em",
+                                    marginBottom: "-1rem"
+                                }}>
                                     <h1 className=" text-xl text-center text-white">Type Your Answer Here: </h1>
                                 </div>
                                 <ButtonWrapper>
@@ -112,7 +117,8 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
                         <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
                     </div>
                     <div className={"col-start-4 col-span-3 flex align-center justify-center "}>
-                        {!timerRun && <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer || -1}/>}
+                        {!timerRun &&
+                            <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer || -1}/>}
                         {timerRun && (
                             <Button label={"Next"} onClickFunc={nextScene}></Button>
                         )}

@@ -19,7 +19,7 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
             return
         }
 
-        const result: Record<string, (Player & {playerId: string})[]> = {}
+        const result: Record<string, (Player & { playerId: string })[]> = {}
         Object.entries(gameData.players).forEach(([playerId, player]) => {
             const key = String(player.team)
             if (!result[key]) {

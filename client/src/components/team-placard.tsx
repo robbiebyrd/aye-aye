@@ -40,7 +40,8 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, colors, posit
                             'flex-row-reverse')}
                              style={{backgroundColor: colors[3]}}>
                             {getSubmissionForPlayer(player.id)?.entry && (
-                                <div className={"absolute w-1/2 h-full"} style={{...(position == "left" ? {left: "100%"} : {right: "100%"}), ...{backgroundColor: colors[3]}}}>
+                                <div className={"absolute w-1/2 h-full"}
+                                     style={{...(position == "left" ? {left: "100%"} : {right: "100%"}), ...{backgroundColor: colors[3]}}}>
                                     <h1>{getSubmissionForPlayer(player.id)?.correct ? "C" : "I"}: {getSubmissionForPlayer(player.id)?.entry}</h1>
                                 </div>
                             )}

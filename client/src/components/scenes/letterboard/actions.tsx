@@ -1,4 +1,4 @@
-import {ChangeEvent, FormEvent, useEffect, useMemo, useState} from "react";
+import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
@@ -106,7 +106,12 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
                     <div className={"col-start-3 col-span-4 flex align-middle justify-center"}>
                         <form id="form" onSubmit={preventSubmit}>
                             <div className="flex flex-col items-center p-5">
-                                <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{borderRadius: ".5em", borderBottom: "none", padding: ".25em .5em 1.25rem .5em", marginBottom: "-1rem"}} >
+                                <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{
+                                    borderRadius: ".5em",
+                                    borderBottom: "none",
+                                    padding: ".25em .5em 1.25rem .5em",
+                                    marginBottom: "-1rem"
+                                }}>
                                     <h1 className=" text-xl text-center text-white">Type Your Answer Here: </h1>
                                 </div>
                                 <ButtonWrapper>
@@ -129,13 +134,15 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
                                 <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
                             </div>
                             <div className={"col-start-3 col-span-2 flex align-center justify-center "}>
-                                {!timerRun && <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer || -1}/>}
+                                {!timerRun && <TimedControllerButton label={'Timer'} onClickFunc={startTimer}
+                                                                     timer={timer || -1}/>}
                                 {timerRun && (
                                     <Button label={"Next"} onClickFunc={nextScene}></Button>
                                 )}
                             </div>
                             <div className={"col-start-5 col-span-2 flex align-center justify-center"}>
-                                {showSolver && <TimedControllerButton label={'Solve'} onClickFunc={solve} timer={timer || -1}/>}
+                                {showSolver &&
+                                    <TimedControllerButton label={'Solve'} onClickFunc={solve} timer={timer || -1}/>}
                             </div>
                         </>
                     )}
