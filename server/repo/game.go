@@ -81,47 +81,76 @@ func (s *GameRepo) UpdateGame(game models.CountdownGameData) {
 
 func (s *GameRepo) NewGame(id string) *models.CountdownGameData {
 	controllingTeam := "team1"
+	showInput := false
 	game := models.CountdownGameData{
 		GameID:          id,
-		ActiveSceneID:   "lobby",
-		CurrentRound:    "Round 1",
+		CurrentScene:    "lobby",
 		ControllingTeam: &controllingTeam,
-		Rounds:          []string{"Round 1", "Round 2", "Round 3"},
-		SceneData: models.CountdownSceneData{
-			Name:        "letterboard",
-			Timer:       -1,
-			Letters:     models.EmptyLetters,
-			Board:       [][]string{models.EmptyLetters, models.EmptyLetters},
-			Submissions: []models.CountdownGameDataSceneSubmissions{},
-			ShowInput:   true,
+		Players:         make(map[string]models.Player),
+		Scenes: map[string]models.Scene{
+			"lobby": {
+				Title:     "Lobby",
+				Scene:     "lobby",
+				NextScene: "round1",
+				Timer:     -1,
+			},
+			"round1": {
+				Title:       "Round 1",
+				Scene:       "letterboard",
+				NextScene:   "round2",
+				Timer:       -1,
+				Letters:     &models.EmptyLetters,
+				Board:       &models.EmptyBoard,
+				FoundWords:  &[]string{},
+				ShowInput:   &showInput,
+				Submissions: []models.Submission{},
+			},
+			"round2": {
+				Title:       "Round 2",
+				Scene:       "letterboard",
+				NextScene:   "round3",
+				Timer:       -1,
+				Letters:     &models.EmptyLetters,
+				Board:       &models.EmptyBoard,
+				FoundWords:  &[]string{},
+				ShowInput:   &showInput,
+				Submissions: []models.Submission{},
+			},
+			"round3": {
+				Title:     "Round 3",
+				Scene:     "conundrum",
+				NextScene: "lobby",
+				Timer:     -1,
+				Word:      &[]string{},
+				Jumbled:   &[]string{},
+			},
 		},
 	}
 	s.UpdateGame(game)
 	return &game
 }
 
-func (s *GameRepo) ResetGame(id string) *models.CountdownGameData {
+func (s *GameRepo) ResetGame(id string, sceneId string) *models.CountdownGameData {
+	showInput := false
 	game := s.GetGame(id)
-	game.SceneData.Timer = -1
-	game.SceneData.Submissions = make([]models.CountdownGameDataSceneSubmissions, 0)
-	game.SceneData.Letters = models.EmptyLetters
-	game.SceneData.Board = [][]string{models.EmptyLetters, models.EmptyLetters}
-	game.SceneData.FoundWords = []string{}
-	game.SceneData.Numbers = []int{}
-	game.SceneData.TargetNumber = 0
-	game.SceneData.Word = models.EmptyLetters
-	game.SceneData.Jumbled = models.EmptyLetters
-	game.SceneData.Clue = ""
-	game.SceneData.ShowInput = true
+	sceneData := game.Scenes[sceneId]
+	sceneData.Timer = -1
+	sceneData.Submissions = make([]models.Submission, 0)
+	sceneData.Letters = &models.EmptyLetters
+	sceneData.Board = &models.EmptyBoard
+	sceneData.FoundWords = &[]string{}
+	sceneData.Word = &models.EmptyLetters
+	sceneData.Jumbled = &models.EmptyLetters
+	sceneData.ShowInput = &showInput
+	game.Scenes[sceneId] = sceneData
 	return game
 }
 
 func (s *GameRepo) CheckGamePlayer(id string, playerId string) bool {
 	game := s.GetGame(id)
-	for _, player := range game.Players {
-		if player.ID == playerId {
-			return true
-		}
+	_, playerExists := game.Players[playerId]
+	if playerExists {
+		return true
 	}
 	return false
 }

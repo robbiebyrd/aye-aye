@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// CountdownerOptions represents configuration for timer.
 type CountdownerOptions struct {
 	Duration       time.Duration
 	Passed         time.Duration
@@ -14,6 +15,7 @@ type CountdownerOptions struct {
 	OnRun          func(started bool)
 }
 
+// Countdowner represents timer with pause/resume features.
 type Countdowner struct {
 	options  CountdownerOptions
 	ticker   *time.Ticker
@@ -22,17 +24,12 @@ type Countdowner struct {
 	lastTick time.Time
 }
 
-// NewCountdowner creates instance of a new Countdown Timer.
-func NewCountdowner(options CountdownerOptions) *Countdowner {
-	return &Countdowner{
-		options: options,
-	}
-}
-
+// Passed returns how much done is already passed.
 func (c *Countdowner) Passed() time.Duration {
 	return c.passed
 }
 
+// Remaining returns how much time is left to end.
 func (c *Countdowner) Remaining() time.Duration {
 	return c.options.Duration - c.Passed()
 }
@@ -82,4 +79,11 @@ func (c *Countdowner) Pause() {
 func (c *Countdowner) Stop() {
 	c.ticker.Stop()
 	c.options.OnDone(true)
+}
+
+// New creates instance of timer.
+func NewCountdowner(options CountdownerOptions) *Countdowner {
+	return &Countdowner{
+		options: options,
+	}
 }

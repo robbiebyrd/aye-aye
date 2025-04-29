@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/csv"
+	"math/rand"
 	"os"
 	"strings"
 )
@@ -32,6 +33,10 @@ func NewConundrumsService(conundrumsPath string) *ConundrumsService {
 func (c *ConundrumsService) GetConundrum() Conundrum {
 	if len(c.Conundrums) == 0 {
 		a, _ := loadConundrums(c.ConundrumsPath)
+		rand.Shuffle(len(a), func(i, j int) {
+			a[i], a[j] = a[j], a[i]
+		})
+
 		c.Conundrums = a
 	}
 	conundrum := c.Conundrums[len(c.Conundrums)-1]

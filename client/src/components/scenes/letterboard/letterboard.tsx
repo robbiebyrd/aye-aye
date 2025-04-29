@@ -22,23 +22,26 @@ export type LetterboardProps = {
 export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, ws, gameData}) => {
     console.log(gameData)
     const canInput = useMemo(() => {
-        const a = gameData?.sceneData.submissions?.find((s: SceneSubmissions) => s.playerId == playerId)
+        const a = gameData?.scenes[gameData.currentScene].submissions?.find((s: SceneSubmissions) => s.playerId == playerId)
         return !!a?.entry
     }, [gameData, playerId])
 
     const canDraw = useMemo(() => {
-        return gameData?.sceneData.letters.some((l: string) => l === " ")
-    }, [gameData?.sceneData.letters])
+        return gameData?.scenes[gameData.currentScene].letters.some((l: string) => l === " ")
+    }, [gameData?.scenes])
 
     const teams = useMemo(() => {
         if (!gameData?.players) {
             return
         }
 
-        const result: Record<string, Player[]> = {}
-        gameData.players.forEach((player: Player) => {
+        const result: Record<string, (Player & {playerId: string})[]> = {}
+        Object.entries(gameData.players).forEach(([playerId, player]) => {
             const key = String(player.team)
-            result[key] = [...(result[key] || []), player]
+            if (!result[key]) {
+                result[key] = []
+            }
+            result[key].push({playerId, ...player})
         })
 
         return Object.entries(result)
@@ -49,6 +52,8 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
             <div className="flex justify-center w-full min-h-[15vh]">
                 {teams?.at(0)?.at(0) ? (
                     <TeamPlacard
+                        playerId={playerId}
+                        gameData={gameData}
                         teamName={String(teams?.at(0)?.at(0))}
                         players={teams?.at(0)?.at(1) as Player[]}
                         colors={[
@@ -66,7 +71,7 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                 }}/>}
                 <div className="flex flex-col items-center justify-center content-center flex-grow">
                     <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4"} style={{borderRadius: ".5em", borderTop: "none", padding: "1em .5em .25rem .5em", marginTop: "-2em"}} >
-                        <h1 className=" text-xl text-center text-white">{gameData.currentRound}</h1>
+                        <h1 className=" text-xl text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
                     </div>
                     <div
                         className={'h-[10em] relative aspect-square mb-0 items-center content-center text-center justify-center'}
@@ -77,15 +82,15 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                             backgroundPosition: "center"
                         }}>
                         <img src={'/img/clock-arm.svg'} className={'relative'} style={{
-                            transform: `rotate(${gameData.sceneData.timer >= 0 ? gameData.sceneData.timer * 6 : 0}deg)`
+                            transform: `rotate(${gameData.scenes[gameData.currentScene].timer >= 0 ? gameData.scenes[gameData.currentScene].timer * 6 : 0}deg)`
                         }}/>
-                        {gameData.sceneData.timer >= 0 ?
+                        {gameData.scenes[gameData.currentScene].timer >= 0 ?
                             <h1 className={'font-bold w-full h-full'}
                                 style={{
                                     fontSize: '5em',
                                     top: "10%",
                                     position: "absolute",
-                                }}>{gameData.sceneData.timer}</h1> :
+                                }}>{gameData.scenes[gameData.currentScene].timer}</h1> :
                             // <img className={'w-1/2 m-auto'} style={{
                             //     position: "relative",
                             //     top: "-75%",
@@ -97,7 +102,7 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                                     top: "25%"
                                 }}
                                 className={"w-full h-8 m-auto aspect-square absolute"}
-                                value={`http://localhost:3000/?game=${encodeURIComponent(gameId)}`}
+                                value={`${process.env.SERVER_PROTOCOL}://${process.env.SERVER_HOST}/?game=${encodeURIComponent(gameId)}`}
                             />
                         }
                     </div>
@@ -107,6 +112,8 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                 {/*</div>*/}
                 {teams?.at(1)?.at(0) ? (
                     <TeamPlacard
+                        playerId={playerId}
+                        gameData={gameData}
                         teamName={String(teams?.at(1)?.at(0))}
                         players={teams?.at(1)?.at(1) as Player[]}
                         colors={[
@@ -122,19 +129,11 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                     height: "11em"
                 }}/>}
             </div>
-            <div>
-                <ul>
-                    {gameData?.sceneData.submissions?.map((submission) => {
-                        return (
-                            <li key={submission.playerId}>{submission.playerId} | {JSON.stringify(submission.correct)} </li>)
-                    })}
-                </ul>
-            </div>
-            <Letters letters={gameData?.sceneData.board}/>
+            <Letters letters={gameData.scenes[gameData.currentScene].board}/>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
                 <Draw gameId={gameId} playerId={playerId} ws={ws} show={canDraw}/>
                 <Actions gameId={gameId} playerId={playerId} ws={ws} inputEnabled={canInput} show={!canDraw}
-                         timer={gameData.sceneData.timer}/>
+                         timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
             </div>
         </>
 

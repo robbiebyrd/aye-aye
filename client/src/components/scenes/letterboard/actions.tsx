@@ -1,15 +1,17 @@
-import {ChangeEvent, FormEvent, useEffect, useState} from "react";
+import {ChangeEvent, FormEvent, useEffect, useMemo, useState} from "react";
 import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
 
-const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 'show' | 'timer'> & {
+const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'> & {
     inputEnabled: boolean
-}> = ({gameId, playerId, inputEnabled, ws, show, timer}) => {
+}> = ({gameData, gameId, playerId, inputEnabled, ws, show, timer}) => {
     const sceneId = "letterboard"
     const [inputValue, setInputValue] = useState('')
     const [showSolver, setShowSolver] = useState<boolean>(false)
     const [timerRun, setTimerRun] = useState<boolean>(false)
+
+    const isHost = gameData.players[playerId]?.host
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value)
@@ -39,7 +41,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
     }
 
     const startTimer = () => {
-        setShowSolver(true)
+        setShowSolver(isHost)
         setTimerRun(true)
         const submission = {
             gameId: gameId,
@@ -69,14 +71,14 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
             submission: inputValue,
         }
         ws?.send(JSON.stringify(submission))
+        setInputValue("")
     }
 
-    const gotoLobby = () => {
+    const nextScene = () => {
         const submission = {
             gameId: gameId,
             playerId: playerId,
             sceneId: "sceneChange",
-            action: "lobby",
         }
         ws?.send(JSON.stringify(submission))
     }
@@ -121,18 +123,23 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
                 </div>
             ) : (
                 <div className={"w-full grid grid-cols-6 gap-1"}>
-                    <div className={"col-start-1 col-span-2 flex justify-center "}>
-                        <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
-                    </div>
-                    <div className={"col-start-3 col-span-2 flex align-center justify-center "}>
-                        {!timerRun && <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer || -1}/>}
-                        {timerRun && (
-                            <Button label={"Lobby"} onClickFunc={gotoLobby}></Button>
-                        )}
-                    </div>
-                    <div className={"col-start-5 col-span-2 flex align-center justify-center"}>
-                        {showSolver && <TimedControllerButton label={'Solve'} onClickFunc={solve} timer={timer || -1}/>}
-                    </div>
+                    <pre className={"text-white"}>isHost: {JSON.stringify(isHost)}</pre>
+                    {isHost && (
+                        <>
+                            <div className={"col-start-1 col-span-2 flex justify-center "}>
+                                <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
+                            </div>
+                            <div className={"col-start-3 col-span-2 flex align-center justify-center "}>
+                                {!timerRun && <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer || -1}/>}
+                                {timerRun && (
+                                    <Button label={"Next"} onClickFunc={nextScene}></Button>
+                                )}
+                            </div>
+                            <div className={"col-start-5 col-span-2 flex align-center justify-center"}>
+                                {showSolver && <TimedControllerButton label={'Solve'} onClickFunc={solve} timer={timer || -1}/>}
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
         </div>

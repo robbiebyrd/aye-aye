@@ -1,8 +1,10 @@
 package models
 
-type CountdownGameDataSceneSubmissions struct {
-	PlayerId string `json:"playerId"`
-	Entry    string `json:"entry"`
-	Total    string `json:"total"`
-	Correct  *bool  `json:"correct"`
+import "time"
+
+type Submission struct {
+	PlayerID  string     `json:"playerId"`
+	Entry     string     `json:"entry,omitempty"`
+	Timestamp *time.Time `json:"timestamp,omitempty"`
+	Correct   *bool      `json:"correct,omitempty"`
 }

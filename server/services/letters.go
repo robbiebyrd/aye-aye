@@ -26,8 +26,8 @@ type LettersService struct {
 }
 
 var letterTypeFrequencies = map[string]int{
-	"vowels":     1,
-	"consonants": 5,
+	"vowels":     2,
+	"consonants": 7,
 }
 
 var vowelFrequencies = map[string]int{
@@ -105,7 +105,7 @@ func (s *LettersService) getLettersFromFrequencies(frequencies map[string]int) [
 	return keys
 }
 
-func (s *LettersService) createDeck(gameId string) {
+func (s *LettersService) createLettersDeck(gameId string) {
 	if len(s.VowelFrequencies) <= 0 {
 		s.VowelFrequencies = vowelFrequencies
 	}
@@ -164,7 +164,7 @@ func (s *LettersService) drawLetterFromDeck(letterType LetterType, gameId string
 	var deck []string
 
 	if len(s.VowelDecks[gameId]) == 0 || len(s.ConsonantDecks[gameId]) == 0 {
-		s.createDeck(gameId)
+		s.createLettersDeck(gameId)
 	}
 
 	if letterType == Vowel {

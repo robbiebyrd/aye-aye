@@ -41,13 +41,13 @@ export default function Page({params}: {
                 backgroundRepeat: 'no-repeat',
                 padding: "1em"
             }}>
-                {gameData?.activeSceneId == "letterboard" && (
+                {gameData?.scenes[gameData?.currentScene].scene == "letterboard" && (
                     <LetterboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
                 )}
-                {gameData?.activeSceneId == "lobby" && (
+                {gameData?.scenes[gameData?.currentScene].scene == "lobby" && (
                     <LobbyScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
                 )}
-                {gameData?.activeSceneId == "conundrum" && (
+                {gameData?.scenes[gameData?.currentScene].scene == "conundrum" && (
                     <ConundrumScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
                 )}
             </main>

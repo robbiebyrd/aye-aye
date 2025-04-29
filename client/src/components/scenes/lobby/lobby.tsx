@@ -19,31 +19,23 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
             return
         }
 
-        const result: Record<string, Player[]> = {}
-        gameData.players.forEach((player: Player) => {
+        const result: Record<string, (Player & {playerId: string})[]> = {}
+        Object.entries(gameData.players).forEach(([playerId, player]) => {
             const key = String(player.team)
-            result[key] = [...(result[key] || []), player]
+            if (!result[key]) {
+                result[key] = []
+            }
+            result[key].push({playerId, ...player})
         })
 
         return Object.entries(result)
     }, [gameData?.players])
 
-    const startConundrumScene = () => {
+    const nextScene = () => {
         const submission = {
             gameId: gameId,
             playerId: playerId,
             sceneId: "sceneChange",
-            action: "conundrum",
-        }
-        ws?.send(JSON.stringify(submission))
-    }
-
-    const startLetterboardScene = () => {
-        const submission = {
-            gameId: gameId,
-            playerId: playerId,
-            sceneId: "sceneChange",
-            action: "letterboard",
         }
         ws?.send(JSON.stringify(submission))
     }
@@ -53,6 +45,8 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
             <div className="flex justify-center w-full min-h-[15vh]">
                 {teams?.at(0)?.at(0) ? (
                     <TeamPlacard
+                        playerId={playerId}
+                        gameData={gameData}
                         teamName={String(teams?.at(0)?.at(0))}
                         players={teams?.at(0)?.at(1) as Player[]}
                         colors={[
@@ -73,6 +67,8 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
                 {/*</div>*/}
                 {teams?.at(1)?.at(0) ? (
                     <TeamPlacard
+                        playerId={playerId}
+                        gameData={gameData}
                         teamName={String(teams?.at(1)?.at(0))}
                         players={teams?.at(1)?.at(1) as Player[]}
                         colors={[
@@ -87,8 +83,7 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
                     aspectRatio: "2 / 1",
                     height: "11em"
                 }}/>}
-                <Button label={"Letters"} onClickFunc={startLetterboardScene}></Button>
-                <Button label={"Conundrums"} onClickFunc={startConundrumScene}></Button>
+                <Button label={"Start"} onClickFunc={nextScene}></Button>
 
             </div>
         </>

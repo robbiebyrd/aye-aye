@@ -2,28 +2,31 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"github.com/joho/godotenv"
 	"github.com/olahol/melody"
-	"github.com/robbiebyrd/gameserve/models"
 	"github.com/robbiebyrd/gameserve/repo"
 	"github.com/robbiebyrd/gameserve/services"
 	"github.com/robbiebyrd/gameserve/services/scenes"
+	"log"
 	"net/http"
+	"os"
 )
 
 type CountdownGameDataKeys map[string]any
 
-func getStandardKeys(s *melody.Session) (string, string, string) {
-	keyGameId, _ := s.Get("gameId")
-	keyTeamId, _ := s.Get("teamId")
-	keyPlayerId, _ := s.Get("playerId")
-	gameId := keyGameId.(string)
-	teamId := keyTeamId.(string)
-	playerId := keyPlayerId.(string)
-	return gameId, teamId, playerId
-}
-
 func serve(m *melody.Melody) {
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+
+	listenAddr := os.Getenv("LISTEN_ADDR")
+	listenPort := os.Getenv("LISTEN_PORT")
+	if listenPort == "" {
+		panic("You need to specify a port")
+	}
+
 	http.HandleFunc("/ws/{gameId}/{teamId}/{playerId}", func(w http.ResponseWriter, r *http.Request) {
 		keys := make(CountdownGameDataKeys)
 		keys["gameId"] = r.PathValue("gameId")
@@ -32,84 +35,29 @@ func serve(m *melody.Melody) {
 		m.HandleRequestWithKeys(w, r, keys)
 		return
 	})
-}
 
-func disconnect(s *melody.Session, m *melody.Melody, gameRepo repo.GameRepo) {
-	gameId, _, playerId := getStandardKeys(s)
-
-	game := gameRepo.GetGame(gameId)
-	previousData, _ := json.Marshal(game)
-
-	for i, player := range game.Players {
-		if player.ID == playerId {
-			game.Players[i].Disconnected = true
-		}
-	}
-
-	gameRepo.UpdateGame(*game)
-	newData, _ := json.Marshal(game)
-	fmt.Println(services.GetPatch(previousData, newData))
-	m.Broadcast(newData)
-}
-
-func connect(s *melody.Session, m *melody.Melody, gameRepo repo.GameRepo) {
-	var game *models.CountdownGameData
-
-	gameId, teamId, playerId := getStandardKeys(s)
-
-	if gameRepo.CheckGame(gameId) {
-		game = gameRepo.GetGame(gameId)
-	} else {
-		game = gameRepo.NewGame(gameId)
-	}
-
-	if !gameRepo.CheckGamePlayer(gameId, playerId) {
-		host := false
-		if !gameRepo.CheckGameForHost(gameId) {
-			host = true
-		}
-
-		game.Players = append(game.Players, models.CountdownGameDataPlayer{
-			ID:   playerId,
-			Name: &playerId,
-			Host: host,
-			Team: &teamId,
-		})
-	} else {
-		for i, player := range game.Players {
-			if player.ID == playerId {
-				game.Players[i].Disconnected = false
-			}
-		}
-	}
-
-	gameRepo.UpdateGame(*game)
-
-	s.Set("gameId", gameId)
-	data, _ := json.Marshal(game)
-	fmt.Println(services.GetPatch(nil, data))
-
-	m.Broadcast(data)
+	http.ListenAndServe(listenAddr+":"+listenPort, nil)
 }
 
 func main() {
-	m := melody.New()
-	serve(m)
 
 	gameRepo := repo.NewGameRepo()
-	letterboardScene := scenes.NewLetterBoardScene()
-	conundrumScene := scenes.NewConundrumScene()
+	sceneService := services.NewSceneService(gameRepo)
+	letterboardScene := scenes.NewLetterBoardScene("./data/words.txt", gameRepo)
+	conundrumScene := scenes.NewConundrumScene("./data/conundrums.txt", gameRepo)
+
+	m := melody.New()
 
 	m.HandleConnect(func(s *melody.Session) {
-		connect(s, m, *gameRepo)
+		services.HandleConnect(s, m, gameRepo)
 	})
 
 	m.HandleDisconnect(func(s *melody.Session) {
-		disconnect(s, m, *gameRepo)
+		services.HandleDisconnect(s, m, gameRepo)
 	})
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
-		gameId, _, playerId := getStandardKeys(s)
+		gameId, _, playerId := services.GetStandardKeys(s)
 
 		var inputMessage map[string]interface{}
 		_ = json.Unmarshal(msg, &inputMessage)
@@ -119,14 +67,10 @@ func main() {
 		}
 
 		game := gameRepo.GetGame(gameId)
-		dataBefore, _ := json.Marshal(game)
 
 		switch inputMessage["sceneId"].(string) {
 		case "sceneChange":
-			fmt.Println("sceneChange")
-			g := gameRepo.GetGame(gameId)
-			g.ActiveSceneID = inputMessage["action"].(string)
-			gameRepo.UpdateGame(*g)
+			sceneService.NextScene(gameId)
 		case "letterboard":
 			letterboardScene.HandleMessage(msg, gameId, playerId, m, s)
 		case "conundrum":
@@ -136,11 +80,8 @@ func main() {
 		game = gameRepo.GetGame(gameId)
 		dataAfter, _ := json.Marshal(game)
 
-		patch := services.GetPatch(dataBefore, dataAfter)
-		fmt.Println(patch)
-
 		m.Broadcast(dataAfter)
 	})
 
-	http.ListenAndServe(":5002", nil)
+	serve(m)
 }

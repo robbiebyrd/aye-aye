@@ -3,31 +3,35 @@ export type letters = [letterRow, letterRow]
 
 export interface GameData {
     gameId: string
-    activeSceneId: string
-    sceneData: SceneData
-    players: Player[]
-    currentRound: string
-    rounds: string[]
+    currentScene: string
+    scenes: Record<string, SceneData>
+    players: Record<string, Player>
+    controllingTeam: string
 }
 
 export interface SceneData {
-    name: string
+    title: string
+    scene: string
     timer: number
-    submissions?: SceneSubmissions[]
-    board: letters
     letters: letterRow
-    foundWord?: string[]
-    numbers?: number[]
-    targetNumber?: number
+    board: letters
+    foundWords?: string[]
+    showInput?: boolean
+    nextScene?: string
+
     word?: letterRow
     jumbled?: letterRow
-    showInput?: boolean
+    clue?: letterRow
+
+    submissions?: SceneSubmissions[]
+    numbers?: number[]
+    targetNumber?: number
 }
 
 export interface SceneSubmissions {
     playerId: string
     entry: string
-    total: string
+    timestamp: string
     correct?: boolean
 }
 

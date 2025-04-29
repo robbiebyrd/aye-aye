@@ -58,12 +58,11 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
         ws?.send(JSON.stringify(submission))
     }
 
-    const gotoLobby = () => {
+    const nextScene = () => {
         const submission = {
             gameId: gameId,
             playerId: playerId,
-            sceneId: "sceneChange",
-            action: "lobby",
+            sceneId: "sceneChange"
         }
         ws?.send(JSON.stringify(submission))
     }
@@ -115,7 +114,7 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
                     <div className={"col-start-4 col-span-3 flex align-center justify-center "}>
                         {!timerRun && <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer || -1}/>}
                         {timerRun && (
-                            <Button label={"Lobby"} onClickFunc={gotoLobby}></Button>
+                            <Button label={"Next"} onClickFunc={nextScene}></Button>
                         )}
                     </div>
                 </div>
