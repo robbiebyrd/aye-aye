@@ -123,7 +123,6 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
                 </div>
             ) : (
                 <div className={"w-full grid grid-cols-6 gap-1"}>
-                    <pre className={"text-white"}>isHost: {JSON.stringify(isHost)}</pre>
                     {isHost && (
                         <>
                             <div className={"col-start-1 col-span-2 flex justify-center "}>
