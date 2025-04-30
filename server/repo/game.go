@@ -132,18 +132,19 @@ func (s *GameRepo) NewGame(id string) *models.CountdownGameData {
 
 func (s *GameRepo) ResetGame(id string, sceneId string) *models.CountdownGameData {
 	showInput := false
-	game := s.GetGame(id)
-	sceneData := game.Scenes[sceneId]
-	sceneData.Timer = -1
-	sceneData.Submissions = make([]models.Submission, 0)
-	sceneData.Letters = &models.EmptyLetters
-	sceneData.Board = &models.EmptyBoard
-	sceneData.FoundWords = &[]string{}
-	sceneData.Word = &models.EmptyLetters
-	sceneData.Jumbled = &models.EmptyLetters
-	sceneData.ShowInput = &showInput
-	game.Scenes[sceneId] = sceneData
-	return game
+	g := s.GetGame(id)
+	sc := g.Scenes[sceneId]
+	sc.Timer = -1
+	sc.TimerRun = false
+	sc.Submissions = make([]models.Submission, 0)
+	sc.Letters = &models.EmptyLetters
+	sc.Board = &models.EmptyBoard
+	sc.FoundWords = &[]string{}
+	sc.Word = &models.EmptyLetters
+	sc.Jumbled = &models.EmptyLetters
+	sc.ShowInput = &showInput
+	g.Scenes[sceneId] = sc
+	return g
 }
 
 func (s *GameRepo) CheckGamePlayer(id string, playerId string) bool {
