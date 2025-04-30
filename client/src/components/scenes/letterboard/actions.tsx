@@ -11,17 +11,22 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
     const [inputValue, setInputValue] = useState('')
 
     const isHost = gameData.players[playerId]?.host
+    const {timerRun} = gameData.scenes[gameData.currentScene]
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value)
     }
 
+    const standardMessageAttributes = {
+        gameId,
+        playerId,
+        sceneId
+    }
+
     const resetBoard = () => {
         const submission = {
             action: "reset",
-            gameId,
-            playerId,
-            sceneId
+            ...standardMessageAttributes
         }
         ws?.send(JSON.stringify(submission))
         setInputValue("")
@@ -29,30 +34,24 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
 
     const solve = () => {
         const submission = {
-            gameId: gameId,
-            playerId: playerId,
-            sceneId,
             action: "solve",
+            ...standardMessageAttributes
         }
         ws?.send(JSON.stringify(submission))
     }
 
     const startTimer = () => {
         const submission = {
-            gameId: gameId,
-            playerId: playerId,
-            sceneId,
             action: "start",
+            ...standardMessageAttributes
         }
         ws?.send(JSON.stringify(submission))
     }
 
     const cancelTimer = () => {
         const submission = {
-            gameId: gameId,
-            playerId: playerId,
-            sceneId,
             action: "cancel",
+            ...standardMessageAttributes
         }
         ws?.send(JSON.stringify(submission))
         setInputValue("")
@@ -60,24 +59,21 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
 
     const handleSubmit = () => {
         const submission = {
-            gameId: gameId,
-            playerId: playerId,
-            sceneId,
             action: "submit",
             submission: inputValue,
+            ...standardMessageAttributes
         }
         ws?.send(JSON.stringify(submission))
     }
 
     const nextScene = () => {
         const submission = {
-            gameId: gameId,
-            playerId: playerId,
             sceneId: "sceneChange",
+            gameId,
+            playerId,
         }
         ws?.send(JSON.stringify(submission))
     }
-
 
     const preventSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -88,8 +84,6 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
             handleSubmit()
         }
     }, [timer])
-
-    const {timerRun} = gameData.scenes[gameData.currentScene]
 
     return show && (
         <div className="flex w-full bottom-2">
