@@ -2,14 +2,13 @@ import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
+import {TimedControllerButton} from "@/components/scenes/conundrum/actions";
 
 const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'> & {
     inputEnabled: boolean
 }> = ({gameData, gameId, playerId, inputEnabled, ws, show, timer}) => {
     const sceneId = "letterboard"
     const [inputValue, setInputValue] = useState('')
-    const [showSolver, setShowSolver] = useState<boolean>(false)
-    const [timerRun, setTimerRun] = useState<boolean>(false)
 
     const isHost = gameData.players[playerId]?.host
 
@@ -26,7 +25,6 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
         }
         ws?.send(JSON.stringify(submission))
         setInputValue("")
-        setTimerRun(false)
     }
 
     const solve = () => {
@@ -36,13 +34,10 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
             sceneId,
             action: "solve",
         }
-        setShowSolver(false)
         ws?.send(JSON.stringify(submission))
     }
 
     const startTimer = () => {
-        setShowSolver(isHost)
-        setTimerRun(true)
         const submission = {
             gameId: gameId,
             playerId: playerId,
@@ -60,6 +55,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
             action: "cancel",
         }
         ws?.send(JSON.stringify(submission))
+        setInputValue("")
     }
 
     const handleSubmit = () => {
@@ -71,7 +67,6 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
             submission: inputValue,
         }
         ws?.send(JSON.stringify(submission))
-        setInputValue("")
     }
 
     const nextScene = () => {
@@ -93,6 +88,8 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
             handleSubmit()
         }
     }, [timer])
+
+    const {timerRun} = gameData.scenes[gameData.currentScene]
 
     return show && (
         <div className="flex w-full bottom-2">
@@ -141,7 +138,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
                                 )}
                             </div>
                             <div className={"col-start-5 col-span-2 flex align-center justify-center"}>
-                                {showSolver &&
+                                {timerRun &&
                                     <TimedControllerButton label={'Solve'} onClickFunc={solve} timer={timer || -1}/>}
                             </div>
                         </>
@@ -153,13 +150,3 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
 }
 
 export default Actions
-
-export type TimedControllerButtonProps = {
-    label: string
-    onClickFunc?: () => void
-    timer: number
-}
-
-const TimedControllerButton: React.FC<TimedControllerButtonProps> = ({label, onClickFunc, timer}) => {
-    return timer < 0 && <Button label={label} onClickFunc={onClickFunc}/>
-}

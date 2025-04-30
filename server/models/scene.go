@@ -5,6 +5,7 @@ type Scene struct {
 	Scene        string       `json:"scene"`
 	NextScene    string       `json:"nextScene"`
 	Timer        int          `json:"timer"`
+	TimerRun     bool         `json:"timerRun"`
 	Letters      *[]string    `json:"letters"`
 	Board        *[][]string  `json:"board"`
 	FoundWords   *[]string    `json:"foundWords"`

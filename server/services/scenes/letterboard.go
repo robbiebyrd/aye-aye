@@ -68,6 +68,7 @@ func (s *LetterboardScene) startTimer(game *models.CountdownGameData, m *melody.
 			g := s.GameRepo.GetGame(game.GameID)
 			sc := g.Scenes[game.CurrentScene]
 			sc.Timer -= 1
+			sc.TimerRun = true
 			g.Scenes[game.CurrentScene] = sc
 			s.GameRepo.UpdateGame(*g)
 			newData, _ := json.Marshal(g)

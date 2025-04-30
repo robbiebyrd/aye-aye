@@ -13,6 +13,7 @@ export interface SceneData {
     title: string
     scene: string
     timer: number
+    timerRun: boolean
     letters: letterRow
     board: letters
     foundWords?: string[]

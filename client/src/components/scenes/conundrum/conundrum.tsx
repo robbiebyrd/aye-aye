@@ -129,7 +129,7 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
             <ConundrumLetters jumbled={gameData.scenes[gameData.currentScene].jumbled}
                               word={gameData.scenes[gameData.currentScene].word}/>
             <ConundrumActions gameId={gameId} playerId={playerId} ws={ws} inputEnabled={canInput} show={true}
-                              timer={gameData.scenes[gameData.currentScene].timer}/>
+                              gameData={gameData} timer={gameData.scenes[gameData.currentScene].timer}/>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
             </div>
         </>

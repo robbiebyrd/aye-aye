@@ -1,14 +1,13 @@
-import {ChangeEvent, FormEvent, useEffect, useState} from "react";
+import {ChangeEvent, FormEvent, useEffect, useMemo, useState} from "react";
 import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
 
-const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 'show' | 'timer'> & {
+const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'> & {
     inputEnabled: boolean
-}> = ({gameId, playerId, inputEnabled, ws, show, timer}) => {
+}> = ({gameId, playerId, gameData, inputEnabled, ws, show, timer}) => {
     const sceneId = "conundrum"
     const [inputValue, setInputValue] = useState('')
-    const [timerRun, setTimerRun] = useState<boolean>(false)
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value)
@@ -23,11 +22,9 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
         }
         ws?.send(JSON.stringify(submission))
         setInputValue("")
-        setTimerRun(false)
     }
 
     const startTimer = () => {
-        setTimerRun(true)
         const submission = {
             gameId: gameId,
             playerId: playerId,
@@ -77,6 +74,8 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
             handleSubmit()
         }
     }, [timer])
+
+    const {timerRun} = gameData.scenes[gameData.currentScene]
 
     return show && (
         <div className="flex w-full bottom-2">
@@ -137,6 +136,6 @@ export type TimedControllerButtonProps = {
     timer: number
 }
 
-const TimedControllerButton: React.FC<TimedControllerButtonProps> = ({label, onClickFunc, timer}) => {
+export const TimedControllerButton: React.FC<TimedControllerButtonProps> = ({label, onClickFunc, timer}) => {
     return timer < 0 && <Button label={label} onClickFunc={onClickFunc}/>
 }

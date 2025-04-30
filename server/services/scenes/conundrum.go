@@ -65,6 +65,8 @@ func (c *ConundrumScene) startConundrumTimer(game *models.CountdownGameData, ses
 			g := c.GameRepo.GetGame(game.GameID)
 			sc := g.Scenes[game.CurrentScene]
 			sc.Timer -= 1
+			sc.Word = &conundrum.Word
+			sc.TimerRun = true
 			g.Scenes[game.CurrentScene] = sc
 			c.GameRepo.UpdateGame(*g)
 			newData, _ := json.Marshal(g)
