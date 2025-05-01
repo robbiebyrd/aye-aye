@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var timerLength = 5
+var timerLength = 30
 
 type LetterboardScene struct {
 	GameRepo       *repo.GameRepo
