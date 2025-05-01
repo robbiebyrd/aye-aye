@@ -67,7 +67,7 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
                         padding: "1em .5em .25rem .5em",
                         marginTop: "-2em"
                     }}>
-                        <h1 className=" text-xl text-center text-white">Conundrum {gameData.currentScene}</h1>
+                        <h1 className=" text-xl text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
                     </div>
                     <div
                         className={'h-[10em] relative aspect-square mb-0 items-center content-center text-center justify-center'}

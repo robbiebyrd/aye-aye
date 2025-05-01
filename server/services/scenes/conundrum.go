@@ -2,10 +2,12 @@ package scenes
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/olahol/melody"
 	"github.com/robbiebyrd/gameserve/models"
 	"github.com/robbiebyrd/gameserve/repo"
 	"github.com/robbiebyrd/gameserve/services"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -116,6 +118,8 @@ func (c *ConundrumScene) submitConundrum(game *models.CountdownGameData, submiss
 		}
 	}
 
+	fmt.Println("submissionIndex" + strconv.Itoa(submissionIndex))
+
 	isCorrect := false
 	if strings.ToLower(strings.Join(*sc.Word, "")) == strings.ToLower(submissionText) {
 		isCorrect = true
@@ -128,6 +132,7 @@ func (c *ConundrumScene) submitConundrum(game *models.CountdownGameData, submiss
 	for _, sub := range sc.Submissions {
 		if *sub.Correct == true {
 			alreadySolved = true
+			fmt.Println("Already solved by " + strconv.FormatBool(alreadySolved))
 		}
 	}
 
@@ -144,6 +149,7 @@ func (c *ConundrumScene) submitConundrum(game *models.CountdownGameData, submiss
 		score := *player.Score + length
 		player.Score = &score
 		game.Players[playerId] = player
+		fmt.Println(*player.Score)
 	}
 
 	if submissionIndex == -1 {

@@ -32,12 +32,7 @@ func NewConundrumsService(conundrumsPath string) *ConundrumsService {
 
 func (c *ConundrumsService) GetConundrum() Conundrum {
 	if len(c.Conundrums) == 0 {
-		a, _ := loadConundrums(c.ConundrumsPath)
-		rand.Shuffle(len(a), func(i, j int) {
-			a[i], a[j] = a[j], a[i]
-		})
-
-		c.Conundrums = a
+		c.Conundrums, _ = loadConundrums(c.ConundrumsPath)
 	}
 	conundrum := c.Conundrums[len(c.Conundrums)-1]
 	c.Conundrums = c.Conundrums[:len(c.Conundrums)-1]
@@ -68,6 +63,10 @@ func loadConundrums(filename string) ([]Conundrum, error) {
 			Clue:    value[2],
 		})
 	}
+
+	rand.Shuffle(len(conundrums), func(i, j int) {
+		conundrums[i], conundrums[j] = conundrums[j], conundrums[i]
+	})
 
 	return conundrums, nil
 }
