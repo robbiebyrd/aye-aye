@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/olahol/melody"
 	"github.com/robbiebyrd/gameserve/repo"
@@ -67,20 +68,21 @@ func main() {
 		}
 
 		game := gameRepo.GetGame(gameId)
+		dataBefore, _ := json.Marshal(game)
 
 		switch inputMessage["sceneId"].(string) {
 		case "sceneChange":
-			sceneService.NextScene(gameId)
+			game = sceneService.NextScene(game)
 		case "letterboard":
-			letterboardScene.HandleMessage(msg, gameId, playerId, m, s)
+			game = letterboardScene.HandleMessage(game, msg, playerId, m, s)
 		case "conundrum":
-			conundrumScene.HandleConundrumMessage(msg, gameId, playerId, m, s)
+			game = conundrumScene.HandleConundrumMessage(game, msg, playerId, m, s)
 		}
 
-		game = gameRepo.GetGame(gameId)
-		dataAfter, _ := json.Marshal(game)
-
-		m.Broadcast(dataAfter)
+		gameRepo.UpdateGame(*game)
+		data, _ := json.Marshal(game)
+		fmt.Println(services.GetPatch(dataBefore, data))
+		m.Broadcast(data)
 	})
 
 	serve(m)
