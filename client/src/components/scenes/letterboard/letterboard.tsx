@@ -20,10 +20,10 @@ export type LetterboardProps = {
 }
 
 export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, ws, gameData}) => {
-    console.log(gameData)
     const canInput = useMemo(() => {
         const a = gameData?.scenes[gameData.currentScene].submissions?.find((s: SceneSubmissions) => s.playerId == playerId)
-        return a?.entry === "" || a?.entry === undefined
+        console.log(a)
+        return !(a === undefined || a.entry === undefined || a.entry === "" || a.entry === " ")
     }, [gameData, playerId])
 
     const canDraw = useMemo(() => {

@@ -106,6 +106,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
                                     <h1 className=" text-xl text-center text-white">Type Your Answer Here: </h1>
                                 </div>
                                 <ButtonWrapper>
+                                    <pre>{JSON.stringify(inputEnabled)}</pre>
                                     <input
                                         maxLength={9}
                                         className="text-center text-4xl flex items-center p-2 uppercase"

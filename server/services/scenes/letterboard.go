@@ -179,20 +179,15 @@ func (s *LetterboardScene) submit(game *models.GameData, submissionText string, 
 	if !s.playerHasSubmitted(game, playerId) {
 		now := time.Now()
 
-		blankEntry := " "
 		sc.Submissions = append(sc.Submissions, models.Submission{
 			PlayerID:  playerId,
-			Entry:     &blankEntry,
+			Entry:     &submissionText,
 			Timestamp: &now,
 		})
 	}
 	game.Scenes[game.CurrentScene] = sc
 
 	for i, sub := range sc.Submissions {
-		if sub.PlayerID == playerId && sub.Entry != nil {
-			return game
-		}
-
 		if sub.PlayerID == playerId {
 			s.processSubmission(game, submissionText, playerId, i)
 		}
