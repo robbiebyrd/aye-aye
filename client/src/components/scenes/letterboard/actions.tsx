@@ -122,7 +122,9 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
                     {isHost && (
                         <>
                             <div className={"col-start-1 col-span-2 flex justify-center "}>
-                                <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
+                                {!timerRun &&
+                                    <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
+                                }
                             </div>
                             <div className={"col-start-3 col-span-2 flex align-center justify-center "}>
                                 {!timerRun && <TimedControllerButton label={'Timer'} onClickFunc={startTimer}
