@@ -1,4 +1,4 @@
-import {ChangeEvent, FormEvent, useEffect, useMemo, useState} from "react";
+import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
@@ -73,7 +73,7 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
         if (timer === -1 || timer === undefined) {
             handleSubmit()
         }
-    }, [timer])
+    }, [timer, handleSubmit])
 
     const {timerRun} = gameData.scenes[gameData.currentScene]
 
