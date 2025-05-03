@@ -65,7 +65,7 @@ func sortWordLists(words []string) []string {
 
 func removeWordListDuplicates(arr []string) []string {
 	seen := make(map[string]bool)
-	result := []string{}
+	var result []string
 
 	for _, val := range arr {
 		if _, ok := seen[val]; !ok {
@@ -117,18 +117,6 @@ func loadWords(filename string) ([]string, error) {
 	}
 
 	return words, nil
-}
-
-// countLetterFrequency computes and returns the number of times each letter appears in a word
-func countLetterFrequency(checkString string) LetterFrequency {
-	frequencyMap := make(LetterFrequency)
-
-	for _, char := range strings.ToLower(checkString) {
-		if char >= 'a' && char <= 'z' {
-			frequencyMap[char]++
-		}
-	}
-	return frequencyMap
 }
 
 // dropLongWords removes words over a specific length

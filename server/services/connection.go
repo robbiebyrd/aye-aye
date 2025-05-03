@@ -2,7 +2,6 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/olahol/melody"
 	"github.com/robbiebyrd/gameserve/models"
 	"github.com/robbiebyrd/gameserve/repo"
@@ -23,7 +22,7 @@ func HandleDisconnect(s *melody.Session, m *melody.Melody, gameRepo *repo.GameRe
 }
 
 func HandleConnect(s *melody.Session, m *melody.Melody, gameRepo *repo.GameRepo) {
-	var game *models.CountdownGameData
+	var game *models.GameData
 
 	gameId, teamId, playerId := GetStandardKeys(s)
 
@@ -49,8 +48,6 @@ func HandleConnect(s *melody.Session, m *melody.Melody, gameRepo *repo.GameRepo)
 
 	s.Set("gameId", gameId)
 	data, _ := json.Marshal(game)
-
-	fmt.Println(GetPatch([]byte{}, data))
 
 	m.Broadcast(data)
 }

@@ -2,7 +2,6 @@ package scenes
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/olahol/melody"
 	"github.com/robbiebyrd/gameserve/models"
 	"github.com/robbiebyrd/gameserve/repo"
@@ -25,7 +24,7 @@ func NewConundrumScene(conundrumsPath string, gameRepo *repo.GameRepo) *Conundru
 	}
 }
 
-func (c *ConundrumScene) cancelConundrumTimer(game *models.CountdownGameData) *models.CountdownGameData {
+func (c *ConundrumScene) cancelConundrumTimer(game *models.GameData) *models.GameData {
 	_, ok := c.Timers[game.GameID]
 	if ok {
 		c.Timers[game.GameID].Stop()
@@ -36,7 +35,7 @@ func (c *ConundrumScene) cancelConundrumTimer(game *models.CountdownGameData) *m
 	return game
 }
 
-func (c *ConundrumScene) startConundrumTimer(game *models.CountdownGameData, session *melody.Session, m *melody.Melody) *models.CountdownGameData {
+func (c *ConundrumScene) startConundrumTimer(game *models.GameData, m *melody.Melody) *models.GameData {
 	c.resetConundrum(game)
 	sc := game.Scenes[game.CurrentScene]
 	sc.Timer = timerLength + 1
@@ -49,19 +48,16 @@ func (c *ConundrumScene) startConundrumTimer(game *models.CountdownGameData, ses
 		Duration:       time.Duration(timerLength) * time.Second,
 		TickerInternal: 1 * time.Second,
 		OnRun: func(started bool) {
-			dataBefore, _ := json.Marshal(game)
 			scene := game.Scenes[game.CurrentScene]
 			scene.Timer = timerLength + 1
 			game.Scenes[game.CurrentScene] = scene
 			c.GameRepo.UpdateGame(*game)
 			data, _ := json.Marshal(game)
-			fmt.Println(services.GetPatch(dataBefore, data))
 			m.Broadcast(data)
 		},
 		OnPaused: func(passed, remained time.Duration) {},
 		OnDone: func(stopped bool) {
 			g := c.GameRepo.GetGame(game.GameID)
-			dataBefore, _ := json.Marshal(g)
 			sc := g.Scenes[game.CurrentScene]
 			sc.Timer -= 1
 			sc.Word = &conundrum.Word
@@ -69,19 +65,16 @@ func (c *ConundrumScene) startConundrumTimer(game *models.CountdownGameData, ses
 			g.Scenes[game.CurrentScene] = sc
 			c.GameRepo.UpdateGame(*g)
 			data, _ := json.Marshal(g)
-			fmt.Println(services.GetPatch(dataBefore, data))
 			m.Broadcast(data)
 			delete(c.Timers, game.GameID)
 		},
 		OnTick: func(passed, remained time.Duration) {
 			g := c.GameRepo.GetGame(game.GameID)
-			dataBefore, _ := json.Marshal(g)
 			sc := g.Scenes[game.CurrentScene]
 			sc.Timer -= 1
 			g.Scenes[game.CurrentScene] = sc
 			c.GameRepo.UpdateGame(*g)
 			data, _ := json.Marshal(g)
-			fmt.Println(services.GetPatch(dataBefore, data))
 			m.Broadcast(data)
 		},
 	})
@@ -91,19 +84,19 @@ func (c *ConundrumScene) startConundrumTimer(game *models.CountdownGameData, ses
 
 }
 
-func (c *ConundrumScene) resetConundrum(game *models.CountdownGameData) *models.CountdownGameData {
+func (c *ConundrumScene) resetConundrum(game *models.GameData) *models.GameData {
 	c.cancelConundrumTimer(game)
-	return c.GameRepo.ResetGame(game.GameID, game.CurrentScene)
+	return c.GameRepo.ResetGame(game, game.CurrentScene)
 }
 
-func (c *ConundrumScene) submitConundrum(game *models.CountdownGameData, submissionText string, playerId string) *models.CountdownGameData {
+func (c *ConundrumScene) submitConundrum(game *models.GameData, submissionText string, playerId string) *models.GameData {
 	submissionIndex := -1
 
 	now := time.Now()
 
 	submission := models.Submission{
 		PlayerID:  playerId,
-		Entry:     submissionText,
+		Entry:     &submissionText,
 		Timestamp: &now,
 		Correct:   nil,
 	}
@@ -133,7 +126,7 @@ func (c *ConundrumScene) submitConundrum(game *models.CountdownGameData, submiss
 	}
 
 	if isCorrect && !alreadySolved {
-		length := len(submission.Entry)
+		length := len(*submission.Entry)
 		if game.Players[playerId].Score == nil {
 			zeroScore := 0
 			p := game.Players[playerId]
@@ -157,7 +150,7 @@ func (c *ConundrumScene) submitConundrum(game *models.CountdownGameData, submiss
 	return game
 }
 
-func (c *ConundrumScene) HandleConundrumMessage(game *models.CountdownGameData, msg []byte, playerId string, m *melody.Melody, session *melody.Session) *models.CountdownGameData {
+func (c *ConundrumScene) HandleConundrumMessage(game *models.GameData, msg []byte, playerId string, m *melody.Melody) *models.GameData {
 
 	var messageDecoded map[string]interface{}
 	_ = json.Unmarshal(msg, &messageDecoded)
@@ -168,7 +161,7 @@ func (c *ConundrumScene) HandleConundrumMessage(game *models.CountdownGameData, 
 
 	switch messageDecoded["action"].(string) {
 	case "start":
-		game = c.startConundrumTimer(game, session, m)
+		game = c.startConundrumTimer(game, m)
 		break
 	case "cancel":
 		game = c.cancelConundrumTimer(game)

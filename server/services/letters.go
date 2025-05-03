@@ -26,7 +26,7 @@ type LettersService struct {
 }
 
 var letterTypeFrequencies = map[string]int{
-	"vowels":     2,
+	"vowels":     1,
 	"consonants": 7,
 }
 

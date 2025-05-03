@@ -13,6 +13,7 @@ type GameRepo struct {
 	Ctx    context.Context
 }
 
+// NewGameRepo creates a new repository for accessing game data
 func NewGameRepo() *GameRepo {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
@@ -33,13 +34,14 @@ func NewGameRepo() *GameRepo {
 	}
 }
 
-func (s *GameRepo) GetGame(id string) *models.CountdownGameData {
+// GetGame retrieves game data for a specific game ID
+func (s *GameRepo) GetGame(id string) *models.GameData {
 	gameExists := s.CheckGame(id)
 	if !gameExists {
 		return s.NewGame(id)
 	}
 
-	var game models.CountdownGameData
+	var game models.GameData
 
 	val, err := s.Client.Get(s.Ctx, id).Result()
 	if err != nil {
@@ -54,6 +56,7 @@ func (s *GameRepo) GetGame(id string) *models.CountdownGameData {
 	return &game
 }
 
+// CheckGame checks to see if a game with the given ID already exists
 func (s *GameRepo) CheckGame(id string) bool {
 	exists, err := s.Client.Exists(s.Ctx, id).Result()
 	if err != nil {
@@ -65,7 +68,8 @@ func (s *GameRepo) CheckGame(id string) bool {
 	return false
 }
 
-func (s *GameRepo) UpdateGame(game models.CountdownGameData) {
+// UpdateGame saves game data to the repository
+func (s *GameRepo) UpdateGame(game models.GameData) {
 	jsonData, err := json.MarshalIndent(game, "", "  ")
 	if err != nil {
 		panic(err)
@@ -79,10 +83,11 @@ func (s *GameRepo) UpdateGame(game models.CountdownGameData) {
 	return
 }
 
-func (s *GameRepo) NewGame(id string) *models.CountdownGameData {
+// NewGame creates a new game, given an ID
+func (s *GameRepo) NewGame(id string) *models.GameData {
 	controllingTeam := "team1"
 	showInput := false
-	game := models.CountdownGameData{
+	game := models.GameData{
 		GameID:          id,
 		CurrentScene:    "lobby",
 		ControllingTeam: &controllingTeam,
@@ -130,10 +135,10 @@ func (s *GameRepo) NewGame(id string) *models.CountdownGameData {
 	return &game
 }
 
-func (s *GameRepo) ResetGame(id string, sceneId string) *models.CountdownGameData {
+// ResetGame resets a scene in a game to its defaults
+func (s *GameRepo) ResetGame(game *models.GameData, sceneId string) *models.GameData {
 	showInput := false
-	g := s.GetGame(id)
-	sc := g.Scenes[sceneId]
+	sc := game.Scenes[sceneId]
 	sc.Timer = -1
 	sc.TimerRun = false
 	sc.Submissions = make([]models.Submission, 0)
@@ -143,10 +148,11 @@ func (s *GameRepo) ResetGame(id string, sceneId string) *models.CountdownGameDat
 	sc.Word = &models.EmptyLetters
 	sc.Jumbled = &models.EmptyLetters
 	sc.ShowInput = &showInput
-	g.Scenes[sceneId] = sc
-	return g
+	game.Scenes[sceneId] = sc
+	return game
 }
 
+// CheckGamePlayer determines if a given PlayerID is in a game
 func (s *GameRepo) CheckGamePlayer(id string, playerId string) bool {
 	game := s.GetGame(id)
 	_, playerExists := game.Players[playerId]
@@ -156,6 +162,7 @@ func (s *GameRepo) CheckGamePlayer(id string, playerId string) bool {
 	return false
 }
 
+// CheckGameForHost checks to see if the game has a host already
 func (s *GameRepo) CheckGameForHost(id string) bool {
 	game := s.GetGame(id)
 	for _, player := range game.Players {

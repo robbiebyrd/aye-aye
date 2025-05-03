@@ -9,19 +9,18 @@ type SceneService struct {
 	GameRepo *repo.GameRepo
 }
 
+// NewSceneService creates a new Scene Service
 func NewSceneService(gameRepo *repo.GameRepo) *SceneService {
 	return &SceneService{
 		GameRepo: gameRepo,
 	}
 }
 
-func (s *SceneService) NextScene(game *models.CountdownGameData) *models.CountdownGameData {
+// NextScene moves to the next scene as specified by the NextScene property of the current Scene.
+func (s *SceneService) NextScene(game *models.GameData) *models.GameData {
 	sc := game.Scenes[game.CurrentScene]
 	game.CurrentScene = sc.NextScene
-	s.GameRepo.UpdateGame(*game)
-	game = s.GameRepo.ResetGame(game.GameID, game.CurrentScene)
-	s.GameRepo.UpdateGame(*game)
-	game = s.GameRepo.ResetGame(game.GameID, sc.NextScene)
-	s.GameRepo.UpdateGame(*game)
+	game = s.GameRepo.ResetGame(game, game.CurrentScene)
+	game = s.GameRepo.ResetGame(game, sc.NextScene)
 	return game
 }

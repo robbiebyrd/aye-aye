@@ -81,7 +81,7 @@ func (c *Countdowner) Stop() {
 	c.options.OnDone(true)
 }
 
-// New creates instance of timer.
+// NewCountdowner creates instance of timer.
 func NewCountdowner(options CountdownerOptions) *Countdowner {
 	return &Countdowner{
 		options: options,

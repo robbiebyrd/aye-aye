@@ -1,6 +1,6 @@
 package models
 
-type CountdownGameData struct {
+type GameData struct {
 	GameID          string            `json:"gameId"`
 	CurrentScene    string            `json:"currentScene"`
 	ControllingTeam *string           `json:"controllingTeam,omitempty"`

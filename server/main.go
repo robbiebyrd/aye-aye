@@ -2,43 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/olahol/melody"
 	"github.com/robbiebyrd/gameserve/repo"
+	"github.com/robbiebyrd/gameserve/servers"
 	"github.com/robbiebyrd/gameserve/services"
 	"github.com/robbiebyrd/gameserve/services/scenes"
-	"log"
-	"net/http"
-	"os"
 )
-
-type CountdownGameDataKeys map[string]any
-
-func serve(m *melody.Melody) {
-
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
-	}
-
-	listenAddr := os.Getenv("LISTEN_ADDR")
-	listenPort := os.Getenv("LISTEN_PORT")
-	if listenPort == "" {
-		panic("You need to specify a port")
-	}
-
-	http.HandleFunc("/ws/{gameId}/{teamId}/{playerId}", func(w http.ResponseWriter, r *http.Request) {
-		keys := make(CountdownGameDataKeys)
-		keys["gameId"] = r.PathValue("gameId")
-		keys["playerId"] = r.PathValue("playerId")
-		keys["teamId"] = r.PathValue("teamId")
-		m.HandleRequestWithKeys(w, r, keys)
-		return
-	})
-
-	http.ListenAndServe(listenAddr+":"+listenPort, nil)
-}
 
 func main() {
 
@@ -58,32 +27,39 @@ func main() {
 	})
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
-		gameId, _, playerId := services.GetStandardKeys(s)
-
+		// Decode the incoming message into a JSON Object
 		var inputMessage map[string]interface{}
 		_ = json.Unmarshal(msg, &inputMessage)
 
+		// Clients must present their current Scene ID when sending a message
 		if inputMessage["sceneId"] == nil {
 			return
 		}
 
-		game := gameRepo.GetGame(gameId)
-		dataBefore, _ := json.Marshal(game)
+		// Get the gameId from the Session's keys
+		gameId, _, playerId := services.GetStandardKeys(s)
 
+		//Retrieve the game data
+		game := gameRepo.GetGame(gameId)
+
+		// Depending on the current active scene on the client, we hand the request and the game data
+		// off to the appropriate scene handler service.
 		switch inputMessage["sceneId"].(string) {
 		case "sceneChange":
 			game = sceneService.NextScene(game)
 		case "letterboard":
-			game = letterboardScene.HandleMessage(game, msg, playerId, m, s)
+			game = letterboardScene.HandleMessage(game, msg, playerId, m)
 		case "conundrum":
-			game = conundrumScene.HandleConundrumMessage(game, msg, playerId, m, s)
+			game = conundrumScene.HandleConundrumMessage(game, msg, playerId, m)
 		}
 
+		// The Scene Handlers return the updated game data, and we save it to the repository...
 		gameRepo.UpdateGame(*game)
+
+		// ... and then broadcast the game data to all clients.
 		data, _ := json.Marshal(game)
-		fmt.Println(services.GetPatch(dataBefore, data))
 		m.Broadcast(data)
 	})
 
-	serve(m)
+	servers.Serve(m)
 }
