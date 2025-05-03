@@ -15,7 +15,7 @@ import (
 )
 
 // timerLength is the default duration of the game timer in seconds.
-var timerLength = 5
+var timerLength = 30
 
 // LetterboardScene represents the state and logic for the Letterboard game scene.
 type LetterboardScene struct {
