@@ -23,12 +23,12 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
     console.log(gameData)
     const canInput = useMemo(() => {
         const a = gameData?.scenes[gameData.currentScene].submissions?.find((s: SceneSubmissions) => s.playerId == playerId)
-        return a?.entry != ""
+        return a?.entry === "" || a?.entry === undefined
     }, [gameData, playerId])
 
     const canDraw = useMemo(() => {
         return gameData?.scenes[gameData.currentScene].letters.some((l: string) => l === " ")
-    }, [gameData.currentScene, gameData?.scenes])
+    }, [gameData?.scenes])
 
     const teams = useMemo(() => {
         if (!gameData?.players) {
