@@ -173,47 +173,42 @@ func (s *LetterboardScene) solveScene(game *models.GameData) *models.GameData {
 func (s *LetterboardScene) submit(game *models.GameData, submissionText string, playerId string) *models.GameData {
 	sc := game.Scenes[game.CurrentScene]
 	if sc.Submissions == nil {
-		sc.Submissions = make([]models.Submission, 0)
+		sc.Submissions = map[string]models.Submission{}
 	}
 
 	if !s.playerHasSubmitted(game, playerId) {
 		now := time.Now()
 
-		sc.Submissions = append(sc.Submissions, models.Submission{
+		sc.Submissions[playerId] = models.Submission{
 			PlayerID:  playerId,
 			Entry:     &submissionText,
 			Timestamp: &now,
-		})
+		}
 	}
 	game.Scenes[game.CurrentScene] = sc
 
-	for i, sub := range sc.Submissions {
-		if sub.PlayerID == playerId {
-			s.processSubmission(game, submissionText, playerId, i)
-		}
-	}
+	s.processSubmission(game, submissionText, playerId)
 
 	return game
 }
 
 // playerHasSubmitted checks if a player has already submitted a word for the current round.
 func (s *LetterboardScene) playerHasSubmitted(game *models.GameData, playerId string) bool {
-	for _, sub := range game.Scenes[game.CurrentScene].Submissions {
-		if sub.PlayerID == playerId {
-			return true
-		}
+	submission := game.Scenes[game.CurrentScene].Submissions[playerId]
+	if submission.Entry != nil {
+		return true
 	}
 	return false
 }
 
 // processSubmission validates a player's submission, updates their score, and persists the game state.
-func (s *LetterboardScene) processSubmission(game *models.GameData, submissionText string, playerId string, submissionIndex int) {
+func (s *LetterboardScene) processSubmission(game *models.GameData, submissionText string, playerId string) {
 	sc := game.Scenes[game.CurrentScene]
 	foundWords := s.WordsService.GetMatchingWords(strings.Join(*sc.Letters, ""))
 	isCorrect := slices.Contains(foundWords, strings.ToLower(submissionText))
 	now := time.Now()
 
-	sc.Submissions[submissionIndex] = models.Submission{
+	sc.Submissions[playerId] = models.Submission{
 		PlayerID:  playerId,
 		Entry:     &submissionText,
 		Timestamp: &now,

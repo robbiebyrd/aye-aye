@@ -108,7 +108,7 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				Board:       &models.EmptyBoard,
 				FoundWords:  &[]string{},
 				ShowInput:   &showInput,
-				Submissions: []models.Submission{},
+				Submissions: map[string]models.Submission{},
 			},
 			"round2": {
 				Title:       "Round 2",
@@ -119,15 +119,17 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				Board:       &models.EmptyBoard,
 				FoundWords:  &[]string{},
 				ShowInput:   &showInput,
-				Submissions: []models.Submission{},
+				Submissions: map[string]models.Submission{},
 			},
 			"round3": {
-				Title:     "Round 3",
-				Scene:     "conundrum",
-				NextScene: "lobby",
-				Timer:     -1,
-				Word:      &[]string{},
-				Jumbled:   &[]string{},
+				Title:       "Round 3",
+				Scene:       "conundrum",
+				NextScene:   "lobby",
+				Timer:       -1,
+				Word:        &[]string{},
+				Jumbled:     &[]string{},
+				ShowInput:   &showInput,
+				Submissions: map[string]models.Submission{},
 			},
 		},
 	}
@@ -141,7 +143,7 @@ func (s *GameRepo) ResetGame(game *models.GameData, sceneId string) *models.Game
 	sc := game.Scenes[sceneId]
 	sc.Timer = -1
 	sc.TimerRun = false
-	sc.Submissions = make([]models.Submission, 0)
+	sc.Submissions = map[string]models.Submission{}
 	sc.Letters = &models.EmptyLetters
 	sc.Board = &models.EmptyBoard
 	sc.FoundWords = &[]string{}

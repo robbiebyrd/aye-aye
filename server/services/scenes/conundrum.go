@@ -90,23 +90,16 @@ func (c *ConundrumScene) resetConundrum(game *models.GameData) *models.GameData 
 }
 
 func (c *ConundrumScene) submitConundrum(game *models.GameData, submissionText string, playerId string) *models.GameData {
-	submissionIndex := -1
-
-	now := time.Now()
-
-	submission := models.Submission{
-		PlayerID:  playerId,
-		Entry:     &submissionText,
-		Timestamp: &now,
-		Correct:   nil,
-	}
 	sc := game.Scenes[game.CurrentScene]
+	submission, ok := sc.Submissions[playerId]
 
-	for i, p := range sc.Submissions {
-		if p.PlayerID == playerId {
-			submissionIndex = i
-			submission = sc.Submissions[submissionIndex]
-			break
+	if ok == false {
+		now := time.Now()
+		submission = models.Submission{
+			PlayerID:  playerId,
+			Entry:     &submissionText,
+			Timestamp: &now,
+			Correct:   nil,
 		}
 	}
 
@@ -117,15 +110,7 @@ func (c *ConundrumScene) submitConundrum(game *models.GameData, submissionText s
 
 	submission.Correct = &isCorrect
 
-	var alreadySolved bool
-
-	for _, sub := range sc.Submissions {
-		if *sub.Correct == true {
-			alreadySolved = true
-		}
-	}
-
-	if isCorrect && !alreadySolved {
+	if isCorrect {
 		length := len(*submission.Entry)
 		if game.Players[playerId].Score == nil {
 			zeroScore := 0
@@ -140,11 +125,7 @@ func (c *ConundrumScene) submitConundrum(game *models.GameData, submissionText s
 		game.Players[playerId] = player
 	}
 
-	if submissionIndex == -1 {
-		sc.Submissions = append(sc.Submissions, submission)
-	} else {
-		sc.Submissions[submissionIndex] = submission
-	}
+	sc.Submissions[playerId] = submission
 
 	game.Scenes[game.CurrentScene] = sc
 	return game
