@@ -24,7 +24,7 @@ export interface SceneData {
     jumbled?: letterRow
     clue?: letterRow
 
-    submissions?: Record<string, SceneSubmissions>
+    submissions: Record<string, SceneSubmissions>
     numbers?: number[]
     targetNumber?: number
 }

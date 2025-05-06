@@ -1,5 +1,5 @@
 import {TeamPlacard} from "@/components/team-placard";
-import {GameData, letters, Player, SceneSubmissions} from "@/models/letterboard";
+import {GameData, letters, Player} from "@/models/letterboard";
 import {useMemo} from "react";
 import QRCode from "react-qr-code";
 import ConundrumLetters from "@/components/scenes/conundrum/letters";
@@ -124,10 +124,13 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
             </div>
             <div>
                 <ul>
-                    {gameData.scenes[gameData.currentScene].submissions?.map((submission) => {
-                        return (
-                            <li key={submission.playerId}>{submission.playerId} | {JSON.stringify(submission.correct)} </li>)
+                    {Object.entries(gameData.scenes[gameData.currentScene].submissions).map(() => {
+                        return <></>
                     })}
+                    {/*{gameData.scenes[gameData.currentScene].submissions?.forEach((submission) => {*/}
+                    {/*    return (*/}
+                    {/*        <li key={submission.playerId}>{submission.playerId} | {JSON.stringify(submission.correct)} </li>)*/}
+                    {/*})}*/}
                 </ul>
             </div>
             <ConundrumLetters jumbled={gameData.scenes[gameData.currentScene].jumbled}
