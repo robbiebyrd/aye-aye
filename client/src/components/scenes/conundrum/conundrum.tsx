@@ -34,8 +34,12 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
     }, [gameData?.players])
 
     const canInput = useMemo(() => {
-        const a = gameData?.scenes[gameData.currentScene].submissions?.find((s: SceneSubmissions) => s.playerId == playerId)
-        return !!a?.entry
+        const allSubmissions = gameData?.scenes[gameData.currentScene].submissions
+        if (!allSubmissions) {
+            return
+        }
+        const submission = allSubmissions[playerId]
+        return !!submission?.entry
     }, [gameData, playerId])
 
     return (
