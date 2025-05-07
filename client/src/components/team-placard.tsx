@@ -15,7 +15,7 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, colors, posit
     const teamScore = updatedPlayers.reduce((accumulator, player) => accumulator + player.score, 0);
 
     const getSubmissionForPlayer = (playerId: string) => {
-        return gameData.scenes[gameData.currentScene].submissions?.find((s) => s.playerId == playerId)
+        return gameData.scenes[gameData.currentScene].submissions[playerId]
     }
 
     return (
