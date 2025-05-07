@@ -64,6 +64,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 's
             ...standardMessageAttributes
         }
         ws?.send(JSON.stringify(submission))
+        setInputValue("")
     }
 
     const nextScene = () => {
