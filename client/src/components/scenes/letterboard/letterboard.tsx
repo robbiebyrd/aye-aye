@@ -1,5 +1,5 @@
 import {TeamPlacard} from "@/components/team-placard";
-import {GameData, letterRow, letters, Player, SceneSubmissions} from "@/models/letterboard";
+import {GameData, letterRow, letters, Player} from "@/models/letterboard";
 import Letters from "@/components/scenes/letterboard/letters";
 import Draw from "@/components/scenes/letterboard/draw";
 import Actions from "@/components/scenes/letterboard/actions";
