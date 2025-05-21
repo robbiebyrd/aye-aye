@@ -4,12 +4,12 @@ import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
 import {TimedControllerButton} from "@/components/scenes/conundrum/actions";
 
-const Actions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'> & {
+const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'> & {
     inputEnabled: boolean
-}> = ({gameData, gameId, playerId, inputEnabled, ws, show, timer}) => {
+}> = ({gameData, playerId, inputEnabled, ws, show, timer}) => {
     const sceneId = "letterboard"
     const [inputValue, setInputValue] = useState('')
-
+    const {gameId} = gameData
     const isHost = gameData.players[playerId]?.host
     const {timerRun} = gameData.scenes[gameData.currentScene]
 

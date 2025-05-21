@@ -133,7 +133,7 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
             <Letters letters={gameData.scenes[gameData.currentScene].board}/>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
                 <Draw gameId={gameId} playerId={playerId} ws={ws} show={canDraw}/>
-                <Actions gameId={gameId} playerId={playerId} ws={ws} inputEnabled={canInput} show={!canDraw}
+                <Actions playerId={playerId} ws={ws} inputEnabled={canInput} show={!canDraw}
                          timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
             </div>
         </>
