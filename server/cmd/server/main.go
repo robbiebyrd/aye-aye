@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/json"
+
 	"github.com/olahol/melody"
-	"github.com/robbiebyrd/gameserve/repo"
-	"github.com/robbiebyrd/gameserve/servers"
-	"github.com/robbiebyrd/gameserve/services"
-	"github.com/robbiebyrd/gameserve/services/scenes"
+	services "github.com/robbiebyrd/gameserve/internal/game"
+	"github.com/robbiebyrd/gameserve/internal/game/scenes"
+	"github.com/robbiebyrd/gameserve/internal/repo"
+	servers "github.com/robbiebyrd/gameserve/internal/ws"
 )
 
 func main() {

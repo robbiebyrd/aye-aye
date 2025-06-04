@@ -2,11 +2,12 @@ package scenes
 
 import (
 	"encoding/json"
-	"github.com/olahol/melody"
-	"github.com/robbiebyrd/gameserve/models"
-	"github.com/robbiebyrd/gameserve/repo"
 	"strings"
 	"time"
+
+	"github.com/olahol/melody"
+	"github.com/robbiebyrd/gameserve/internal/models"
+	"github.com/robbiebyrd/gameserve/internal/repo"
 )
 
 type ConundrumScene struct {
