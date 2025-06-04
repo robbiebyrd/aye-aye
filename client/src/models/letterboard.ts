@@ -37,7 +37,7 @@ export interface SceneSubmissions {
 }
 
 export interface Player {
-    id: string
+    playerId: string
     disconnected: boolean
     host: boolean
     name: string

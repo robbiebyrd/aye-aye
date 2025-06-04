@@ -1,4 +1,4 @@
-package services
+package repo
 
 import (
 	"encoding/csv"
@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type ConundrumsService struct {
+type ConundrumsRepo struct {
 	Conundrums     []Conundrum
 	ConundrumsPath string
 }
@@ -18,19 +18,19 @@ type Conundrum struct {
 	Clue    string
 }
 
-func NewConundrumsService(conundrumsPath string) *ConundrumsService {
+func NewConundrumsRepo(conundrumsPath string) *ConundrumsRepo {
 	conundrums, err := loadConundrums(conundrumsPath)
 	if err != nil {
 		panic(err)
 	}
 
-	return &ConundrumsService{
+	return &ConundrumsRepo{
 		Conundrums:     conundrums,
 		ConundrumsPath: conundrumsPath,
 	}
 }
 
-func (c *ConundrumsService) GetConundrum() Conundrum {
+func (c *ConundrumsRepo) GetConundrum() Conundrum {
 	if len(c.Conundrums) == 0 {
 		c.Conundrums, _ = loadConundrums(c.ConundrumsPath)
 	}

@@ -12,7 +12,6 @@ export type LobbyProps = {
 }
 
 export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws}) => {
-    console.log(gameData)
 
     const teams = useMemo(() => {
         if (!gameData?.players) {
@@ -25,7 +24,7 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
             if (!result[key]) {
                 result[key] = []
             }
-            result[key].push({playerId, ...player})
+            result[key].push({...player, playerId})
         })
 
         return Object.entries(result)
@@ -42,49 +41,48 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
 
     return (
         <>
-            <div className="flex justify-center w-full min-h-[15vh]">
-                {teams?.at(0)?.at(0) ? (
-                    <TeamPlacard
-                        playerId={playerId}
-                        gameData={gameData}
-                        teamName={String(teams?.at(0)?.at(0))}
-                        players={teams?.at(0)?.at(1) as Player[]}
-                        colors={[
-                            "#C1272D",
-                            "#3D775A",
-                            "#410006",
-                            "#E6E6E6",
-                            "#CCCCCC"
-                        ]}
-                        position={'left'}
-                    />
-                ) : <div className={"flex flex-col"} style={{
-                    aspectRatio: "2 / 1",
-                    height: "11em"
-                }}/>}
-                {/*<div className="flex flex-col items-center justify-center">*/}
-                {/*    <p className="font-bold text-center">{gameData?.gameId}</p>*/}
-                {/*</div>*/}
-                {teams?.at(1)?.at(0) ? (
-                    <TeamPlacard
-                        playerId={playerId}
-                        gameData={gameData}
-                        teamName={String(teams?.at(1)?.at(0))}
-                        players={teams?.at(1)?.at(1) as Player[]}
-                        colors={[
-                            "#0000FF",
-                            "#3D775A",
-                            "#1B1464",
-                            "#E6E6E6",
-                            "#CCCCCC"
-                        ]}
-                        position={'right'}/>
-                ) : <div className={"flex flex-col"} style={{
-                    aspectRatio: "2 / 1",
-                    height: "11em"
-                }}/>}
+            <div className={"flex flex-col content-center align-middle items-center w-full h-full  justify-center"}>
+                <div className="flex justify-left w-full min-h-[15vh]">
+                    <div className={'w-1/2'}>
+                        {teams?.at(0)?.at(0) ? (
+                            <TeamPlacard
+                                playerId={playerId}
+                                gameData={gameData}
+                                teamName={String(teams?.at(0)?.at(0))}
+                                players={teams?.at(0)?.at(1) as Player[]}
+                                colors={[
+                                    "#C1272D",
+                                    "#3D775A",
+                                    "#410006",
+                                    "#E6E6E6",
+                                    "#CCCCCC"
+                                ]}
+                                position={'left'}
+                            />
+                        ) : <div className={"flex flex-col flex-grow"}/>}
+                    </div>
+                    <div className={"w-1/2 flex justify-end"}>
+                        {teams?.at(1)?.at(0) ? (
+                            <TeamPlacard
+                                playerId={playerId}
+                                gameData={gameData}
+                                teamName={String(teams?.at(1)?.at(0))}
+                                players={teams?.at(1)?.at(1) as Player[]}
+                                colors={[
+                                    "#0000FF",
+                                    "#3D775A",
+                                    "#1B1464",
+                                    "#E6E6E6",
+                                    "#CCCCCC"
+                                ]}
+                                position={'right'}/>
+                        ) : <div className={"flex flex-col justify-end"} style={{
+                            aspectRatio: "2 / 1",
+                            height: "11em"
+                        }}>&nbsp;</div>}
+                    </div>
+                </div>
                 <Button label={"Start"} onClickFunc={nextScene}></Button>
-
             </div>
         </>
 

@@ -21,13 +21,13 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
             return
         }
 
-        const result: Record<string, (Player & { playerId: string })[]> = {}
-        Object.entries(gameData.players).forEach(([playerId, player]) => {
+        const result: Record<string, (Player)[]> = {}
+        Object.values(gameData.players).forEach((player) => {
             const key = String(player.team)
             if (!result[key]) {
                 result[key] = []
             }
-            result[key].push({playerId, ...player})
+            result[key].push(player)
         })
 
         return Object.entries(result)

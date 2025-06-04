@@ -44,7 +44,7 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
             if (!result[key]) {
                 result[key] = []
             }
-            result[key].push({playerId, ...player})
+            result[key].push({...player, playerId})
         })
 
         return Object.entries(result)
@@ -53,25 +53,27 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
     return (
         <>
             <div className="flex justify-center w-full min-h-[15vh]">
-                {teams?.at(0)?.at(0) ? (
-                    <TeamPlacard
-                        playerId={playerId}
-                        gameData={gameData}
-                        teamName={String(teams?.at(0)?.at(0))}
-                        players={teams?.at(0)?.at(1) as Player[]}
-                        colors={[
-                            "#C1272D",
-                            "#3D775A",
-                            "#410006",
-                            "#E6E6E6",
-                            "#CCCCCC"
-                        ]}
-                        position={'left'}
-                    />
-                ) : <div className={"flex flex-col"} style={{
-                    aspectRatio: "2 / 1",
-                    height: "11em"
-                }}/>}
+                <div className={"w-3/4"}>
+                    {teams?.at(0)?.at(0) ? (
+                        <TeamPlacard
+                            playerId={playerId}
+                            gameData={gameData}
+                            teamName={String(teams?.at(0)?.at(0))}
+                            players={teams?.at(0)?.at(1) as Player[]}
+                            colors={[
+                                "#C1272D",
+                                "#3D775A",
+                                "#410006",
+                                "#E6E6E6",
+                                "#CCCCCC"
+                            ]}
+                            position={'left'}
+                        />
+                    ) : <div className={"flex flex-col"} style={{
+                        aspectRatio: "2 / 1",
+                        height: "11em"
+                    }}/>}
+                </div>
                 <div className="flex flex-col items-center justify-center content-center flex-grow">
                     <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4"} style={{
                         borderRadius: ".5em",
@@ -111,28 +113,30 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                         }
                     </div>
                 </div>
-                {teams?.at(1)?.at(0) ? (
-                    <TeamPlacard
-                        playerId={playerId}
-                        gameData={gameData}
-                        teamName={String(teams?.at(1)?.at(0))}
-                        players={teams?.at(1)?.at(1) as Player[]}
-                        colors={[
-                            "#0000FF",
-                            "#3D775A",
-                            "#1B1464",
-                            "#E6E6E6",
-                            "#CCCCCC"
-                        ]}
-                        position={'right'}/>
-                ) : <div className={"flex flex-col"} style={{
-                    aspectRatio: "2 / 1",
-                    height: "11em"
-                }}/>}
+                <div className={"w-3/4 flex justify-end"}>
+                    {teams?.at(1)?.at(0) ? (
+                        <TeamPlacard
+                            playerId={playerId}
+                            gameData={gameData}
+                            teamName={String(teams?.at(1)?.at(0))}
+                            players={teams?.at(1)?.at(1) as Player[]}
+                            colors={[
+                                "#0000FF",
+                                "#3D775A",
+                                "#1B1464",
+                                "#E6E6E6",
+                                "#CCCCCC"
+                            ]}
+                            position={'right'}/>
+                    ) : <div className={"flex flex-col"} style={{
+                        aspectRatio: "2 / 1",
+                        height: "11em"
+                    }}/>}
+                </div>
             </div>
             <Letters letters={gameData.scenes[gameData.currentScene].board}/>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
-                <Draw gameId={gameId} playerId={playerId} ws={ws} show={canDraw}/>
+                <Draw gameId={gameId} playerId={playerId} ws={ws} show={canDraw} drawn={gameData.scenes[gameData.currentScene].board[0]}/>
                 <Actions playerId={playerId} ws={ws} inputEnabled={canInput} show={!canDraw}
                          timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
             </div>

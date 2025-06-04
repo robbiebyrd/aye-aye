@@ -62,13 +62,13 @@ var consonantFrequencies = map[string]int{
 	"z": 1,
 }
 
-func NewLettersService() *LettersService {
+func NewLettersService(pickType LetterPickType) *LettersService {
 	return &LettersService{
 		Rng:                   rand.New(rand.NewSource(time.Now().UnixNano())),
 		VowelFrequencies:      vowelFrequencies,
 		ConsonantFrequencies:  consonantFrequencies,
 		LetterTypeFrequencies: letterTypeFrequencies,
-		PickType:              LetterPickDeck,
+		PickType:              pickType,
 		VowelDecks:            map[string][]string{},
 		ConsonantDecks:        map[string][]string{},
 	}
@@ -185,10 +185,16 @@ func (s *LettersService) drawLetterFromDeck(letterType LetterType, gameId string
 }
 
 func (s *LettersService) DrawLetter(letterType LetterType, gameId *string) string {
-	if s.PickType == LetterPickDeck && &gameId != nil {
+	switch s.PickType {
+	case LetterPickDeck:
 		return s.drawLetterFromDeck(letterType, *gameId)
+	case LetterPickFrequency:
+		return s.drawLetterFromWeights(letterType)
+	case LetterPickRandom:
+		return s.drawLetterFromRandom(letterType)
+	default:
+		return s.drawLetterFromRandom(letterType)
 	}
-	return s.drawLetterFromRandom(letterType)
 }
 
 func (s *LettersService) DrawRandomLetters(numberOfLetters int, gameId *string) []string {

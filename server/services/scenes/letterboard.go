@@ -19,29 +19,29 @@ var timerLength = 30
 
 // LetterboardScene represents the state and logic for the Letterboard game scene.
 type LetterboardScene struct {
-	// GameRepo provides access to game data persistence.
-	GameRepo *repo.GameRepo
+	// GameScene provides access to game data persistence and timers.
+	GameScene *GameScene
 	// LettersService manages letter distribution and drawing.
 	LettersService *services.LettersService
 	// Timers holds active countdown timers for each game.
 	Timers map[string]*services.Countdowner
 	// WordsService provides word validation and lookup functionality.
-	WordsService *services.WordsService
+	WordsService *repo.WordsRepo
 }
 
 // NewLetterBoardScene creates a new instance of the LetterboardScene.
 // It initializes the scene with the provided dictionary path and game repository.
-func NewLetterBoardScene(dictionaryPath string, gameRepo *repo.GameRepo) *LetterboardScene {
+func NewLetterBoardScene(dictionaryPath string, pickType services.LetterPickType, gameRepo *repo.GameRepo) *LetterboardScene {
 	return &LetterboardScene{
-		GameRepo:       gameRepo,
-		LettersService: services.NewLettersService(),
+		GameScene:      NewGameScene(gameRepo),
+		LettersService: services.NewLettersService(pickType),
 		Timers:         make(map[string]*services.Countdowner),
-		WordsService:   services.NewWordsService(dictionaryPath),
+		WordsService:   repo.NewWordsRepo(dictionaryPath),
 	}
 }
 
-// removeMatchingStrings removes all occurrences of a given string from a slice of strings.
-func removeMatchingStrings(slice []string, match string) []string {
+// removeMatchingItemsFromArray removes all occurrences of a given string from a slice of strings.
+func removeMatchingItemsFromArray(slice []string, match string) []string {
 	var result []string
 	for _, str := range slice {
 		if str != match {
@@ -49,62 +49,6 @@ func removeMatchingStrings(slice []string, match string) []string {
 		}
 	}
 	return result
-}
-
-// cancelTimer stops and removes the game timer for the specified game.
-func (s *LetterboardScene) cancelTimer(game *models.GameData) *models.GameData {
-	if s.Timers[game.GameID] != nil {
-		s.Timers[game.GameID].Stop()
-	}
-	sc := game.Scenes[game.CurrentScene]
-	sc.Timer = -1
-	game.Scenes[game.CurrentScene] = sc
-	return game
-}
-
-// incrementTimer adjusts the game timer by the given increment and broadcasts the updated game state.
-func (s *LetterboardScene) incrementTimer(game *models.GameData, m *melody.Melody, increment int) {
-	scene := game.Scenes[game.CurrentScene]
-	scene.Timer = scene.Timer + increment
-	game.Scenes[game.CurrentScene] = scene
-	s.GameRepo.UpdateGame(*game)
-	data, _ := json.Marshal(game)
-	m.Broadcast(data)
-}
-
-// setTimer sets the game timer to the specified value and running state, then broadcasts the update.
-func (s *LetterboardScene) setTimer(game *models.GameData, m *melody.Melody, setTime int, setRun bool) {
-	scene := game.Scenes[game.CurrentScene]
-	scene.Timer = setTime
-	scene.TimerRun = setRun
-	game.Scenes[game.CurrentScene] = scene
-	s.GameRepo.UpdateGame(*game)
-	data, _ := json.Marshal(game)
-	m.Broadcast(data)
-}
-
-// startTimer initializes and starts the game timer for the specified game.
-func (s *LetterboardScene) startTimer(game *models.GameData, m *melody.Melody) {
-	s.Timers[game.GameID] = services.NewCountdowner(services.CountdownerOptions{
-		Duration:       time.Duration(timerLength) * time.Second,
-		TickerInternal: 1 * time.Second,
-		OnRun: func(started bool) {
-			g := s.GameRepo.GetGame(game.GameID)
-			s.setTimer(g, m, timerLength+1, false)
-		},
-		OnPaused: func(passed, remained time.Duration) {},
-		OnDone: func(stopped bool) {
-			g := s.GameRepo.GetGame(game.GameID)
-			s.setTimer(g, m, -1, true)
-			delete(s.Timers, game.GameID)
-		},
-		OnTick: func(passed, remained time.Duration) {
-			g := s.GameRepo.GetGame(game.GameID)
-			s.incrementTimer(g, m, -1)
-		},
-	})
-	go s.Timers[game.GameID].Run()
-	return
 }
 
 // drawLetter draws a letter of the specified type (vowel or consonant) and adds it to the game board.
@@ -117,7 +61,7 @@ func (s *LetterboardScene) drawLetter(game *models.GameData, letterType string) 
 	}
 
 	sc := game.Scenes[game.CurrentScene]
-	currentLetters := removeMatchingStrings(*sc.Letters, " ")
+	currentLetters := removeMatchingItemsFromArray(*sc.Letters, " ")
 
 	if len(currentLetters) >= 9 {
 		return game
@@ -138,7 +82,7 @@ func (s *LetterboardScene) drawLetter(game *models.GameData, letterType string) 
 // drawLetters draws random letters to fill the game board up to 9 letters.
 func (s *LetterboardScene) drawLetters(game *models.GameData) *models.GameData {
 	sc := game.Scenes[game.CurrentScene]
-	currentLetters := removeMatchingStrings(*sc.Letters, " ")
+	currentLetters := removeMatchingItemsFromArray(*sc.Letters, " ")
 	if len(currentLetters) >= 9 {
 		return game
 	}
@@ -152,8 +96,8 @@ func (s *LetterboardScene) drawLetters(game *models.GameData) *models.GameData {
 
 // resetGame resets the game state for the current scene, including the timer and game data.
 func (s *LetterboardScene) resetGame(game *models.GameData) *models.GameData {
-	game = s.cancelTimer(game)
-	return s.GameRepo.ResetGame(game, game.CurrentScene)
+	game = s.GameScene.CancelTimer(game)
+	return s.GameScene.GameRepo.ResetGame(game, game.CurrentScene)
 }
 
 // solveScene finds the longest two words for the current letters and updates the game board.
@@ -176,7 +120,7 @@ func (s *LetterboardScene) submit(game *models.GameData, submissionText string, 
 		sc.Submissions = map[string]models.Submission{}
 	}
 
-	if !s.playerHasSubmitted(game, playerId) {
+	if !s.GameScene.HasPlayerSubmitted(game, playerId) {
 		now := time.Now()
 
 		sc.Submissions[playerId] = models.Submission{
@@ -192,15 +136,6 @@ func (s *LetterboardScene) submit(game *models.GameData, submissionText string, 
 	return game
 }
 
-// playerHasSubmitted checks if a player has already submitted a word for the current round.
-func (s *LetterboardScene) playerHasSubmitted(game *models.GameData, playerId string) bool {
-	submission := game.Scenes[game.CurrentScene].Submissions[playerId]
-	if submission.Entry != nil {
-		return true
-	}
-	return false
-}
-
 // processSubmission validates a player's submission, updates their score, and persists the game state.
 func (s *LetterboardScene) processSubmission(game *models.GameData, submissionText string, playerId string) {
 	sc := game.Scenes[game.CurrentScene]
@@ -214,34 +149,13 @@ func (s *LetterboardScene) processSubmission(game *models.GameData, submissionTe
 		Timestamp: &now,
 		Correct:   &isCorrect,
 	}
+	game.Scenes[game.CurrentScene] = sc
 
 	if isCorrect {
-		game = addToPlayerScore(game, playerId, len(submissionText))
+		game = s.GameScene.AddToPlayerScore(game, playerId, len(submissionText))
 	}
 
-	game.Scenes[game.CurrentScene] = sc
-	s.GameRepo.UpdateGame(*game)
-}
-
-// addToPlayerScore adds the given score to the specified player's total score.
-func addToPlayerScore(game *models.GameData, playerId string, addToScore int) *models.GameData {
-	for j, p := range game.Players {
-		if j == playerId {
-			score := 0
-
-			if p.Score != nil {
-				score = *p.Score
-			}
-
-			newScore := score + addToScore
-			player := game.Players[j]
-			player.Score = &newScore
-			game.Players[j] = player
-
-			break
-		}
-	}
-	return game
+	s.GameScene.GameRepo.UpdateGame(*game)
 }
 
 // HandleMessage processes incoming messages for the Letterboard scene, handling game actions and updates.
@@ -255,10 +169,10 @@ func (s *LetterboardScene) HandleMessage(game *models.GameData, msg []byte, play
 
 	switch messageDecoded["action"].(string) {
 	case "start":
-		s.startTimer(game, m)
+		s.GameScene.StartTimer(game, m, timerLength, func(updatedGame *models.GameData) {})
 		break
 	case "cancel":
-		game = s.cancelTimer(game)
+		game = s.GameScene.CancelTimer(game)
 	case "draw":
 		game = s.drawLetter(game, messageDecoded["type"].(string))
 		break

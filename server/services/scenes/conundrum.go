@@ -5,88 +5,45 @@ import (
 	"github.com/olahol/melody"
 	"github.com/robbiebyrd/gameserve/models"
 	"github.com/robbiebyrd/gameserve/repo"
-	"github.com/robbiebyrd/gameserve/services"
 	"strings"
 	"time"
 )
 
 type ConundrumScene struct {
-	GameRepo         *repo.GameRepo
-	ConundrumService *services.ConundrumsService
-	Timers           map[string]*services.Countdowner
+	ConundrumService *repo.ConundrumsRepo
+	GameScene        *GameScene
 }
 
 func NewConundrumScene(conundrumsPath string, gameRepo *repo.GameRepo) *ConundrumScene {
 	return &ConundrumScene{
-		GameRepo:         gameRepo,
-		ConundrumService: services.NewConundrumsService(conundrumsPath),
-		Timers:           make(map[string]*services.Countdowner),
+		ConundrumService: repo.NewConundrumsRepo(conundrumsPath),
+		GameScene:        NewGameScene(gameRepo),
 	}
-}
-
-func (c *ConundrumScene) cancelConundrumTimer(game *models.GameData) *models.GameData {
-	_, ok := c.Timers[game.GameID]
-	if ok {
-		c.Timers[game.GameID].Stop()
-	}
-	sc := game.Scenes[game.CurrentScene]
-	sc.Timer = -1
-	game.Scenes[game.CurrentScene] = sc
-	return game
 }
 
 func (c *ConundrumScene) startConundrumTimer(game *models.GameData, m *melody.Melody) *models.GameData {
 	c.resetConundrum(game)
-	sc := game.Scenes[game.CurrentScene]
-	sc.Timer = timerLength + 1
 
+	sc := game.Scenes[game.CurrentScene]
 	conundrum := c.ConundrumService.GetConundrum()
 	sc.Jumbled = &conundrum.Jumbled
 	game.Scenes[game.CurrentScene] = sc
+	c.GameScene.GameRepo.UpdateGame(*game)
 
-	c.Timers[game.GameID] = services.NewCountdowner(services.CountdownerOptions{
-		Duration:       time.Duration(timerLength) * time.Second,
-		TickerInternal: 1 * time.Second,
-		OnRun: func(started bool) {
-			scene := game.Scenes[game.CurrentScene]
-			scene.Timer = timerLength + 1
-			game.Scenes[game.CurrentScene] = scene
-			c.GameRepo.UpdateGame(*game)
-			data, _ := json.Marshal(game)
-			m.Broadcast(data)
-		},
-		OnPaused: func(passed, remained time.Duration) {},
-		OnDone: func(stopped bool) {
-			g := c.GameRepo.GetGame(game.GameID)
-			sc := g.Scenes[game.CurrentScene]
-			sc.Timer -= 1
-			sc.Word = &conundrum.Word
-			sc.TimerRun = true
-			g.Scenes[game.CurrentScene] = sc
-			c.GameRepo.UpdateGame(*g)
-			data, _ := json.Marshal(g)
-			m.Broadcast(data)
-			delete(c.Timers, game.GameID)
-		},
-		OnTick: func(passed, remained time.Duration) {
-			g := c.GameRepo.GetGame(game.GameID)
-			sc := g.Scenes[game.CurrentScene]
-			sc.Timer -= 1
-			g.Scenes[game.CurrentScene] = sc
-			c.GameRepo.UpdateGame(*g)
-			data, _ := json.Marshal(g)
-			m.Broadcast(data)
-		},
+	c.GameScene.StartTimer(game, m, timerLength, func(updatedGame *models.GameData) {
+		sc := updatedGame.Scenes[updatedGame.CurrentScene]
+		sc.Word = &conundrum.Word
+		updatedGame.Scenes[updatedGame.CurrentScene] = sc
+		c.GameScene.GameRepo.UpdateGame(*updatedGame)
 	})
 
-	go c.Timers[game.GameID].Run()
 	return game
 
 }
 
 func (c *ConundrumScene) resetConundrum(game *models.GameData) *models.GameData {
-	c.cancelConundrumTimer(game)
-	return c.GameRepo.ResetGame(game, game.CurrentScene)
+	game = c.GameScene.CancelTimer(game)
+	return c.GameScene.GameRepo.ResetGame(game, game.CurrentScene)
 }
 
 func (c *ConundrumScene) submitConundrum(game *models.GameData, submissionText string, playerId string) *models.GameData {
@@ -106,28 +63,13 @@ func (c *ConundrumScene) submitConundrum(game *models.GameData, submissionText s
 	isCorrect := false
 	if strings.ToLower(strings.Join(*sc.Word, "")) == strings.ToLower(submissionText) {
 		isCorrect = true
+		game = c.GameScene.AddToPlayerScore(game, playerId, len(*submission.Entry))
 	}
 
 	submission.Correct = &isCorrect
-
-	if isCorrect {
-		length := len(*submission.Entry)
-		if game.Players[playerId].Score == nil {
-			zeroScore := 0
-			p := game.Players[playerId]
-			p.Score = &zeroScore
-			game.Players[playerId] = p
-		}
-
-		player := game.Players[playerId]
-		score := *player.Score + length
-		player.Score = &score
-		game.Players[playerId] = player
-	}
-
 	sc.Submissions[playerId] = submission
-
 	game.Scenes[game.CurrentScene] = sc
+
 	return game
 }
 
@@ -145,7 +87,7 @@ func (c *ConundrumScene) HandleConundrumMessage(game *models.GameData, msg []byt
 		game = c.startConundrumTimer(game, m)
 		break
 	case "cancel":
-		game = c.cancelConundrumTimer(game)
+		game = c.GameScene.CancelTimer(game)
 	case "reset":
 		game = c.resetConundrum(game)
 		break

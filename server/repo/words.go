@@ -1,4 +1,4 @@
-package services
+package repo
 
 import (
 	"bufio"
@@ -9,11 +9,11 @@ import (
 
 type LetterFrequency map[rune]int
 
-type WordsService struct {
+type WordsRepo struct {
 	Words []string
 }
 
-func NewWordsService(dictionaryPath string) *WordsService {
+func NewWordsRepo(dictionaryPath string) *WordsRepo {
 	words, err := loadWords(dictionaryPath)
 	if err != nil {
 		panic(err)
@@ -23,12 +23,12 @@ func NewWordsService(dictionaryPath string) *WordsService {
 	words = dropLongWords(words, 9)
 	words = dropMultiwords(words)
 
-	return &WordsService{
+	return &WordsRepo{
 		Words: words,
 	}
 }
 
-func (s *WordsService) GetMatchingWords(letters string) []string {
+func (s *WordsRepo) GetMatchingWords(letters string) []string {
 	letters = strings.ToLower(letters)
 	letterCounts := getLetterCounts(letters)
 
@@ -43,7 +43,7 @@ func (s *WordsService) GetMatchingWords(letters string) []string {
 	return sortWordLists(matchingWords)
 }
 
-func (s *WordsService) GetMatchingWordsOfLengths(letters string, minimumLength int, maximumLength int) []string {
+func (s *WordsRepo) GetMatchingWordsOfLengths(letters string, minimumLength int, maximumLength int) []string {
 	var matchingWords []string
 
 	for wordLength := minimumLength; wordLength <= maximumLength; wordLength++ {

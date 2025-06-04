@@ -53,8 +53,7 @@ export default function Page({params}: {
                     <ConundrumScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
                 )}
             </main>
-            <footer className="">
-            </footer>
+            <footer></footer>
         </div>
     )
 }

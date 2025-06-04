@@ -122,13 +122,21 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                 <div className={"w-full grid grid-cols-6 gap-1"}>
                     {isHost && (
                         <>
+                            <div className={"border-4 bg-burnham-500 bg-opacity-50 col-start-3 col-span-2 help"} style={{
+                                     borderRadius: ".5em",
+                                     padding: ".5em",
+                                     marginBottom: '1em'
+                                 }}>
+                                <h1 className={'text-4xl text-center text-white'}>{
+                                    !timerRun ? 'Click Start Timer to Begin' : 'Click Next for Next Round'
+                                }</h1></div>
                             <div className={"col-start-1 col-span-2 flex justify-center "}>
                                 {!timerRun &&
                                     <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
                                 }
                             </div>
                             <div className={"col-start-3 col-span-2 flex align-center justify-center "}>
-                                {!timerRun && <TimedControllerButton label={'Timer'} onClickFunc={startTimer}
+                                {!timerRun && <TimedControllerButton label={'Start Timer'} onClickFunc={startTimer}
                                                                      timer={timer || -1}/>}
                                 {timerRun && (
                                     <Button label={"Next"} onClickFunc={nextScene}></Button>

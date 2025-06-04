@@ -11,11 +11,15 @@ import (
 
 func main() {
 
+	// Create the Data Repos
 	gameRepo := repo.NewGameRepo()
+
+	// Create Services
 	sceneService := services.NewSceneService(gameRepo)
-	letterboardScene := scenes.NewLetterBoardScene("./data/words.txt", gameRepo)
+	letterboardScene := scenes.NewLetterBoardScene("./data/words.txt", services.LetterPickDeck, gameRepo)
 	conundrumScene := scenes.NewConundrumScene("./data/conundrums.txt", gameRepo)
 
+	// Create the Melody framework object
 	m := melody.New()
 
 	m.HandleConnect(func(s *melody.Session) {
@@ -28,11 +32,10 @@ func main() {
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
 		// Decode the incoming message into a JSON Object
-		var inputMessage map[string]interface{}
-		_ = json.Unmarshal(msg, &inputMessage)
+		sceneID := services.GetSceneIdFromMessage(msg)
 
 		// Clients must present their current Scene ID when sending a message
-		if inputMessage["sceneId"] == nil {
+		if sceneID == nil {
 			return
 		}
 
@@ -44,7 +47,7 @@ func main() {
 
 		// Depending on the current active scene on the client, we hand the request and the game data
 		// off to the appropriate scene handler service.
-		switch inputMessage["sceneId"].(string) {
+		switch *sceneID {
 		case "sceneChange":
 			game = sceneService.NextScene(game)
 		case "letterboard":
