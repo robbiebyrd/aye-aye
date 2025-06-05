@@ -4,13 +4,16 @@ import (
 	"encoding/json"
 
 	"github.com/olahol/melody"
-	services "github.com/robbiebyrd/gameserve/internal/game"
-	"github.com/robbiebyrd/gameserve/internal/game/scenes"
-	"github.com/robbiebyrd/gameserve/internal/repo"
-	servers "github.com/robbiebyrd/gameserve/internal/ws"
+
+	services "github.com/robbiebyrd/aye-aye/internal/game"
+	"github.com/robbiebyrd/aye-aye/internal/game/scenes"
+	"github.com/robbiebyrd/aye-aye/internal/repo"
+	"github.com/robbiebyrd/aye-aye/internal/servers"
 )
 
 func main() {
+	// Get the environment variables
+	envVars := repo.LoadEnvVars()
 
 	// Create the Data Repos
 	gameRepo := repo.NewGameRepo()
@@ -19,6 +22,7 @@ func main() {
 	sceneService := services.NewSceneService(gameRepo)
 	letterboardScene := scenes.NewLetterBoardScene("./data/words.txt", services.LetterPickDeck, gameRepo)
 	conundrumScene := scenes.NewConundrumScene("./data/conundrums.txt", gameRepo)
+	mathsScene := scenes.NewMathsScene(gameRepo)
 
 	// Create the Melody framework object
 	m := melody.New()
@@ -55,6 +59,8 @@ func main() {
 			game = letterboardScene.HandleMessage(game, msg, playerId, m)
 		case "conundrum":
 			game = conundrumScene.HandleConundrumMessage(game, msg, playerId, m)
+		case "mathsboard":
+			game = mathsScene.HandleMathsMessage(game, msg, playerId, m)
 		}
 
 		// The Scene Handlers return the updated game data, and we save it to the repository...
@@ -65,5 +71,5 @@ func main() {
 		m.Broadcast(data)
 	})
 
-	servers.Serve(m)
+	servers.WSServe(m, envVars.ListenAddr, envVars.ListenPort)
 }

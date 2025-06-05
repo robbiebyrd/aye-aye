@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/olahol/melody"
-	"github.com/robbiebyrd/gameserve/internal/models"
-	"github.com/robbiebyrd/gameserve/internal/repo"
+	"github.com/robbiebyrd/aye-aye/internal/models"
+	"github.com/robbiebyrd/aye-aye/internal/repo"
 )
 
 func HandleDisconnect(s *melody.Session, m *melody.Melody, gameRepo *repo.GameRepo) {

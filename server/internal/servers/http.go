@@ -1,28 +1,14 @@
 package servers
 
 import (
-	"github.com/joho/godotenv"
-	"github.com/olahol/melody"
-	"log"
 	"net/http"
-	"os"
+
+	"github.com/olahol/melody"
 )
 
 type GameDataKeys map[string]any
 
-func Serve(m *melody.Melody) {
-
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
-	}
-
-	listenAddr := os.Getenv("LISTEN_ADDR")
-	listenPort := os.Getenv("LISTEN_PORT")
-	if listenPort == "" {
-		panic("You need to specify a port")
-	}
-
+func WSServe(m *melody.Melody, listenAddr string, listenPort string) {
 	http.HandleFunc("/ws/{gameId}/{teamId}/{playerId}", func(w http.ResponseWriter, r *http.Request) {
 		keys := make(GameDataKeys)
 		keys["gameId"] = r.PathValue("gameId")

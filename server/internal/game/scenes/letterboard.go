@@ -1,21 +1,18 @@
-// Package scenes provides the implementation for the Letterboard game scene.
 package scenes
 
 import (
 	"encoding/json"
 	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/olahol/melody"
-	services "github.com/robbiebyrd/gameserve/internal/game"
-	"github.com/robbiebyrd/gameserve/internal/models"
-	"github.com/robbiebyrd/gameserve/internal/repo"
+	services "github.com/robbiebyrd/aye-aye/internal/game"
+	"github.com/robbiebyrd/aye-aye/internal/models"
+	"github.com/robbiebyrd/aye-aye/internal/repo"
 )
-
-// timerLength is the default duration of the game timer in seconds.
-var timerLength = 30
 
 // LetterboardScene represents the state and logic for the Letterboard game scene.
 type LetterboardScene struct {
@@ -160,6 +157,10 @@ func (s *LetterboardScene) processSubmission(game *models.GameData, submissionTe
 
 // HandleMessage processes incoming messages for the Letterboard scene, handling game actions and updates.
 func (s *LetterboardScene) HandleMessage(game *models.GameData, msg []byte, playerId string, m *melody.Melody) *models.GameData {
+	// timerLength is the default duration of the game timer in seconds.
+	envVars := repo.LoadEnvVars()
+	timerLength, _ := strconv.Atoi(envVars.TimerLength)
+
 	var messageDecoded map[string]interface{}
 	_ = json.Unmarshal(msg, &messageDecoded)
 

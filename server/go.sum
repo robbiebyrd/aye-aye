@@ -1,3 +1,7 @@
+github.com/0x3alex/gee v0.0.0-20240520202956-f8c9c70f020c h1:frJBV7PcBfG4Q1+4m8repIfqpXaWoaMi2fMO7PQVTbU=
+github.com/0x3alex/gee v0.0.0-20240520202956-f8c9c70f020c/go.mod h1:jtFF/bpfFOpZbT0urqKXXKerC6cDINxlIa9qrp1fZv4=
+github.com/Pramod-Devireddy/go-exprtk v1.1.0 h1:U/uvXm5UMQ25p6PCnThz51WsxDqAeoynzdnhpQEAxZo=
+github.com/Pramod-Devireddy/go-exprtk v1.1.0/go.mod h1:GbqdmGxU1ESDj3lu8mPbffejPB5UoOtm6eB7qr3YZ94=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
 github.com/bsm/ginkgo/v2 v2.12.0/go.mod h1:SwYbGRRDovPVboqFv0tPTcG1sN61LM1Z4ARdbAV9g4c=
 github.com/bsm/gomega v1.27.10 h1:yeMWxP2pV2fG3FgAODIY8EiRE3dy0aeFYt4l7wh6yKA=

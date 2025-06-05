@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/olahol/melody"
-	services "github.com/robbiebyrd/gameserve/internal/game"
-	"github.com/robbiebyrd/gameserve/internal/models"
-	"github.com/robbiebyrd/gameserve/internal/repo"
+	services "github.com/robbiebyrd/aye-aye/internal/game"
+	"github.com/robbiebyrd/aye-aye/internal/models"
+	"github.com/robbiebyrd/aye-aye/internal/repo"
 )
 
 // GameScene represents common logic for game scenes.

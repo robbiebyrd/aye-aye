@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/robbiebyrd/gameserve/internal/models"
-	"github.com/robbiebyrd/gameserve/internal/repo"
+	"github.com/robbiebyrd/aye-aye/internal/models"
+	"github.com/robbiebyrd/aye-aye/internal/repo"
 )
 
 type SceneService struct {

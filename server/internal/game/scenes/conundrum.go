@@ -2,12 +2,13 @@ package scenes
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/olahol/melody"
-	"github.com/robbiebyrd/gameserve/internal/models"
-	"github.com/robbiebyrd/gameserve/internal/repo"
+	"github.com/robbiebyrd/aye-aye/internal/models"
+	"github.com/robbiebyrd/aye-aye/internal/repo"
 )
 
 type ConundrumScene struct {
@@ -24,6 +25,10 @@ func NewConundrumScene(conundrumsPath string, gameRepo *repo.GameRepo) *Conundru
 
 func (c *ConundrumScene) startConundrumTimer(game *models.GameData, m *melody.Melody) *models.GameData {
 	c.resetConundrum(game)
+
+	// timerLength is the default duration of the game timer in seconds.
+	envVars := repo.LoadEnvVars()
+	timerLength, _ := strconv.Atoi(envVars.TimerLength)
 
 	sc := game.Scenes[game.CurrentScene]
 	conundrum := c.ConundrumService.GetConundrum()

@@ -6,6 +6,7 @@ import invariant from 'tiny-invariant'
 import {LetterboardScene} from "@/components/scenes/letterboard/letterboard";
 import {LobbyScene} from "@/components/scenes/lobby/lobby";
 import {ConundrumScene} from "@/components/scenes/conundrum/conundrum";
+import { MathsboardScene } from "@/components/scenes/numbers/mathsboard";
 
 
 export default function Page({params}: {
@@ -45,6 +46,9 @@ export default function Page({params}: {
             }}>
                 {gameData?.scenes[gameData?.currentScene].scene == "letterboard" && (
                     <LetterboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
+                )}
+                {gameData?.scenes[gameData?.currentScene].scene == "mathsboard" && (
+                    <MathsboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "lobby" && (
                     <LobbyScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>

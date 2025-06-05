@@ -5,37 +5,37 @@ export type DrawProps = {
     gameId: string
     playerId: string
     ws?: WebSocket
-    show?: boolean
-    drawn?: letterRow
+    drawn?: number[]
 }
 
-const Draw: React.FC<DrawProps> = ({gameId, playerId, ws, show, drawn}) => {
-    const sceneId = "letterboard"
+const Draw: React.FC<DrawProps> = ({gameId, playerId, ws, drawn}) => {
+    const sceneId = "mathsboard"
 
-    const draw = (drawType: "drawRandom" | "draw", letterType?: "consonant" | "vowel") => {
+    const draw = (drawType: "drawRandom" | "draw", numberType?: "big" | "little") => {
         const submission = {
             gameId: gameId,
             playerId: playerId,
             sceneId,
             action: drawType,
-            type: drawType == "drawRandom" ? undefined : letterType
+            type: drawType == "drawRandom" ? undefined : numberType
         }
         ws?.send(JSON.stringify(submission))
     }
 
-    const drawVowel = () => {
-        draw("draw", "vowel")
+    const drawBig = () => {
+        draw("draw", "big")
     }
 
     const drawRandom = () => {
-        draw("drawRandom", undefined)
+        draw("drawRandom")
     }
 
-    const drawConsonant = () => {
-        draw("draw", "consonant")
+    const drawLittle = () => {
+        draw("draw", "little")
     }
+    console.log(drawn)
 
-    return show && (
+    return (
         <div className="grid grid-cols-3 w-full ">
             <div className={"border-4 bg-burnham-500 bg-opacity-50 col-start-2 col-span-1 help"} style={{
                 borderRadius: ".5em",
@@ -43,17 +43,17 @@ const Draw: React.FC<DrawProps> = ({gameId, playerId, ws, show, drawn}) => {
                 marginBottom: '1em'
             }}>
                 <h1 className={'text-4xl text-center text-white'}>
-                    Draw {9 - (drawn?.filter((a) => a != " ").length || 0)} More Letters
+                    Draw {6 - (drawn?.filter((a) => a != 0).length || 0)} More Numbers
                 </h1>
             </div>
             <div className="col-start-1 col-span-1 flex align-middle justify-center">
-                <Button label={'Draw Vowel'} onClickFunc={drawVowel}/>
+                <Button label={'Draw Big'} onClickFunc={drawBig}/>
             </div>
             <div className="col-start-2 col-span-1 flex flex-col items-center align-middle justify-center">
                 <Button label={'Draw Random'} onClickFunc={drawRandom}/>
             </div>
             <div className="col-start-3 col-span-1 flex align-middle justify-center">
-                <Button label={'Draw Consonant'} onClickFunc={drawConsonant}/>
+                <Button label={'Draw Little'} onClickFunc={drawLittle}/>
             </div>
         </div>
     )

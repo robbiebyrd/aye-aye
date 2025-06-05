@@ -6,7 +6,8 @@ import (
 	"log"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/robbiebyrd/gameserve/internal/models"
+
+	"github.com/robbiebyrd/aye-aye/internal/models"
 )
 
 type GameRepo struct {
@@ -101,7 +102,15 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				Timer:     -1,
 			},
 			"round1": {
-				Title:       "Round 1",
+				Title:        "Round 1",
+				Scene:        "maths",
+				NextScene:    "round2",
+				Timer:        -1,
+				Numbers:      &[]int{0, 0, 0, 0, 0, 0},
+				TargetNumber: nil,
+			},
+			"round2": {
+				Title:       "Round 2",
 				Scene:       "letterboard",
 				NextScene:   "round2",
 				Timer:       -1,
@@ -111,10 +120,10 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				ShowInput:   &showInput,
 				Submissions: map[string]models.Submission{},
 			},
-			"round2": {
-				Title:       "Round 2",
+			"round3": {
+				Title:       "Round 3",
 				Scene:       "letterboard",
-				NextScene:   "round3",
+				NextScene:   "round4",
 				Timer:       -1,
 				Letters:     &models.EmptyLetters,
 				Board:       &models.EmptyBoard,
@@ -122,8 +131,8 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				ShowInput:   &showInput,
 				Submissions: map[string]models.Submission{},
 			},
-			"round3": {
-				Title:       "Round 3",
+			"round4": {
+				Title:       "Round 4",
 				Scene:       "conundrum",
 				NextScene:   "lobby",
 				Timer:       -1,
@@ -151,6 +160,8 @@ func (s *GameRepo) ResetGame(game *models.GameData, sceneId string) *models.Game
 	sc.Word = &models.EmptyLetters
 	sc.Jumbled = &models.EmptyLetters
 	sc.ShowInput = &showInput
+	sc.Numbers = &[]int{}
+	sc.TargetNumber = nil
 	game.Scenes[sceneId] = sc
 	return game
 }
