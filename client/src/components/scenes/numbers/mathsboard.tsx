@@ -4,7 +4,7 @@ import Draw from "@/components/scenes/numbers/draw";
 import Actions from "@/components/scenes/numbers/actions";
 import {useMemo} from "react";
 import QRCode from "react-qr-code";
-import {Numbers, Number} from "@/components/scenes/numbers/numbers";
+import {Number, Numbers} from "@/components/scenes/numbers/numbers";
 import DrawTarget from "@/components/scenes/numbers/drawtarget";
 
 export type MathsboardProps = {
@@ -26,25 +26,24 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, ws
             return true
         }
         const submission = allSubmissions[playerId]
-        return !!submission?.entry
+        return !submission?.entry != ""
     }, [gameData, playerId])
 
     const canDraw = useMemo(() => {
-        const currentNumbers = gameData?.scenes?.[gameData.currentScene]?.numbers
-        if (!currentNumbers) {
-            return true
-        }
-        
-        const filteredNumbers = currentNumbers.filter((a) => a != 0)
-        
-        return filteredNumbers.length < 6
-    },
+            const currentNumbers = gameData?.scenes?.[gameData.currentScene]?.numbers
+            if (!currentNumbers) {
+                return true
+            }
+
+            const filteredNumbers = currentNumbers.filter((a) => a != 0)
+
+            return filteredNumbers.length < 6
+        },
         [gameData?.scenes, gameData?.currentScene]
     );
 
 
-    const canPickTarget = useMemo(() =>
-        {
+    const canPickTarget = useMemo(() => {
             const targetNum = gameData?.scenes?.[gameData.currentScene]?.targetNumber ?? 0
             return targetNum == 0
         },
@@ -67,14 +66,16 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, ws
 
         return Object.entries(result)
     }, [gameData?.players])
+
     function padArray<T>(arr: T[] | undefined, length: number, fillValue: T): T[] {
         if (!arr) return []
         if (arr.length >= length) {
-          return arr;
+            return arr;
         }
         const padding = Array(length - arr.length).fill(fillValue);
         return arr.concat(padding);
-      }
+    }
+
     return (
         <>
             <div className="flex justify-center w-full min-h-[15vh]">
@@ -164,19 +165,20 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, ws
                     <Numbers numbers={padArray(gameData.scenes[gameData.currentScene].numbers, 6, 0)}/>
                 </div>
                 <div className="w-1/6 flex my-8">
-                        <Number number={gameData.scenes[gameData.currentScene].targetNumber}/>
+                    <Number number={gameData.scenes[gameData.currentScene].targetNumber}/>
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
                 {canDraw && (
-                    <Draw gameId={gameId} playerId={playerId} ws={ws} drawn={gameData.scenes[gameData.currentScene].numbers}/>
+                    <Draw gameId={gameId} playerId={playerId} ws={ws}
+                          drawn={gameData.scenes[gameData.currentScene].numbers}/>
                 )}
                 {(!canDraw && canPickTarget) && (
-                    <DrawTarget gameId={gameId} playerId={playerId} ws={ws} />
+                    <DrawTarget gameId={gameId} playerId={playerId} ws={ws}/>
                 )}
                 {(!canDraw && !canPickTarget) && (
-                <Actions playerId={playerId} ws={ws} inputEnabled={canInput} show={!canDraw && !canPickTarget}
-                         timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
+                    <Actions playerId={playerId} ws={ws} inputEnabled={canInput} show={!canDraw && !canPickTarget}
+                             timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
                 )}
             </div>
         </>

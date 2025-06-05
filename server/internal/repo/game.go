@@ -103,7 +103,7 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 			},
 			"round1": {
 				Title:        "Round 1",
-				Scene:        "maths",
+				Scene:        "mathsboard",
 				NextScene:    "round2",
 				Timer:        -1,
 				Numbers:      &[]int{0, 0, 0, 0, 0, 0},

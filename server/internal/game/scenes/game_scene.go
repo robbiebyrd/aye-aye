@@ -108,8 +108,11 @@ func (g *GameScene) ResetGame(game *models.GameData) *models.GameData {
 // HasPlayerSubmitted checks if a player has already submitted a word for the current round.
 func (g *GameScene) HasPlayerSubmitted(game *models.GameData, playerId string) bool {
 	submission := game.Scenes[game.CurrentScene].Submissions[playerId]
-	if submission.Entry != nil {
-		return true
+	if submission.Entry == nil {
+		return false
 	}
-	return false
+	if *submission.Entry == "" {
+		return false
+	}
+	return true
 }

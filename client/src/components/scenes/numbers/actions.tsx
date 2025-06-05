@@ -3,6 +3,7 @@ import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
 import {TimedControllerButton} from "@/components/scenes/conundrum/actions";
+import {input} from "sucrase/dist/types/parser/traverser/base";
 
 const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'> & {
     inputEnabled: boolean
@@ -81,7 +82,10 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
     };
 
     useEffect(() => {
-        if (timer === -1 || timer === undefined) {
+        console.group('inputValue')
+        console.log(inputValue, inputValue === "", typeof inputValue)
+        console.groupEnd()
+        if (timer === -1 || timer === undefined && inputValue !== "") {
             handleSubmit()
         }
     }, [timer])
@@ -96,7 +100,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                         }
                     </div>
                     <div className={"col-start-3 col-span-4 flex align-middle justify-center"}>
-                        <form id="form" onSubmit={preventSubmit}>
+                        <form id="form" onSubmit={preventSubmit} className={'w-full'}>
                             <div className="flex flex-col items-center p-5">
                                 <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{
                                     borderRadius: ".5em",
@@ -106,14 +110,18 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                                 }}>
                                     <h1 className=" text-xl text-center text-white">Type Your Answer Here: </h1>
                                 </div>
-                                <ButtonWrapper>
-                                    <input
-                                        maxLength={9}
-                                        className="text-center text-4xl flex items-center p-2 uppercase"
-                                        style={{outline: "none", background: "none"}}
-                                        name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
-                                        value={inputValue}/>
-                                </ButtonWrapper>
+                                <textarea
+                                    className="w-full text-center text-4xl flex items-center p-2 uppercase bg-white border-white border-4"
+                                    rows="5"
+                                    name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
+                                    style={{
+                                        borderRadius: ".5em",
+                                        borderBottom: "none",
+                                        padding: ".25em .5em 1.25rem .5em",
+                                        marginBottom: "-1rem"
+                                    }}>
+                                    {inputValue}
+                                    </textarea>
                             </div>
                         </form>
                     </div>
@@ -122,7 +130,8 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                 <div className={"w-full grid grid-cols-6 gap-1"}>
                     {isHost && (
                         <>
-                            <div className={"border-4 bg-burnham-500 bg-opacity-50 col-start-3 col-span-2 help"} style={{
+                            <div className={"border-4 bg-burnham-500 bg-opacity-50 col-start-3 col-span-2 help"}
+                                 style={{
                                      borderRadius: ".5em",
                                      padding: ".5em",
                                      marginBottom: '1em'
@@ -132,7 +141,8 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                                 }</h1></div>
                             <div className={"col-start-1 col-span-2 flex justify-center "}>
                                 {!timerRun &&
-                                    <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
+                                    <TimedControllerButton label={'Reset'} onClickFunc={resetBoard}
+                                                           timer={timer || -1}/>
                                 }
                             </div>
                             <div className={"col-start-3 col-span-2 flex align-center justify-center "}>
@@ -143,8 +153,8 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                                 )}
                             </div>
                             <div className={"col-start-5 col-span-2 flex align-center justify-center"}>
-                                {timerRun &&
-                                    <TimedControllerButton label={'Solve'} onClickFunc={solve} timer={timer || -1}/>}
+                                {/*{timerRun &&*/}
+                                {/*    <TimedControllerButton label={'Solve'} onClickFunc={solve} timer={timer || -1}/>}*/}
                             </div>
                         </>
                     )}

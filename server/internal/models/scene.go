@@ -15,7 +15,7 @@ type Scene struct {
 	Clue         *string               `json:"clue"`
 	Submissions  map[string]Submission `json:"submissions"`
 	Numbers      *[]int                `json:"numbers,omitempty"`
-	TargetNumber *int                  `json:"targetNumber,omitempty"`
+	TargetNumber *int                  `json:"targetNumber"`
 }
 
 var EmptyLetters = []string{" ", " ", " ", " ", " ", " ", " ", " ", " "}

@@ -2,6 +2,7 @@ package scenes
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -26,7 +27,7 @@ func NewMathsScene(gameRepo *repo.GameRepo) *MathsScene {
 
 // drawTarget draws a letter of the specified type (vowel or consonant) and adds it to the game board.
 func (s *MathsScene) drawTarget(game *models.GameData) *models.GameData {
-	var number int = s.NumbersRepo.DrawTarget()
+	number := s.NumbersRepo.DrawTarget()
 	sc := game.Scenes[game.CurrentScene]
 	sc.TargetNumber = &number
 	game.Scenes[game.CurrentScene] = sc
@@ -82,7 +83,6 @@ func (s *MathsScene) drawNumbers(game *models.GameData) *models.GameData {
 }
 
 func (c *MathsScene) startMathsTimer(game *models.GameData, m *melody.Melody) *models.GameData {
-	game = c.resetMaths(game)
 
 	// timerLength is the default duration of the game timer in seconds.
 	envVars := repo.LoadEnvVars()
@@ -103,26 +103,8 @@ func (c *MathsScene) resetMaths(game *models.GameData) *models.GameData {
 }
 
 // processMathsSubmission validates a player's submission, updates their score, and persists the game state.
-func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionText string, playerId string) {
+func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionText string, isCorrect bool, playerId string) {
 	sc := game.Scenes[game.CurrentScene]
-	isCorrect := false
-
-	var submissionSolved float64
-	t, v, err := gee.Eval(submissionText)
-
-	if err != nil || v == nil {
-		v = 0.0
-	}
-	switch t {
-	case 0:
-		submissionSolved = v.(float64)
-	default:
-		submissionSolved = 0.0
-	}
-
-	if sc.TargetNumber != nil && float64(*sc.TargetNumber) == submissionSolved {
-		isCorrect = true
-	}
 
 	now := time.Now()
 
@@ -143,23 +125,33 @@ func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionTex
 
 func (c *MathsScene) submitMaths(game *models.GameData, submissionText string, playerId string) *models.GameData {
 	sc := game.Scenes[game.CurrentScene]
-	if sc.Submissions == nil {
-		sc.Submissions = map[string]models.Submission{}
+
+	if submissionText == "" && c.GameScene.HasPlayerSubmitted(game, playerId) {
+		fmt.Println("Player already submitted trying to sumbit " + submissionText)
+		return game
 	}
 
-	if !c.GameScene.HasPlayerSubmitted(game, playerId) {
-		now := time.Now()
+	isCorrect := false
 
-		sc.Submissions[playerId] = models.Submission{
-			PlayerID:  playerId,
-			Entry:     &submissionText,
-			Timestamp: &now,
-		}
+	var submissionSolved float64
+	t, v, err := gee.Eval(submissionText)
+
+	if err != nil || v == nil {
+		v = 0.0
+	}
+	switch t {
+	case 0:
+		submissionSolved = v.(float64)
+	default:
+		submissionSolved = 0.0
 	}
 
-	game.Scenes[game.CurrentScene] = sc
+	if sc.TargetNumber != nil && float64(*sc.TargetNumber) == submissionSolved {
+		isCorrect = true
+	}
 
-	c.processMathsSubmission(game, submissionText, playerId)
+	submissionFormatted := submissionText + " = " + strconv.FormatFloat(submissionSolved, 'f', 0, 64)
+	c.processMathsSubmission(game, submissionFormatted, isCorrect, playerId)
 
 	return game
 }
@@ -185,11 +177,11 @@ func (c *MathsScene) HandleMathsMessage(game *models.GameData, msg []byte, playe
 		c.drawNumbers(game)
 	case "reset":
 		game = c.resetMaths(game)
-	// case "submit":
-	// if messageDecoded["submission"] == nil {
-	// 	return game
-	// }
-	// game = c.submitMaths(game, messageDecoded["submission"].(string), playerId)
+	case "submit":
+		if messageDecoded["submission"] == nil {
+			return game
+		}
+		game = c.submitMaths(game, messageDecoded["submission"].(string), playerId)
 	default:
 		break
 	}
