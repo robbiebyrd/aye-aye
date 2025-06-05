@@ -40,7 +40,7 @@ const Letter: React.FC<{ letter: string }> = ({letter}) => {
 
     return (
         <div ref={boxRef}
-             className="border-sherwood-green-500 border-4 border-solid aspect-square bg-white  flex items-center justify-center">
+             className="border-sherwood-green-300 border-4 border-solid aspect-square bg-white  flex items-center justify-center">
             <h1 className="text-burnham-500 text-9xl text-center m-h[2rem] uppercase font-bold">{letter == " " ?
                 <span>&nbsp;</span> : letter}</h1>
         </div>

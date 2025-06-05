@@ -1,5 +1,4 @@
 import {Button} from "@/components/button";
-import {letterRow} from "@/models/letterboard";
 
 export type DrawProps = {
     gameId: string

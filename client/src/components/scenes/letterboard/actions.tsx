@@ -1,4 +1,4 @@
-import {ChangeEvent, FormEvent, useEffect, useState} from "react";
+import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
@@ -106,14 +106,24 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                                 }}>
                                     <h1 className=" text-xl text-center text-white">Type Your Answer Here: </h1>
                                 </div>
-                                <ButtonWrapper>
-                                    <input
-                                        maxLength={9}
-                                        className="text-center text-4xl flex items-center p-2 uppercase"
-                                        style={{outline: "none", background: "none"}}
-                                        name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
-                                        value={inputValue}/>
-                                </ButtonWrapper>
+                                <div style={{zIndex: 10}}>
+                                    <ButtonWrapper>
+                                        <input
+                                            maxLength={9}
+                                            className="text-center text-4xl flex items-center p-2 uppercase"
+                                            style={{outline: "none", background: "none"}}
+                                            name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
+                                            value={inputValue}/>
+                                    </ButtonWrapper>
+                                </div>
+                                <div className={"w-2/3 border-4 bg-burnham-500 bg-opacity-50"} style={{
+                                    borderRadius: ".5em",
+                                    borderTop: "none",
+                                    padding: "1.25em .5em .25rem .5em",
+                                    marginTop: "-1rem"
+                                }}>
+                                    <h1 className=" text-xl text-center text-white">Your answer will automatically submit<br/> after the timer has completed. </h1>
+                                </div>
                             </div>
                         </form>
                     </div>

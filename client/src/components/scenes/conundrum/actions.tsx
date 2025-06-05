@@ -106,6 +106,14 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
                                         name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
                                         value={inputValue}/>
                                 </ButtonWrapper>
+                                <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{
+                                    borderRadius: ".5em",
+                                    borderTop: "none",
+                                    padding: "1.25em .5em .25rem .5em",
+                                    marginTop: "-1rem"
+                                }}>
+                                    <h1 className=" text-xl text-center text-white">Your answer will automatically submit after the timer has completed. </h1>
+                                </div>
                             </div>
                         </form>
                     </div>

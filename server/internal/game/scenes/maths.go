@@ -2,7 +2,6 @@ package scenes
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -126,8 +125,7 @@ func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionTex
 func (c *MathsScene) submitMaths(game *models.GameData, submissionText string, playerId string) *models.GameData {
 	sc := game.Scenes[game.CurrentScene]
 
-	if submissionText == "" && c.GameScene.HasPlayerSubmitted(game, playerId) {
-		fmt.Println("Player already submitted trying to sumbit " + submissionText)
+	if submissionText == "" || c.GameScene.HasPlayerSubmitted(game, playerId) {
 		return game
 	}
 
@@ -136,15 +134,11 @@ func (c *MathsScene) submitMaths(game *models.GameData, submissionText string, p
 	var submissionSolved float64
 	t, v, err := gee.Eval(submissionText)
 
-	if err != nil || v == nil {
+	if err != nil || v == nil || t != 0 {
 		v = 0.0
 	}
-	switch t {
-	case 0:
-		submissionSolved = v.(float64)
-	default:
-		submissionSolved = 0.0
-	}
+
+	submissionSolved = v.(float64)
 
 	if sc.TargetNumber != nil && float64(*sc.TargetNumber) == submissionSolved {
 		isCorrect = true

@@ -1,22 +1,16 @@
-import {ChangeEvent, FormEvent, useEffect, useState} from "react";
-import {Button, ButtonWrapper} from "@/components/button";
+import React, {FormEvent, useEffect, useState} from "react";
+import {Button} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
 import {TimedControllerButton} from "@/components/scenes/conundrum/actions";
-import {input} from "sucrase/dist/types/parser/traverser/base";
+import {addStyles, EditableMathField, MathField} from 'react-mathquill'
 
-const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'> & {
-    inputEnabled: boolean
-}> = ({gameData, playerId, inputEnabled, ws, show, timer}) => {
+const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'>> = ({gameData, playerId, ws, show, timer}) => {
     const sceneId = "mathsboard"
-    const [inputValue, setInputValue] = useState('')
+    const [inputValue, setInputValue] = useState<MathField | null>(null)
     const {gameId} = gameData
     const isHost = gameData.players[playerId]?.host
     const {timerRun} = gameData.scenes[gameData.currentScene]
-
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setInputValue(event.target.value)
-    }
 
     const standardMessageAttributes = {
         gameId,
@@ -30,15 +24,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             ...standardMessageAttributes
         }
         ws?.send(JSON.stringify(submission))
-        setInputValue("")
-    }
-
-    const solve = () => {
-        const submission = {
-            action: "solve",
-            ...standardMessageAttributes
-        }
-        ws?.send(JSON.stringify(submission))
+        setInputValue(null)
     }
 
     const startTimer = () => {
@@ -55,17 +41,17 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             ...standardMessageAttributes
         }
         ws?.send(JSON.stringify(submission))
-        setInputValue("")
+        setInputValue(null)
     }
 
     const handleSubmit = () => {
         const submission = {
             action: "submit",
-            submission: inputValue,
+            submission: inputValue?.text(),
             ...standardMessageAttributes
         }
         ws?.send(JSON.stringify(submission))
-        setInputValue("")
+        setInputValue(null)
     }
 
     const nextScene = () => {
@@ -82,13 +68,11 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
     };
 
     useEffect(() => {
-        console.group('inputValue')
-        console.log(inputValue, inputValue === "", typeof inputValue)
-        console.groupEnd()
-        if (timer === -1 || timer === undefined && inputValue !== "") {
+        if (timer === -1 || timer === undefined && inputValue?.text() !== "") {
             handleSubmit()
         }
     }, [timer])
+    addStyles()
 
     return show && (
         <div className="flex w-full bottom-2">
@@ -110,18 +94,44 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                                 }}>
                                     <h1 className=" text-xl text-center text-white">Type Your Answer Here: </h1>
                                 </div>
-                                <textarea
-                                    className="w-full text-center text-4xl flex items-center p-2 uppercase bg-white border-white border-4"
-                                    rows="5"
-                                    name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
-                                    style={{
-                                        borderRadius: ".5em",
-                                        borderBottom: "none",
-                                        padding: ".25em .5em 1.25rem .5em",
-                                        marginBottom: "-1rem"
-                                    }}>
-                                    {inputValue}
-                                    </textarea>
+                                <div className={'bg-white text-xl'} style={{
+                                    position: "relative", width: "100%", height: "10em",
+                                    borderRadius: ".5em",
+                                    padding: ".5em",
+                                }}>
+                                    <EditableMathField
+                                        className={'w-full'}
+                                        style={{
+                                            boxShadow: "none",
+                                            fontFamily: "Dosis",
+                                            fontSize: "2em",
+                                            border: "none",
+                                            outline: "none",
+                                            height: "100%",
+                                            alignContent: "center",
+                                            textAlign: "center"
+                                        }}
+                                        latex={inputValue?.latex() || ""}
+                                        onKeyDown={(e) => {
+                                            console.log(e.key)
+                                            if (!['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '*', '/', '(', ')', "+", "-", 'Tab', " "].includes(e.key)) {
+                                                e.preventDefault()
+                                                return
+                                            }
+                                        }}
+                                        onChange={(mathField) => {
+                                            setInputValue(mathField)
+                                        }}
+                                    />
+                                </div>
+                                <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{
+                                    borderRadius: ".5em",
+                                    borderTop: "none",
+                                    padding: "1.25em .5em .25rem .5em",
+                                    marginTop: "-1rem"
+                                }}>
+                                    <h1 className=" text-xl text-center text-white">Your answer will automatically submit after the timer has completed. </h1>
+                                </div>
                             </div>
                         </form>
                     </div>

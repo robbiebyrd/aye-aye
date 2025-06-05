@@ -102,14 +102,6 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				Timer:     -1,
 			},
 			"round1": {
-				Title:        "Round 1",
-				Scene:        "mathsboard",
-				NextScene:    "round2",
-				Timer:        -1,
-				Numbers:      &[]int{0, 0, 0, 0, 0, 0},
-				TargetNumber: nil,
-			},
-			"round2": {
 				Title:       "Round 2",
 				Scene:       "letterboard",
 				NextScene:   "round2",
@@ -119,6 +111,14 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				FoundWords:  &[]string{},
 				ShowInput:   &showInput,
 				Submissions: map[string]models.Submission{},
+			},
+			"round2": {
+				Title:        "Round 1",
+				Scene:        "mathsboard",
+				NextScene:    "round3",
+				Timer:        -1,
+				Numbers:      &[]int{0, 0, 0, 0, 0, 0},
+				TargetNumber: nil,
 			},
 			"round3": {
 				Title:       "Round 3",
@@ -132,6 +132,14 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				Submissions: map[string]models.Submission{},
 			},
 			"round4": {
+				Title:        "Round 1",
+				Scene:        "mathsboard",
+				NextScene:    "round5",
+				Timer:        -1,
+				Numbers:      &[]int{0, 0, 0, 0, 0, 0},
+				TargetNumber: nil,
+			},
+			"round5": {
 				Title:       "Round 4",
 				Scene:       "conundrum",
 				NextScene:   "lobby",

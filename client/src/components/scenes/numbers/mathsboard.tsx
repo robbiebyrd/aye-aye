@@ -20,14 +20,6 @@ export type MathsboardProps = {
 }
 
 export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, ws, gameData}) => {
-    const canInput = useMemo(() => {
-        const allSubmissions = gameData?.scenes[gameData.currentScene].submissions
-        if (!allSubmissions) {
-            return true
-        }
-        const submission = allSubmissions[playerId]
-        return !submission?.entry != ""
-    }, [gameData, playerId])
 
     const canDraw = useMemo(() => {
             const currentNumbers = gameData?.scenes?.[gameData.currentScene]?.numbers
@@ -165,7 +157,7 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, ws
                     <Numbers numbers={padArray(gameData.scenes[gameData.currentScene].numbers, 6, 0)}/>
                 </div>
                 <div className="w-1/6 flex my-8">
-                    <Number number={gameData.scenes[gameData.currentScene].targetNumber}/>
+                    <Number number={gameData.scenes[gameData.currentScene].targetNumber} header={'Target Number'}/>
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
@@ -177,7 +169,7 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, ws
                     <DrawTarget gameId={gameId} playerId={playerId} ws={ws}/>
                 )}
                 {(!canDraw && !canPickTarget) && (
-                    <Actions playerId={playerId} ws={ws} inputEnabled={canInput} show={!canDraw && !canPickTarget}
+                    <Actions playerId={playerId} ws={ws} show={!canDraw && !canPickTarget}
                              timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
                 )}
             </div>
