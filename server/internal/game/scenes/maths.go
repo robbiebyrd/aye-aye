@@ -2,6 +2,7 @@ package scenes
 
 import (
 	"encoding/json"
+	"math"
 	"strconv"
 	"time"
 
@@ -102,7 +103,7 @@ func (c *MathsScene) resetMaths(game *models.GameData) *models.GameData {
 }
 
 // processMathsSubmission validates a player's submission, updates their score, and persists the game state.
-func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionText string, isCorrect bool, playerId string) {
+func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionText string, isCorrect bool, scoreToAdd int, playerId string) {
 	sc := game.Scenes[game.CurrentScene]
 
 	now := time.Now()
@@ -116,7 +117,7 @@ func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionTex
 	game.Scenes[game.CurrentScene] = sc
 
 	if isCorrect {
-		game = s.GameScene.AddToPlayerScore(game, playerId, len(submissionText))
+		game = s.GameScene.AddToPlayerScore(game, playerId, scoreToAdd)
 	}
 
 	s.GameScene.GameRepo.UpdateGame(*game)
@@ -139,13 +140,17 @@ func (c *MathsScene) submitMaths(game *models.GameData, submissionText string, p
 	}
 
 	submissionSolved = v.(float64)
+	intPart, decimalPart := math.Modf(submissionSolved)
+	difference := math.Abs(submissionSolved - float64(*sc.TargetNumber))
 
-	if sc.TargetNumber != nil && float64(*sc.TargetNumber) == submissionSolved {
+	if decimalPart == 0.0 && difference < 10 {
 		isCorrect = true
 	}
 
-	submissionFormatted := submissionText + " = " + strconv.FormatFloat(submissionSolved, 'f', 0, 64)
-	c.processMathsSubmission(game, submissionFormatted, isCorrect, playerId)
+	scoreToAdd := int(10 - intPart)
+
+	submissionFormatted := submissionText + " = " + strconv.FormatFloat(intPart, 'f', 0, 64)
+	c.processMathsSubmission(game, submissionFormatted, isCorrect, scoreToAdd, playerId)
 
 	return game
 }
