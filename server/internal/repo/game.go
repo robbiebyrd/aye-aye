@@ -89,6 +89,7 @@ func (s *GameRepo) UpdateGame(game models.GameData) {
 func (s *GameRepo) NewGame(id string) *models.GameData {
 	controllingTeam := "team1"
 	showInput := false
+
 	game := models.GameData{
 		GameID:          id,
 		CurrentScene:    "lobby",
@@ -102,7 +103,7 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				Timer:     -1,
 			},
 			"round1": {
-				Title:       "Round 2",
+				Title:       "Round 1",
 				Scene:       "letterboard",
 				NextScene:   "round2",
 				Timer:       -1,
@@ -113,7 +114,7 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				Submissions: map[string]models.Submission{},
 			},
 			"round2": {
-				Title:        "Round 1",
+				Title:        "Round 2",
 				Scene:        "mathsboard",
 				NextScene:    "round3",
 				Timer:        -1,
@@ -132,7 +133,7 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				Submissions: map[string]models.Submission{},
 			},
 			"round4": {
-				Title:        "Round 1",
+				Title:        "Round 4",
 				Scene:        "mathsboard",
 				NextScene:    "round5",
 				Timer:        -1,
@@ -140,8 +141,18 @@ func (s *GameRepo) NewGame(id string) *models.GameData {
 				TargetNumber: nil,
 			},
 			"round5": {
-				Title:       "Round 4",
+				Title:       "Round 5",
 				Scene:       "conundrum",
+				NextScene:   "end",
+				Timer:       -1,
+				Word:        &[]string{},
+				Jumbled:     &[]string{},
+				ShowInput:   &showInput,
+				Submissions: map[string]models.Submission{},
+			},
+			"end": {
+				Title:       "End",
+				Scene:       "end",
 				NextScene:   "lobby",
 				Timer:       -1,
 				Word:        &[]string{},
