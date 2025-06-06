@@ -1,3 +1,5 @@
+"use client"
+
 import React, {FormEvent, useEffect, useState} from "react";
 import {Button} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
