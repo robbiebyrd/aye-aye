@@ -6,7 +6,7 @@ import invariant from 'tiny-invariant'
 import {LetterboardScene} from "@/components/scenes/letterboard/letterboard";
 import {LobbyScene} from "@/components/scenes/lobby/lobby";
 import {ConundrumScene} from "@/components/scenes/conundrum/conundrum";
-import { MathsboardScene } from "@/components/scenes/numbers/mathsboard";
+import {MathsboardScene} from "@/components/scenes/numbers/mathsboard";
 
 
 export default function Page({params}: {

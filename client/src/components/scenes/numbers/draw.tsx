@@ -32,7 +32,6 @@ const Draw: React.FC<DrawProps> = ({gameId, playerId, ws, drawn}) => {
     const drawLittle = () => {
         draw("draw", "little")
     }
-    console.log(drawn)
 
     return (
         <div className="grid grid-cols-3 w-full ">

@@ -113,7 +113,6 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                                         }}
                                         latex={inputValue?.latex() || ""}
                                         onKeyDown={(e) => {
-                                            console.log(e.key)
                                             if (!['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '*', '/', '(', ')', "+", "-", 'Tab', " "].includes(e.key)) {
                                                 e.preventDefault()
                                                 return
