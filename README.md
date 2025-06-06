@@ -12,6 +12,7 @@ Aye Aye is a Countdown-style, multiplayer online game.
    5. Docker
    6. direnv
 7. Copy the `.env.example` file in the `client` directory to `.env` in the same folder.
+7. Also copy the `.env.example` file in the `server` directory to `.env` in the `same` folder.
 6. Change into the serer directory and run the following command:
 `go build main.go`
 7. Run the server:
