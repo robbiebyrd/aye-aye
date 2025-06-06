@@ -28,8 +28,8 @@ func NewMathsScene(gameRepo *repo.GameRepo) *MathsScene {
 }
 
 // drawTarget draws a letter of the specified type (vowel or consonant) and adds it to the game board.
-func (s *MathsScene) drawTarget(game *models.GameData) *models.GameData {
-	number := s.NumbersRepo.DrawTarget()
+func (r *MathsScene) drawTarget(game *models.GameData) *models.GameData {
+	number := r.NumbersRepo.DrawTarget()
 	sc := game.Scenes[game.CurrentScene]
 	sc.TargetNumber = &number
 	game.Scenes[game.CurrentScene] = sc
@@ -37,12 +37,12 @@ func (s *MathsScene) drawTarget(game *models.GameData) *models.GameData {
 }
 
 // drawLetter draws a letter of the specified type (vowel or consonant) and adds it to the game board.
-func (s *MathsScene) drawNumber(game *models.GameData, numberType string) *models.GameData {
+func (r *MathsScene) drawNumber(game *models.GameData, numberType string) *models.GameData {
 	var number int
 	if numberType == "big" {
-		number = s.NumbersRepo.DrawNumber(repo.Big, &game.GameID)
+		number = r.NumbersRepo.DrawNumber(repo.Big, &game.GameID)
 	} else {
-		number = s.NumbersRepo.DrawNumber(repo.Little, &game.GameID)
+		number = r.NumbersRepo.DrawNumber(repo.Little, &game.GameID)
 	}
 
 	sc := game.Scenes[game.CurrentScene]
@@ -65,7 +65,7 @@ func (s *MathsScene) drawNumber(game *models.GameData, numberType string) *model
 }
 
 // drawNumbers draws random letters to fill the game board up to 9 letters.
-func (s *MathsScene) drawNumbers(game *models.GameData) *models.GameData {
+func (r *MathsScene) drawNumbers(game *models.GameData) *models.GameData {
 	sc := game.Scenes[game.CurrentScene]
 	var currentNumbers []int
 	for _, num := range *sc.Numbers {
@@ -77,36 +77,36 @@ func (s *MathsScene) drawNumbers(game *models.GameData) *models.GameData {
 		return game
 	}
 
-	numbers := s.NumbersRepo.DrawRandomNumbers(6-len(currentNumbers), &game.GameID)
+	numbers := r.NumbersRepo.DrawRandomNumbers(6-len(currentNumbers), &game.GameID)
 	newNumbers := append(currentNumbers, numbers...)
 	sc.Numbers = &newNumbers
 	game.Scenes[game.CurrentScene] = sc
 	return game
 }
 
-func (c *MathsScene) startMathsTimer(game *models.GameData, m *melody.Melody) *models.GameData {
+func (r *MathsScene) startMathsTimer(game *models.GameData, m *melody.Melody) *models.GameData {
 
 	// timerLength is the default duration of the game timer in seconds.
 	envVars := repo.LoadEnvVars()
 	timerLength, _ := strconv.Atoi(envVars.TimerLength)
 
-	c.GameScene.StartTimer(game, m, timerLength, func(updatedGame *models.GameData) {
+	r.GameScene.StartTimer(game, m, timerLength, func(updatedGame *models.GameData) {
 		sc := updatedGame.Scenes[updatedGame.CurrentScene]
 		updatedGame.Scenes[updatedGame.CurrentScene] = sc
-		c.GameScene.GameRepo.UpdateGame(*updatedGame)
+		r.GameScene.GameRepo.UpdateGame(*updatedGame)
 	})
 
 	return game
 }
 
-func (c *MathsScene) resetMaths(game *models.GameData) *models.GameData {
-	game = c.GameScene.CancelTimer(game)
-	return c.GameScene.GameRepo.ResetGame(game, game.CurrentScene)
+func (r *MathsScene) resetMaths(game *models.GameData) *models.GameData {
+	game = r.GameScene.CancelTimer(game)
+	return r.GameScene.GameRepo.ResetGame(game, game.CurrentScene)
 }
 
 type numberFreq map[int]int
 
-func (c *MathsScene) getNumbersFrequencies(numbers []int) map[int]int {
+func (r *MathsScene) getNumbersFrequencies(numbers []int) map[int]int {
 	numbersFreq := make(numberFreq)
 
 	for _, num := range numbers {
@@ -115,21 +115,20 @@ func (c *MathsScene) getNumbersFrequencies(numbers []int) map[int]int {
 	return numbersFreq
 }
 
-func (c *MathsScene) getNumbersFromFormula(formula string) []int {
+func (r *MathsScene) getNumbersFromFormula(formula string) []int {
 	re := regexp.MustCompile(`\D+`)
 	var submissionNumbers = []int{}
 	for _, i := range strings.Split(re.ReplaceAllString(formula, ","), ",") {
-		j, err := strconv.Atoi(i)
-		if err != nil {
-			panic(err)
+		j, _ := strconv.Atoi(i)
+		if j != 0 {
+			submissionNumbers = append(submissionNumbers, j)
 		}
-		submissionNumbers = append(submissionNumbers, j)
 	}
 	return submissionNumbers
 }
 
 // processMathsSubmission validates a player's submission, updates their score, and persists the game state.
-func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionText string, isCorrect bool, scoreToAdd int, playerId string) {
+func (r *MathsScene) processMathsSubmission(game *models.GameData, submissionText string, isCorrect bool, scoreToAdd int, playerId string) {
 	sc := game.Scenes[game.CurrentScene]
 
 	now := time.Now()
@@ -143,63 +142,72 @@ func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionTex
 	game.Scenes[game.CurrentScene] = sc
 
 	if isCorrect {
-		game = s.GameScene.AddToPlayerScore(game, playerId, scoreToAdd)
+		game = r.GameScene.AddToPlayerScore(game, playerId, scoreToAdd)
 	}
 
-	s.GameScene.GameRepo.UpdateGame(*game)
+	r.GameScene.GameRepo.UpdateGame(*game)
 }
 
-func (c *MathsScene) submitMaths(game *models.GameData, submissionText string, playerId string) *models.GameData {
-	sc := game.Scenes[game.CurrentScene]
+func (r *MathsScene) checkForNumberOveruse(submissionNumbers []int, sceneNumbers []int) bool {
+	submissionFreq := r.getNumbersFrequencies(submissionNumbers)
+	lettersFreq := r.getNumbersFrequencies(sceneNumbers)
 
-	if submissionText == "" || c.GameScene.HasPlayerSubmitted(game, playerId) {
-		return game
+	if len(submissionFreq) > len(lettersFreq) {
+		return true
 	}
-
-	isCorrect := false
-	submissionNumbers := c.getNumbersFromFormula(submissionText)
-	submissionFreq := c.getNumbersFrequencies(submissionNumbers)
-	lettersFreq := c.getNumbersFrequencies(*sc.Numbers)
-
-	isOverUsed := false
 
 	for _, s := range submissionFreq {
 		_, ok := lettersFreq[s]
 		if !ok {
-			isOverUsed = true
-			break
+			return true
 		}
 		if lettersFreq[s] < submissionFreq[s] {
-			isOverUsed = true
-			break
+			return true
 		}
 	}
 
-	var submissionSolved float64
-	t, v, err := gee.Eval(submissionText)
+	return false
+}
 
+func (r *MathsScene) solveMathsEquation(submissionText string) float64 {
+	t, v, err := gee.Eval(submissionText)
 	if err != nil || v == nil || t != 0 {
-		v = 0.0
+		return 0.0
+	}
+	return v.(float64)
+}
+
+func (r *MathsScene) submitMaths(game *models.GameData, submissionText string, playerId string) *models.GameData {
+	sc := game.Scenes[game.CurrentScene]
+
+	if submissionText == "" || r.GameScene.HasPlayerSubmitted(game, playerId) {
+		return game
 	}
 
-	submissionSolved = v.(float64)
+	isCorrect := false
+	submissionNumbers := r.getNumbersFromFormula(submissionText)
+
+	isOverUsed := r.checkForNumberOveruse(submissionNumbers, *sc.Numbers)
+
+	submissionSolved := r.solveMathsEquation(submissionText)
+
 	intPart, decimalPart := math.Modf(submissionSolved)
 	difference := math.Abs(submissionSolved - float64(*sc.TargetNumber))
 
 	// Logic check for if the answer is correct
-	if decimalPart == 0.0 && difference < 10 && len(submissionNumbers) < 6 && isOverUsed != true {
+	if decimalPart == 0.0 && difference < 10 && isOverUsed != true {
 		isCorrect = true
 	}
 
-	scoreToAdd := int(10 - intPart)
+	scoreToAdd := int(10 - difference)
 
-	submissionFormatted := submissionText + " = " + strconv.FormatFloat(intPart, 'f', 0, 64)
-	c.processMathsSubmission(game, submissionFormatted, isCorrect, scoreToAdd, playerId)
+	submissionFormatted := strconv.FormatFloat(intPart, 'f', 0, 64)
+	r.processMathsSubmission(game, submissionFormatted, isCorrect, scoreToAdd, playerId)
 
 	return game
 }
 
-func (c *MathsScene) HandleMathsMessage(game *models.GameData, msg []byte, playerId string, m *melody.Melody) *models.GameData {
+func (r *MathsScene) HandleMathsMessage(game *models.GameData, msg []byte, playerId string, m *melody.Melody) *models.GameData {
 	var messageDecoded map[string]interface{}
 	_ = json.Unmarshal(msg, &messageDecoded)
 
@@ -209,22 +217,22 @@ func (c *MathsScene) HandleMathsMessage(game *models.GameData, msg []byte, playe
 
 	switch messageDecoded["action"].(string) {
 	case "start":
-		game = c.startMathsTimer(game, m)
+		game = r.startMathsTimer(game, m)
 	case "cancel":
-		game = c.GameScene.CancelTimer(game)
+		game = r.GameScene.CancelTimer(game)
 	case "draw":
-		game = c.drawNumber(game, messageDecoded["type"].(string))
+		game = r.drawNumber(game, messageDecoded["type"].(string))
 	case "target":
-		game = c.drawTarget(game)
+		game = r.drawTarget(game)
 	case "drawRandom":
-		c.drawNumbers(game)
+		r.drawNumbers(game)
 	case "reset":
-		game = c.resetMaths(game)
+		game = r.resetMaths(game)
 	case "submit":
 		if messageDecoded["submission"] == nil {
 			return game
 		}
-		game = c.submitMaths(game, messageDecoded["submission"].(string), playerId)
+		game = r.submitMaths(game, messageDecoded["submission"].(string), playerId)
 	default:
 		break
 	}
