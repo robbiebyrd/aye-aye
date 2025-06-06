@@ -3,7 +3,9 @@ package scenes
 import (
 	"encoding/json"
 	"math"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/0x3alex/gee"
@@ -102,6 +104,30 @@ func (c *MathsScene) resetMaths(game *models.GameData) *models.GameData {
 	return c.GameScene.GameRepo.ResetGame(game, game.CurrentScene)
 }
 
+type numberFreq map[int]int
+
+func (c *MathsScene) getNumbersFrequencies(numbers []int) map[int]int {
+	numbersFreq := make(numberFreq)
+
+	for _, num := range numbers {
+		numbersFreq[num] += 1
+	}
+	return numbersFreq
+}
+
+func (c *MathsScene) getNumbersFromFormula(formula string) []int {
+	re := regexp.MustCompile(`\D+`)
+	var submissionNumbers = []int{}
+	for _, i := range strings.Split(re.ReplaceAllString(formula, ","), ",") {
+		j, err := strconv.Atoi(i)
+		if err != nil {
+			panic(err)
+		}
+		submissionNumbers = append(submissionNumbers, j)
+	}
+	return submissionNumbers
+}
+
 // processMathsSubmission validates a player's submission, updates their score, and persists the game state.
 func (s *MathsScene) processMathsSubmission(game *models.GameData, submissionText string, isCorrect bool, scoreToAdd int, playerId string) {
 	sc := game.Scenes[game.CurrentScene]
@@ -131,6 +157,23 @@ func (c *MathsScene) submitMaths(game *models.GameData, submissionText string, p
 	}
 
 	isCorrect := false
+	submissionNumbers := c.getNumbersFromFormula(submissionText)
+	submissionFreq := c.getNumbersFrequencies(submissionNumbers)
+	lettersFreq := c.getNumbersFrequencies(*sc.Numbers)
+
+	isOverUsed := false
+
+	for _, s := range submissionFreq {
+		_, ok := lettersFreq[s]
+		if !ok {
+			isOverUsed = true
+			break
+		}
+		if lettersFreq[s] < submissionFreq[s] {
+			isOverUsed = true
+			break
+		}
+	}
 
 	var submissionSolved float64
 	t, v, err := gee.Eval(submissionText)
@@ -143,7 +186,8 @@ func (c *MathsScene) submitMaths(game *models.GameData, submissionText string, p
 	intPart, decimalPart := math.Modf(submissionSolved)
 	difference := math.Abs(submissionSolved - float64(*sc.TargetNumber))
 
-	if decimalPart == 0.0 && difference < 10 {
+	// Logic check for if the answer is correct
+	if decimalPart == 0.0 && difference < 10 && len(submissionNumbers) < 6 && isOverUsed != true {
 		isCorrect = true
 	}
 
