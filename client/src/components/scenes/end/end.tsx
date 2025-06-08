@@ -59,7 +59,7 @@ export const EndScene: React.FC<EndProps> = ({gameData, gameId, playerId, ws}) =
                                 ]}
                                 position={'left'}
                             />
-                        ) : <div className={"flex flex-col flex-grow"}/>}
+                        ) : <div className={"flex flex-col flex-grow"}>WAITING FOR PLAYERS</div>}
                     </div>
                     <div className={"w-1/2 flex justify-end"}>
                         {teams?.at(1)?.at(0) ? (

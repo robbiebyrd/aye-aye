@@ -1,4 +1,4 @@
-import {TeamPlacard} from "@/components/team-placard";
+import {EmptyTeamPlacard, TeamPlacard} from "@/components/team-placard";
 import {GameData, Player} from "@/models/letterboard";
 import {useMemo} from "react";
 import {Button} from "@/components/button";
@@ -59,7 +59,16 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
                                 ]}
                                 position={'left'}
                             />
-                        ) : <div className={"flex flex-col flex-grow"}/>}
+                        ) : <EmptyTeamPlacard
+                            colors={[
+                                "#C1272D",
+                                "#3D775A",
+                                "#410006",
+                                "#E6E6E6",
+                                "#CCCCCC"
+                            ]}
+                        />
+                        }
                     </div>
                     <div className={"w-1/2 flex justify-end"}>
                         {teams?.at(1)?.at(0) ? (
@@ -76,10 +85,16 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
                                     "#CCCCCC"
                                 ]}
                                 position={'right'}/>
-                        ) : <div className={"flex flex-col justify-end"} style={{
-                            aspectRatio: "2 / 1",
-                            height: "11em"
-                        }}>&nbsp;</div>}
+                        ) : <EmptyTeamPlacard
+                            colors={[
+                                "#0000FF",
+                                "#3D775A",
+                                "#1B1464",
+                                "#E6E6E6",
+                                "#CCCCCC"
+                            ]}
+                        />
+                        }
                     </div>
                 </div>
                 <Button label={"Start"} onClickFunc={nextScene}></Button>

@@ -15,7 +15,9 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, colors, posit
     const teamScore = updatedPlayers.reduce((accumulator, player) => accumulator + player.score, 0);
 
     const getSubmissionForPlayer = (playerId: string) => {
-        if (gameData.currentScene === 'lobby')  return
+        if (gameData.currentScene === 'lobby') {
+            return
+        }
         if (!gameData.scenes[gameData.currentScene].submissions) {
             return
         }
@@ -67,6 +69,21 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, colors, posit
                         </>
                     ))}
                 </div>
+            </div>
+        </>
+    )
+}
+
+export const EmptyTeamPlacard: React.FC<Pick<TeamPlacardProps, 'teamName' | 'colors'>> = ({colors,}) => {
+
+    return (
+        <>
+            <div className={"w-1/2 h-full flex flex-col border-solid border-4 relative justify-center align-center text-center"}
+                style={{
+                    background: colors[0],
+                    borderColor: colors[1],
+                }}>
+                WAITING FOR PLAYERS
             </div>
         </>
     )
