@@ -4,12 +4,12 @@ import {letterRow} from "@/models/letterboard";
 export type DrawProps = {
     gameId: string
     playerId: string
-    ws?: WebSocket
+    sendMessage: (payload: string) => void
     show?: boolean
     drawn?: letterRow
 }
 
-const Draw: React.FC<DrawProps> = ({gameId, playerId, ws, show, drawn}) => {
+const Draw: React.FC<DrawProps> = ({gameId, playerId, sendMessage, show, drawn}) => {
     const sceneId = "letterboard"
 
     const draw = (drawType: "drawRandom" | "draw", letterType?: "consonant" | "vowel") => {
@@ -20,7 +20,7 @@ const Draw: React.FC<DrawProps> = ({gameId, playerId, ws, show, drawn}) => {
             action: drawType,
             type: drawType == "drawRandom" ? undefined : letterType
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const drawVowel = () => {

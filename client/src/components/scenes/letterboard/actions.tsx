@@ -4,9 +4,9 @@ import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
 import {TimedControllerButton} from "@/components/scenes/conundrum/actions";
 
-const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'> & {
+const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'show' | 'timer' | 'gameData'> & {
     inputEnabled: boolean
-}> = ({gameData, playerId, inputEnabled, ws, show, timer}) => {
+}> = ({gameData, playerId, inputEnabled, sendMessage, show, timer}) => {
     const sceneId = "letterboard"
     const [inputValue, setInputValue] = useState('')
     const {gameId} = gameData
@@ -28,7 +28,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             action: "reset",
             ...standardMessageAttributes
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
         setInputValue("")
     }
 
@@ -37,7 +37,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             action: "solve",
             ...standardMessageAttributes
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const startTimer = () => {
@@ -45,7 +45,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             action: "start",
             ...standardMessageAttributes
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const cancelTimer = () => {
@@ -53,7 +53,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             action: "cancel",
             ...standardMessageAttributes
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
         setInputValue("")
     }
 
@@ -63,7 +63,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             submission: inputValue,
             ...standardMessageAttributes
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
         setInputValue("")
     }
 
@@ -73,7 +73,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             gameId,
             playerId,
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const preventSubmit = (event: FormEvent) => {

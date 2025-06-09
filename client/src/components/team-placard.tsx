@@ -3,14 +3,38 @@ import {GameData, Player} from "@/models/letterboard";
 export type TeamPlacardProps = {
     teamName?: string
     players: Player[]
-    colors: [string, string, string, string, string]
     position: 'left' | 'right'
     gameData: GameData
     playerId: string
 }
 
-export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, colors, position, players, gameData, playerId}) => {
+const teamColors = {
+    "red" : [
+        "#C1272D",
+        "#3D775A",
+        "#410006",
+        "#E6E6E6",
+        "#CCCCCC"
 
+    ],
+    "blue": [
+        "#0000FF",
+        "#3D775A",
+        "#1B1464",
+        "#E6E6E6",
+        "#CCCCCC"
+
+    ]
+}
+
+const getColors = (teamName?: string) => {
+    if (teamName == 'team1') {
+        return teamColors['red']
+    }
+    return teamColors["blue"]
+}
+
+export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, position, players, gameData, playerId}) => {
     const updatedPlayers = players.filter(obj => Object.keys(obj).length > 0);
     const teamScore = updatedPlayers.reduce((accumulator, player) => accumulator + player.score, 0);
 
@@ -25,6 +49,8 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, colors, posit
             return gameData.scenes[gameData.currentScene].submissions[playerId]
         }
     }
+
+    const colors = getColors(teamName)
 
     return (
         <>
@@ -74,8 +100,8 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, colors, posit
     )
 }
 
-export const EmptyTeamPlacard: React.FC<Pick<TeamPlacardProps, 'teamName' | 'colors'>> = ({colors,}) => {
-
+export const EmptyTeamPlacard: React.FC<Pick<TeamPlacardProps, 'teamName'>> = ({teamName}) => {
+    const colors = getColors(teamName)
     return (
         <>
             <div className={"w-1/2 h-full flex flex-col border-solid border-4 relative justify-center align-center text-center"}

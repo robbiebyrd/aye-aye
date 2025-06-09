@@ -3,10 +3,10 @@ import {Button} from "@/components/button";
 export type DrawTargetProps = {
     gameId: string
     playerId: string
-    ws?: WebSocket
+    sendMessage: (payload: string) => void
 }
 
-const DrawTarget: React.FC<DrawTargetProps> = ({gameId, playerId, ws}) => {
+const DrawTarget: React.FC<DrawTargetProps> = ({gameId, playerId, sendMessage}) => {
     const sceneId = "mathsboard"
 
     const drawTarget = () => {
@@ -16,7 +16,7 @@ const DrawTarget: React.FC<DrawTargetProps> = ({gameId, playerId, ws}) => {
             sceneId,
             action: "target",
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     return (

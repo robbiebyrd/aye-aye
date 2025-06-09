@@ -1,6 +1,6 @@
 import {EmptyTeamPlacard, TeamPlacard} from "@/components/team-placard";
 import {GameData, Player} from "@/models/letterboard";
-import {useMemo} from "react";
+import React, {useMemo} from "react";
 import {Button} from "@/components/button";
 
 export type LobbyProps = {
@@ -8,10 +8,10 @@ export type LobbyProps = {
     playerId: string
     teamId: string
     gameData: GameData
-    ws?: WebSocket
+    sendMessage: (payload: string) => void
 }
 
-export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws}) => {
+export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, sendMessage}) => {
 
     const teams = useMemo(() => {
         if (!gameData?.players) {
@@ -36,68 +36,46 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, ws
             playerId: playerId,
             sceneId: "sceneChange",
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     return (
         <>
-            <div className={"flex flex-col content-center align-middle items-center w-full h-full  justify-center"}>
-                <div className="flex justify-left w-full min-h-[15vh]">
-                    <div className={'w-1/2'}>
-                        {teams?.at(0)?.at(0) ? (
-                            <TeamPlacard
-                                playerId={playerId}
-                                gameData={gameData}
-                                teamName={String(teams?.at(0)?.at(0))}
-                                players={teams?.at(0)?.at(1) as Player[]}
-                                colors={[
-                                    "#C1272D",
-                                    "#3D775A",
-                                    "#410006",
-                                    "#E6E6E6",
-                                    "#CCCCCC"
-                                ]}
-                                position={'left'}
-                            />
-                        ) : <EmptyTeamPlacard
-                            colors={[
-                                "#C1272D",
-                                "#3D775A",
-                                "#410006",
-                                "#E6E6E6",
-                                "#CCCCCC"
-                            ]}
+            <div className="flex justify-left w-full min-h-[15vh]">
+                <div className={'w-1/2'}>
+                    {teams?.at(0)?.at(0) ? (
+                        <TeamPlacard
+                            playerId={playerId}
+                            gameData={gameData}
+                            teamName={String(teams?.at(0)?.at(0))}
+                            players={teams?.at(0)?.at(1) as Player[]}
+                            position={'left'}
                         />
-                        }
-                    </div>
-                    <div className={"w-1/2 flex justify-end"}>
-                        {teams?.at(1)?.at(0) ? (
-                            <TeamPlacard
-                                playerId={playerId}
-                                gameData={gameData}
-                                teamName={String(teams?.at(1)?.at(0))}
-                                players={teams?.at(1)?.at(1) as Player[]}
-                                colors={[
-                                    "#0000FF",
-                                    "#3D775A",
-                                    "#1B1464",
-                                    "#E6E6E6",
-                                    "#CCCCCC"
-                                ]}
-                                position={'right'}/>
-                        ) : <EmptyTeamPlacard
-                            colors={[
-                                "#0000FF",
-                                "#3D775A",
-                                "#1B1464",
-                                "#E6E6E6",
-                                "#CCCCCC"
-                            ]}
-                        />
-                        }
-                    </div>
+                    ) : <EmptyTeamPlacard/>
+                    }
                 </div>
-                <Button label={"Start"} onClickFunc={nextScene}></Button>
+                <div className={"w-1/2 flex justify-end"}>
+                    {teams?.at(1)?.at(0) ? (
+                        <TeamPlacard
+                            playerId={playerId}
+                            gameData={gameData}
+                            teamName={String(teams?.at(1)?.at(0))}
+                            players={teams?.at(1)?.at(1) as Player[]}
+                            position={'right'}/>
+                    ) : <EmptyTeamPlacard/>
+                    }
+                </div>
+            </div>
+            <div className={'w-full justify-center align-center h-2/3 flex flex-col items-center'}>
+                <Button label={"Start"} onClickFunc={nextScene} className={'justify-center'}></Button>
+                <div className={"w-2/3 border-4 bg-burnham-500 bg-opacity-50"} style={{
+                    borderRadius: ".5em",
+                    padding: ".5em",
+                    marginTop: '2em'
+                }}>
+                    <h1 className=" text-4xl text-center text-white">Welcome to Aye-Aye!</h1>
+                    <h2 className={"text-2xl text-center text-white"}>An online, multiplayer, letters-and-numbers game</h2>
+                </div>
             </div>
         </>
 

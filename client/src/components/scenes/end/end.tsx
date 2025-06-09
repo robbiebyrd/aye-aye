@@ -8,10 +8,10 @@ export type EndProps = {
     playerId: string
     teamId: string
     gameData: GameData
-    ws?: WebSocket
+    sendMessage: (payload: string) => void
 }
 
-export const EndScene: React.FC<EndProps> = ({gameData, gameId, playerId, ws}) => {
+export const EndScene: React.FC<EndProps> = ({gameData, gameId, playerId, sendMessage}) => {
 
     const teams = useMemo(() => {
         if (!gameData?.players) {
@@ -36,7 +36,7 @@ export const EndScene: React.FC<EndProps> = ({gameData, gameId, playerId, ws}) =
             playerId: playerId,
             sceneId: "sceneChange",
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     return (
@@ -50,13 +50,6 @@ export const EndScene: React.FC<EndProps> = ({gameData, gameId, playerId, ws}) =
                                 gameData={gameData}
                                 teamName={String(teams?.at(0)?.at(0))}
                                 players={teams?.at(0)?.at(1) as Player[]}
-                                colors={[
-                                    "#C1272D",
-                                    "#3D775A",
-                                    "#410006",
-                                    "#E6E6E6",
-                                    "#CCCCCC"
-                                ]}
                                 position={'left'}
                             />
                         ) : <div className={"flex flex-col flex-grow"}>WAITING FOR PLAYERS</div>}
@@ -68,13 +61,6 @@ export const EndScene: React.FC<EndProps> = ({gameData, gameId, playerId, ws}) =
                                 gameData={gameData}
                                 teamName={String(teams?.at(1)?.at(0))}
                                 players={teams?.at(1)?.at(1) as Player[]}
-                                colors={[
-                                    "#0000FF",
-                                    "#3D775A",
-                                    "#1B1464",
-                                    "#E6E6E6",
-                                    "#CCCCCC"
-                                ]}
                                 position={'right'}/>
                         ) : <div className={"flex flex-col justify-end"} style={{
                             aspectRatio: "2 / 1",

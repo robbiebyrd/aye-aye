@@ -7,7 +7,7 @@ import '@/app/globals.css'
 import {TimedControllerButton} from "@/components/scenes/conundrum/actions";
 import {addStyles, EditableMathField, MathField} from 'react-mathquill'
 
-const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'>> = ({gameData, playerId, ws, show, timer}) => {
+const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'show' | 'timer' | 'gameData'>> = ({gameData, playerId, sendMessage, show, timer}) => {
     const sceneId = "mathsboard"
     const [inputValue, setInputValue] = useState<MathField | null>(null)
     const {gameId} = gameData
@@ -25,7 +25,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             action: "reset",
             ...standardMessageAttributes
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
         setInputValue(null)
     }
 
@@ -34,7 +34,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             action: "start",
             ...standardMessageAttributes
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const cancelTimer = () => {
@@ -42,7 +42,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             action: "cancel",
             ...standardMessageAttributes
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
         setInputValue(null)
     }
 
@@ -52,7 +52,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             submission: inputValue?.text(),
             ...standardMessageAttributes
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
         setInputValue(null)
     }
 
@@ -62,7 +62,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
             gameId,
             playerId,
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const preventSubmit = (event: FormEvent) => {
@@ -96,17 +96,16 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'ws' | 'show' | 'tim
                                 }}>
                                     <h1 className=" text-xl text-center text-white">Type Your Answer Here: </h1>
                                 </div>
-                                <div className={'bg-white text-xl'} style={{
-                                    position: "relative", width: "100%", height: "10em",
+                                <div className={'bg-white text-4xl min-h-16'} style={{
+                                    position: "relative", width: "100%",
                                     borderRadius: ".5em",
                                     padding: ".5em",
                                 }}>
                                     <EditableMathField
-                                        className={'w-full'}
+                                        className={'w-full h-auto'}
                                         style={{
                                             boxShadow: "none",
                                             fontFamily: "Dosis",
-                                            fontSize: "2em",
                                             border: "none",
                                             outline: "none",
                                             height: "100%",

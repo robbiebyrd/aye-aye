@@ -3,9 +3,9 @@ import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
 
-const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'ws' | 'show' | 'timer' | 'gameData'> & {
+const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'sendMessage' | 'show' | 'timer' | 'gameData'> & {
     inputEnabled: boolean
-}> = ({gameId, playerId, gameData, inputEnabled, ws, show, timer}) => {
+}> = ({gameId, playerId, gameData, inputEnabled, sendMessage, show, timer}) => {
     const sceneId = "conundrum"
     const [inputValue, setInputValue] = useState('')
 
@@ -20,7 +20,7 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
             playerId,
             sceneId
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
         setInputValue("")
     }
 
@@ -31,7 +31,7 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
             sceneId,
             action: "start",
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const cancelTimer = () => {
@@ -41,7 +41,7 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
             sceneId,
             action: "cancel",
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const handleSubmit = () => {
@@ -52,7 +52,7 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
             action: "submit",
             submission: inputValue,
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const nextScene = () => {
@@ -61,7 +61,7 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
             playerId: playerId,
             sceneId: "sceneChange"
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
 

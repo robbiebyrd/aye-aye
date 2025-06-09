@@ -37,6 +37,10 @@ export default function Page({params}: {
         return ws
     }, [gameId, playerId, teamId, wsHost, wsPort, wsProtocol])
 
+    const sendMessage = (payload: string) => {
+        ws.send(payload)
+    }
+
     return (
         <div>
             <main className="w-svw h-svh" style={{
@@ -46,19 +50,19 @@ export default function Page({params}: {
                 padding: "1em"
             }}>
                 {gameData?.scenes[gameData?.currentScene].scene == "letterboard" && (
-                    <LetterboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
+                    <LetterboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "mathsboard" && (
-                    <MathsboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
+                    <MathsboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "lobby" && (
-                    <LobbyScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
+                    <LobbyScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "end" && (
-                    <EndScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
+                    <EndScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "conundrum" && (
-                    <ConundrumScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} ws={ws}/>
+                    <ConundrumScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
                 )}
             </main>
             <footer></footer>

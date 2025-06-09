@@ -3,11 +3,11 @@ import {Button} from "@/components/button";
 export type DrawProps = {
     gameId: string
     playerId: string
-    ws?: WebSocket
+    sendMessage: (payload: string) => void
     drawn?: number[]
 }
 
-const Draw: React.FC<DrawProps> = ({gameId, playerId, ws, drawn}) => {
+const Draw: React.FC<DrawProps> = ({gameId, playerId, sendMessage, drawn}) => {
     const sceneId = "mathsboard"
 
     const draw = (drawType: "drawRandom" | "draw", numberType?: "big" | "little") => {
@@ -18,7 +18,7 @@ const Draw: React.FC<DrawProps> = ({gameId, playerId, ws, drawn}) => {
             action: drawType,
             type: drawType == "drawRandom" ? undefined : numberType
         }
-        ws?.send(JSON.stringify(submission))
+        sendMessage(JSON.stringify(submission))
     }
 
     const drawBig = () => {

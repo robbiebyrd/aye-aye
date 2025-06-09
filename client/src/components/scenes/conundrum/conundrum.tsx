@@ -1,9 +1,9 @@
-import {TeamPlacard} from "@/components/team-placard";
+import {EmptyTeamPlacard, TeamPlacard} from "@/components/team-placard";
 import {GameData, letters, Player} from "@/models/letterboard";
 import {useMemo} from "react";
-import QRCode from "react-qr-code";
 import ConundrumLetters from "@/components/scenes/conundrum/letters";
 import ConundrumActions from "@/components/scenes/conundrum/actions";
+import {TimerOrCode} from "@/components/scenes/timer";
 
 export type ConundrumProps = {
     gameId: string
@@ -11,11 +11,11 @@ export type ConundrumProps = {
     teamId: string
     timer?: number
     gameData: GameData
-    ws?: WebSocket
+    sendMessage: (payload: string) => void
     letters?: letters
 }
 
-export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, gameData}) => {
+export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, sendMessage, gameData}) => {
     const teams = useMemo(() => {
         if (!gameData?.players) {
             return
@@ -45,25 +45,18 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
     return (
         <>
             <div className="flex justify-center w-full min-h-[15vh]">
-                {teams?.at(0)?.at(0) ? (
-                    <TeamPlacard
-                        playerId={playerId}
-                        gameData={gameData}
-                        teamName={String(teams?.at(0)?.at(0))}
-                        players={teams?.at(0)?.at(1) as Player[]}
-                        colors={[
-                            "#C1272D",
-                            "#3D775A",
-                            "#410006",
-                            "#E6E6E6",
-                            "#CCCCCC"
-                        ]}
-                        position={'left'}
-                    />
-                ) : <div className={"flex flex-col"} style={{
-                    aspectRatio: "2 / 1",
-                    height: "11em"
-                }}/>}
+                <div className={"w-3/4 flex justify-start"}>
+                    {teams?.at(0)?.at(0) ? (
+                        <TeamPlacard
+                            playerId={playerId}
+                            gameData={gameData}
+                            teamName={String(teams?.at(0)?.at(0))}
+                            players={teams?.at(0)?.at(1) as Player[]}
+                            position={'left'}
+                        />
+                    ) : <EmptyTeamPlacard/>
+                    }
+                </div>
                 <div className="flex flex-col items-center justify-center content-center flex-grow">
                     <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4"} style={{
                         borderRadius: ".5em",
@@ -73,69 +66,23 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, ws, 
                     }}>
                         <h1 className=" text-xl text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
                     </div>
-                    <div
-                        className={'h-[10em] relative aspect-square mb-0 items-center content-center text-center justify-center'}
-                        style={{
-                            backgroundImage: "url('/img/clock.png')",
-                            backgroundSize: "contain",
-                            backgroundRepeat: "no-repeat",
-                            backgroundPosition: "center"
-                        }}>
-                        <img src={'/img/clock-arm.svg'} className={'relative'} style={{
-                            transform: `rotate(${gameData.scenes[gameData.currentScene].timer >= 0 ? gameData.scenes[gameData.currentScene].timer * 6 : 0}deg)`
-                        }}/>
-                        {gameData.scenes[gameData.currentScene].timer >= 0 ?
-                            <h1 className={'font-bold w-full h-full'}
-                                style={{
-                                    fontSize: '5em',
-                                    top: "10%",
-                                    position: "absolute",
-                                }}>{gameData.scenes[gameData.currentScene].timer}</h1> :
-                            <QRCode
-                                style={{
-                                    height: "50%",
-                                    position: "absolute",
-                                    top: "25%"
-                                }}
-                                className={"w-full h-8 m-auto aspect-square absolute"}
-                                value={`${process.env.SERVER_PROTOCOL}://${process.env.SERVER_HOST}:${process.env.SERVER_PRT}/?game=${encodeURIComponent(gameId)}`}
-                            />
-                        }
-                    </div>
+                    <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
                 </div>
-                {teams?.at(1)?.at(0) ? (
-                    <TeamPlacard
-                        playerId={playerId}
-                        gameData={gameData}
-                        teamName={String(teams?.at(1)?.at(0))}
-                        players={teams?.at(1)?.at(1) as Player[]}
-                        colors={[
-                            "#0000FF",
-                            "#3D775A",
-                            "#1B1464",
-                            "#E6E6E6",
-                            "#CCCCCC"
-                        ]}
-                        position={'right'}/>
-                ) : <div className={"flex flex-col"} style={{
-                    aspectRatio: "2 / 1",
-                    height: "11em"
-                }}/>}
-            </div>
-            <div>
-                <ul>
-                    {Object.entries(gameData.scenes[gameData.currentScene].submissions).map(() => {
-                        return <></>
-                    })}
-                    {/*{gameData.scenes[gameData.currentScene].submissions?.forEach((submission) => {*/}
-                    {/*    return (*/}
-                    {/*        <li key={submission.playerId}>{submission.playerId} | {JSON.stringify(submission.correct)} </li>)*/}
-                    {/*})}*/}
-                </ul>
+                <div className={"w-3/4 flex justify-end"}>
+                    {teams?.at(1)?.at(0) ? (
+                        <TeamPlacard
+                            playerId={playerId}
+                            gameData={gameData}
+                            teamName={String(teams?.at(1)?.at(0))}
+                            players={teams?.at(1)?.at(1) as Player[]}
+                            position={'right'}/>
+                    ) : <EmptyTeamPlacard/>
+                    }
+                </div>
             </div>
             <ConundrumLetters jumbled={gameData.scenes[gameData.currentScene].jumbled}
                               word={gameData.scenes[gameData.currentScene].word}/>
-            <ConundrumActions gameId={gameId} playerId={playerId} ws={ws} inputEnabled={canInput} show={true}
+            <ConundrumActions gameId={gameId} playerId={playerId} sendMessage={sendMessage} inputEnabled={canInput} show={true}
                               gameData={gameData} timer={gameData.scenes[gameData.currentScene].timer}/>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
             </div>
