@@ -7,8 +7,8 @@ type LettersProps = Pick<LetterboardProps, 'letters'>
 
 const Letters: React.FC<LettersProps> = ({letters}) => {
     return (
-        <div className="w-full flex my-8">
-            <div className="flex-grow">
+        <div className="w-full flex my-2 lg:my-8">
+            <div className="flex-grow z-10">
                 {letters?.map((letterRow, index) => (
                     <div className="grid grid-cols-9 grid-rows-1 w-full" key={index}>
                         {letterRow.map((letter, i) => (

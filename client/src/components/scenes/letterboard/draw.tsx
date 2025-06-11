@@ -37,12 +37,8 @@ const Draw: React.FC<DrawProps> = ({gameId, playerId, sendMessage, show, drawn})
 
     return show && (
         <div className="grid grid-cols-3 w-full ">
-            <div className={"border-4 bg-burnham-500 bg-opacity-50 col-start-2 col-span-1 help"} style={{
-                borderRadius: ".5em",
-                padding: ".5em",
-                marginBottom: '1em'
-            }}>
-                <h1 className={'text-4xl text-center text-white'}>
+            <div className={"z-0 -mt-4 p-0.5 lg:p-2 border-4 bg-burnham-500 bg-opacity-50 col-start-2 col-span-1 help rounded-lg mb-2"}>
+                <h1 className={'text-md lg:text-4xl text-center text-white'}>
                     Draw {9 - (drawn?.filter((a) => a != " ").length || 0)} More Letters
                 </h1>
             </div>

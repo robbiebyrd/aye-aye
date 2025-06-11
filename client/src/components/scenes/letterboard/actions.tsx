@@ -110,7 +110,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'sho
                                     <ButtonWrapper>
                                         <input
                                             maxLength={9}
-                                            className="text-center text-4xl flex items-center p-2 uppercase"
+                                            className="text-center text-xl lg:text-4xl flex items-center p-2 uppercase"
                                             style={{outline: "none", background: "none"}}
                                             name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
                                             value={inputValue}/>
@@ -137,7 +137,7 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'sho
                                      padding: ".5em",
                                      marginBottom: '1em'
                                  }}>
-                                <h1 className={'text-4xl text-center text-white'}>{
+                                <h1 className={'text-xl lg:text-4xl text-center text-white'}>{
                                     !timerRun ? 'Click Start Timer to Begin' : 'Click Next for Next Round'
                                 }</h1></div>
                             <div className={"col-start-1 col-span-2 flex justify-center "}>

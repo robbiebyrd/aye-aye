@@ -52,7 +52,7 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
 
     return (
         <>
-            <div className="flex justify-center w-full min-h-[15vh]">
+            <div className="flex justify-center w-full">
                 <div className={"w-3/4"}>
                     {teams?.at(0)?.at(0) ? (
                         <TeamPlacard
@@ -64,19 +64,18 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                         />
                     ) : <div className={"flex flex-col"} style={{
                         aspectRatio: "2 / 1",
-                        height: "11em"
                     }}/>}
                 </div>
-                <div className="flex flex-col items-center justify-center content-center flex-grow">
-                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4"} style={{
+                <div className="flex flex-col items-center justify-baseline content-center flex-grow w-1/3 h-full">
+                    <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
+                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4 absolute top-0 flex-nowrap"} style={{
                         borderRadius: ".5em",
                         borderTop: "none",
                         padding: "1em .5em .25rem .5em",
-                        marginTop: "-2em"
+                        marginTop: "-1em",
                     }}>
-                        <h1 className=" text-xl text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
+                        <h1 className="text-nowrap lg:text-xl text-md text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
                     </div>
-                    <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
                 </div>
                 <div className={"w-3/4 flex justify-end"}>
                     {teams?.at(1)?.at(0) ? (
@@ -88,7 +87,6 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                             position={'right'}/>
                     ) : <div className={"flex flex-col"} style={{
                         aspectRatio: "2 / 1",
-                        height: "11em"
                     }}/>}
                 </div>
             </div>

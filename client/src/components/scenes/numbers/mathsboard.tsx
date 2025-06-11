@@ -70,7 +70,7 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, se
 
     return (
         <>
-            <div className="flex justify-center w-full min-h-[15vh]">
+            <div className="flex justify-center w-full">
                 <div className={"w-3/4"}>
                     {teams?.at(0)?.at(0) ? (
                         <TeamPlacard

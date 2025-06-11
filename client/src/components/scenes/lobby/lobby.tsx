@@ -40,8 +40,8 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, se
     }
 
     return (
-        <>
-            <div className="flex justify-left w-full min-h-[15vh]">
+        <div className={'h-full'}>
+            <div className="flex justify-left w-full h-1/6 min-h-[15vh]">
                 <div className={'w-1/2'}>
                     {teams?.at(0)?.at(0) ? (
                         <TeamPlacard
@@ -67,17 +67,20 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, se
                 </div>
             </div>
             <div className={'w-full justify-center align-center h-2/3 flex flex-col items-center'}>
-                <Button label={"Start"} onClickFunc={nextScene} className={'justify-center'}></Button>
-                <div className={"w-2/3 border-4 bg-burnham-500 bg-opacity-50"} style={{
+                <div className={"w-5/6 border-4 bg-burnham-500 bg-opacity-70 flex flex-col gap-4 p-6"} style={{
                     borderRadius: ".5em",
-                    padding: ".5em",
                     marginTop: '2em'
                 }}>
-                    <h1 className=" text-4xl text-center text-white">Welcome to Aye-Aye!</h1>
-                    <h2 className={"text-2xl text-center text-white"}>An online, multiplayer, letters-and-numbers game</h2>
+                    <h1 className=" text-4xl text-center text-white">
+                        Welcome to Aye-Aye!
+                    </h1>
+                    <h2 className={"text-2xl text-center text-white"}>
+                        An online, multiplayer, letters-and-numbers game.
+                    </h2>
+                    <Button label={"Start"} onClickFunc={nextScene} className={'justify-center'}></Button>
                 </div>
             </div>
-        </>
+        </div>
 
     )
 }

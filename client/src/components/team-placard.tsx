@@ -54,17 +54,17 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, position, pla
 
     return (
         <>
-            <div key={teamName} className={"flex flex-col border-solid border-4 relative"} style={{
-                background: colors[0],
-                borderColor: colors[1],
-                height: "100%",
-                width: "50%",
-            }}>
+            <div key={teamName} className={"flex flex-col border-solid lg:border-4 md:border-3 border-2 relative"}
+                 style={{
+                     background: colors[0],
+                     borderColor: colors[1],
+                     width: "50%",
+                 }}>
                 <div className={'flex w-full ' + (position === 'left' ? 'flex-row' :
                     'flex-row-reverse')}>
-                    <h1 className={'text-white text-4xl font-bold p-2'}>{teamName}</h1>
+                    <h1 className={'text-white lg:text-4xl md:text-2xl text-lg font-bold p-2'}>{teamName}</h1>
                     <div className={'flex-grow'}></div>
-                    <div className={'text-white text-4xl font-bold p-2'}
+                    <div className={'text-white text-4xl font-bold p-2 lg:text-4xl md:text-2xl text-lg'}
                          style={{backgroundColor: colors[2]}}>{teamScore}
                     </div>
                 </div>
@@ -90,7 +90,7 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, position, pla
                                 )}
                                 <h1 className={`font-bold p-1 ${playerId == player.playerId ? 'italic' : ''}`}>{player.name}</h1>
                                 <div className={'flex-grow'}></div>
-                                <div className={'px-1 content-center'}>{player.score}</div>
+                                <div className={'px-1 content-center hidden lg:block md:block'}>{player.score}</div>
                             </div>
                         </>
                     ))}
@@ -103,14 +103,12 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, position, pla
 export const EmptyTeamPlacard: React.FC<Pick<TeamPlacardProps, 'teamName'>> = ({teamName}) => {
     const colors = getColors(teamName)
     return (
-        <>
-            <div className={"w-1/2 h-full flex flex-col border-solid border-4 relative justify-center align-center text-center"}
-                style={{
-                    background: colors[0],
-                    borderColor: colors[1],
-                }}>
-                WAITING FOR PLAYERS
-            </div>
-        </>
+        <div className={"w-1/2 h-1/2 flex flex-col border-solid border-4 justify-center align-center text-center"}
+             style={{
+                 background: colors[0],
+                 borderColor: colors[1],
+             }}>
+            WAITING FOR PLAYERS
+        </div>
     )
 }

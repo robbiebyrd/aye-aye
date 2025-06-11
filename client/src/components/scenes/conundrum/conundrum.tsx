@@ -64,7 +64,7 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, send
                         padding: "1em .5em .25rem .5em",
                         marginTop: "-2em"
                     }}>
-                        <h1 className=" text-xl text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
+                        <h1 className="lg:text-xl text-md text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
                     </div>
                     <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
                 </div>
