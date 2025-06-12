@@ -20,7 +20,7 @@ export const Button: React.FC<ButtonProps> = ({onClickFunc, label, type = "butto
                 <h1 className="text-2xl text-center text-burnham-500" style={{minWidth: "4em"}}>{label}</h1>
             </div>
             <div className={"w-8"}>
-                <img className={'h-full w-auto'} src={"/img/buttonRight.png"}/>
+                <img className={'h-full w-auto'} src={"/img/buttonright.png"}/>
             </div>
         </button>
     )
