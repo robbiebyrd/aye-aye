@@ -19,6 +19,7 @@ export interface SceneData {
     foundWords?: string[]
     showInput?: boolean
     nextScene?: string
+    nextTeam?: string
 
     word?: letterRow
     jumbled?: letterRow

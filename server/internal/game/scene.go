@@ -22,5 +22,17 @@ func (s *SceneService) NextScene(game *models.GameData) *models.GameData {
 	game = s.GameRepo.ResetGame(game, game.CurrentScene)
 	game.CurrentScene = sc.NextScene
 	game = s.GameRepo.ResetGame(game, sc.NextScene)
+
+	if sc.NextTeam != nil {
+		game.ControllingTeam = sc.NextTeam
+	} else {
+		for _, team := range game.Players {
+			if *game.ControllingTeam != team.Team {
+				game.ControllingTeam = &team.Team
+			}
+			break
+		}
+	}
+
 	return game
 }

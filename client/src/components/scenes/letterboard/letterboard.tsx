@@ -5,6 +5,7 @@ import Draw from "@/components/scenes/letterboard/draw";
 import Actions from "@/components/scenes/letterboard/actions";
 import {useMemo} from "react";
 import {TimerOrCode} from "@/components/scenes/timer";
+import Input from "@/components/scenes/letterboard/input";
 
 export type LetterboardProps = {
     gameId: string
@@ -28,6 +29,10 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
         const submission = allSubmissions[playerId]
         return !!submission?.entry
     }, [gameData, playerId])
+
+    const isControlling = useMemo(() => {
+        return gameData?.players[playerId].team === gameData.controllingTeam;
+    }, [gameData.controllingTeam, gameData?.players, playerId])
 
     const canDraw = useMemo(() => {
         return gameData?.scenes[gameData.currentScene].letters.some((l: string) => l === " ")
@@ -92,9 +97,15 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
             </div>
             <Letters letters={gameData.scenes[gameData.currentScene].board}/>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
-                <Draw gameId={gameId} playerId={playerId} sendMessage={sendMessage} show={canDraw} drawn={gameData.scenes[gameData.currentScene].board[0]}/>
-                <Actions playerId={playerId} sendMessage={sendMessage} inputEnabled={canInput} show={!canDraw}
-                         timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
+                {isControlling && canDraw && (
+                    <Draw gameId={gameId} playerId={playerId} sendMessage={sendMessage} drawn={gameData.scenes[gameData.currentScene].board[0]}/>
+                )}
+                {gameData.scenes[gameData.currentScene].timer === -1 && !canDraw && isControlling && (
+                    <Actions playerId={playerId} sendMessage={sendMessage} inputEnabled={canInput}
+                             timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
+                )}
+                <Input playerId={playerId} sendMessage={sendMessage} inputEnabled={canInput}
+                       timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
             </div>
         </>
 

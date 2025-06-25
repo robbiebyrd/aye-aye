@@ -62,7 +62,7 @@ export const TeamPlacard: React.FC<TeamPlacardProps> = ({teamName, position, pla
                  }}>
                 <div className={'flex w-full ' + (position === 'left' ? 'flex-row' :
                     'flex-row-reverse')}>
-                    <h1 className={'text-white lg:text-4xl md:text-2xl text-lg font-bold p-2'}>{teamName}</h1>
+                    <h1 className={'text-white lg:text-4xl md:text-2xl text-lg font-bold p-2'}>{gameData.controllingTeam === teamName ? '*' : ''}{teamName}</h1>
                     <div className={'flex-grow'}></div>
                     <div className={'text-white text-4xl font-bold p-2 lg:text-4xl md:text-2xl text-lg'}
                          style={{backgroundColor: colors[2]}}>{teamScore}

@@ -5,11 +5,10 @@ export type DrawProps = {
     gameId: string
     playerId: string
     sendMessage: (payload: string) => void
-    show?: boolean
     drawn?: letterRow
 }
 
-const Draw: React.FC<DrawProps> = ({gameId, playerId, sendMessage, show, drawn}) => {
+const Draw: React.FC<DrawProps> = ({gameId, playerId, sendMessage, drawn}) => {
     const sceneId = "letterboard"
 
     const draw = (drawType: "drawRandom" | "draw", letterType?: "consonant" | "vowel") => {
@@ -35,7 +34,7 @@ const Draw: React.FC<DrawProps> = ({gameId, playerId, sendMessage, show, drawn})
         draw("draw", "consonant")
     }
 
-    return show && (
+    return  (
         <div className="grid grid-cols-3 w-full ">
             <div className={"z-0 -mt-4 p-0.5 lg:p-2 border-4 bg-burnham-500 bg-opacity-50 col-start-2 col-span-1 help rounded-lg mb-2"}>
                 <h1 className={'text-md lg:text-4xl text-center text-white'}>

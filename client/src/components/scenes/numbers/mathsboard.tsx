@@ -6,6 +6,7 @@ import {useMemo} from "react";
 import {Number, Numbers} from "@/components/scenes/numbers/numbers";
 import DrawTarget from "@/components/scenes/numbers/drawtarget";
 import {TimerOrCode} from "@/components/scenes/timer";
+import Input from "@/components/scenes/numbers/input";
 
 export type MathsboardProps = {
     gameId: string
@@ -20,6 +21,11 @@ export type MathsboardProps = {
 }
 
 export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, sendMessage, gameData}) => {
+
+
+    const isControlling = useMemo(() => {
+        return gameData?.players[playerId].team === gameData.controllingTeam;
+    }, [gameData.controllingTeam, gameData?.players, playerId])
 
     const canDraw = useMemo(() => {
             const currentNumbers = gameData?.scenes?.[gameData.currentScene]?.numbers
@@ -102,7 +108,7 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, se
                             teamName={String(teams?.at(1)?.at(0))}
                             players={teams?.at(1)?.at(1) as Player[]}
                             position={'right'}/>
-                    ) :<EmptyTeamPlacard />
+                    ) : <EmptyTeamPlacard />
                     }
                 </div>
             </div>
@@ -115,16 +121,19 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, se
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
-                {canDraw && (
+                {isControlling && canDraw && (
                     <Draw gameId={gameId} playerId={playerId} sendMessage={sendMessage}
                           drawn={gameData.scenes[gameData.currentScene].numbers}/>
                 )}
-                {(!canDraw && canPickTarget) && (
+                {isControlling && (!canDraw && canPickTarget) && (
                     <DrawTarget gameId={gameId} playerId={playerId} sendMessage={sendMessage}/>
                 )}
-                {(!canDraw && !canPickTarget) && (
-                    <Actions playerId={playerId} sendMessage={sendMessage} show={!canDraw && !canPickTarget}
+                {isControlling && (!canDraw && !canPickTarget) && (
+                    <Actions playerId={playerId} sendMessage={sendMessage} show={!canDraw && !canPickTarget && isControlling}
                              timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
+                )}
+                {!canDraw && !canPickTarget && gameData.scenes[gameData.currentScene].timer > 0 && (
+                    <Input playerId={playerId} sendMessage={sendMessage} timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData} />
                 )}
             </div>
         </>

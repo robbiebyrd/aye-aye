@@ -112,7 +112,8 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
                                     padding: "1.25em .5em .25rem .5em",
                                     marginTop: "-1rem"
                                 }}>
-                                    <h1 className=" text-xl text-center text-white">Your answer will automatically submit after the timer has completed. </h1>
+                                    <h1 className=" text-xl text-center text-white">Your answer will automatically
+                                        submit after the timer has completed. </h1>
                                 </div>
                             </div>
                         </form>
@@ -136,8 +137,6 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
     )
 }
 
-export default ConundrumActions
-
 export type TimedControllerButtonProps = {
     label: string
     onClickFunc?: () => void
@@ -147,3 +146,5 @@ export type TimedControllerButtonProps = {
 export const TimedControllerButton: React.FC<TimedControllerButtonProps> = ({label, onClickFunc, timer}) => {
     return timer < 0 && <Button label={label} onClickFunc={onClickFunc}/>
 }
+
+export default ConundrumActions
