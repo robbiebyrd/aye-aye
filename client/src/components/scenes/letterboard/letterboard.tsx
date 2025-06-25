@@ -31,6 +31,10 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
     }, [gameData, playerId])
 
     const isControlling = useMemo(() => {
+        const allTeams = Object.values(gameData?.players).map((p) => p.team)
+        if (allTeams.length <= 1) {
+            return true
+        }
         return gameData?.players[playerId].team === gameData.controllingTeam;
     }, [gameData.controllingTeam, gameData?.players, playerId])
 
