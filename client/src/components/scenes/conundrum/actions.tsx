@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
+import React, {ChangeEvent, FormEvent, useEffect, useMemo, useState} from "react";
 import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
@@ -8,6 +8,14 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
 }> = ({gameId, playerId, gameData, inputEnabled, sendMessage, show, timer}) => {
     const sceneId = "conundrum"
     const [inputValue, setInputValue] = useState('')
+
+    const isControlling = useMemo(() => {
+        const allTeams = Object.values(gameData?.players).map((p) => p.team)
+        if (allTeams.length <= 1) {
+            return true
+        }
+        return gameData?.players[playerId].team === gameData.controllingTeam;
+    }, [gameData.controllingTeam, gameData?.players, playerId])
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value)
@@ -120,18 +128,23 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
                     </div>
                 </div>
             ) : (
-                <div className={"w-full grid grid-cols-6 gap-1"}>
-                    <div className={"col-start-1 col-span-3 flex justify-center "}>
-                        <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
-                    </div>
-                    <div className={"col-start-4 col-span-3 flex align-center justify-center "}>
-                        {!timerRun &&
-                            <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer || -1}/>}
-                        {timerRun && (
-                            <Button label={"Next"} onClickFunc={nextScene}></Button>
-                        )}
-                    </div>
-                </div>
+                <>
+                    {isControlling && (
+                        <div className={"w-full grid grid-cols-6 gap-1"}>
+                            <div className={"col-start-1 col-span-3 flex justify-center "}>
+                                <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
+                            </div>
+                            <div className={"col-start-4 col-span-3 flex align-center justify-center "}>
+                                {!timerRun &&
+                                    <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer || -1}/>}
+                                {timerRun && (
+                                    <Button label={"Next"} onClickFunc={nextScene}></Button>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </>
+
             )}
         </div>
     )
