@@ -1,4 +1,4 @@
-import {EmptyTeamPlacard, TeamPlacard} from "@/components/team-placard";
+import {TeamPlacard} from "@/components/team-placard";
 import {GameData, letters, Player} from "@/models/letterboard";
 import {useMemo} from "react";
 import ConundrumLetters from "@/components/scenes/conundrum/letters";
@@ -42,10 +42,18 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, send
         return !!submission?.entry
     }, [gameData, playerId])
 
+    const isControlling = useMemo(() => {
+        const allTeams = Object.values(gameData?.players).map((p) => p.team)
+        if (allTeams.length <= 1) {
+            return true
+        }
+        return gameData?.players[playerId].team === gameData.controllingTeam;
+    }, [gameData.controllingTeam, gameData?.players, playerId])
+
     return (
         <>
-            <div className="flex justify-center w-full min-h-[15vh]">
-                <div className={"w-3/4 flex justify-start"}>
+            <div className="flex justify-center w-full h-40">
+                <div className={"w-1/2 md:w-3/4"}>
                     {teams?.at(0)?.at(0) ? (
                         <TeamPlacard
                             playerId={playerId}
@@ -54,21 +62,19 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, send
                             players={teams?.at(0)?.at(1) as Player[]}
                             position={'left'}
                         />
-                    ) : <EmptyTeamPlacard/>
-                    }
+                    ) : <div className={"flex flex-col"} style={{
+                        aspectRatio: "2 / 1",
+                    }}/>}
                 </div>
-                <div className="flex flex-col items-center justify-center content-center flex-grow">
-                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4"} style={{
-                        borderRadius: ".5em",
-                        borderTop: "none",
-                        padding: "1em .5em .25rem .5em",
-                        marginTop: "-2em"
-                    }}>
-                        <h1 className="lg:text-xl text-md text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
+                <div className="flex flex-col items-center justify-baseline content-center flex-grow w-1/3 h-full">
+                    <div className={"flex w-full h-full content-center text-center justify-center items-center mt-2"}>
+                        <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
                     </div>
-                    <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
+                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4 top-0 h-12 absolute -top-1 md:-top-2 p-2 rounded-lg border-t-0"}>
+                        <h1 className="text-nowrap lg:text-xl text-md text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
+                    </div>
                 </div>
-                <div className={"w-3/4 flex justify-end"}>
+                <div className={"w-1/2 md:w-3/4 flex justify-end"}>
                     {teams?.at(1)?.at(0) ? (
                         <TeamPlacard
                             playerId={playerId}
@@ -76,14 +82,23 @@ export const ConundrumScene: React.FC<ConundrumProps> = ({gameId, playerId, send
                             teamName={String(teams?.at(1)?.at(0))}
                             players={teams?.at(1)?.at(1) as Player[]}
                             position={'right'}/>
-                    ) : <EmptyTeamPlacard/>
-                    }
+                    ) : <div className={"flex flex-col"} style={{
+                        aspectRatio: "2 / 1",
+                    }}/>}
                 </div>
             </div>
             <ConundrumLetters jumbled={gameData.scenes[gameData.currentScene].jumbled}
                               word={gameData.scenes[gameData.currentScene].word}/>
+            {gameData.scenes[gameData.currentScene].timer === -1 && !canInput && !isControlling && (
+                <div className={"z-0 -mt-4 p-0.5 lg:p-2 border-4 bg-burnham-500 bg-opacity-50 col-start-2 col-span-1 help rounded-lg mb-2 p-4"}>
+                    <h1 className={'text-md lg:text-4xl text-center text-white'}>
+                        {gameData.controllingTeam} is controlling the game...
+                    </h1>
+                </div>
+            )}
+
             <ConundrumActions gameId={gameId} playerId={playerId} sendMessage={sendMessage} inputEnabled={canInput} show={true}
-                              gameData={gameData} timer={gameData.scenes[gameData.currentScene].timer}/>
+                              gameData={gameData} timer={gameData.scenes[gameData.currentScene].timer} controlling={isControlling}/>
             <div className="flex flex-col items-center justify-center content-center flex-grow">
             </div>
         </>

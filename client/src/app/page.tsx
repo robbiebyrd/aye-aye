@@ -31,33 +31,34 @@ export default function Home() {
 
     return (
         <div>
-            <main className="">
-                <form>
-                    <div className={'flex flex-col content-center items-center justify-center w-svw h-svh gap-8'}>
-                        <div className={'flex flex-col items-center justify-center '}>
-                            <label form={'gameId'} className={'text-4xl text-white'}>Game ID: </label>
-                            <input defaultValue={gameId || undefined} name={'gameId'} onChange={handleGameChange}
-                                   className={'text-center text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}
-                                   placeholder={'Existing or new game'}/>
+            <main className="w-svw h-svh flex content-center items-center justify-center">
+                <div className={"w-2/3"}>
+                    <form>
+                        <div className={'flex flex-col content-center items-center justify-center gap-8'}>
+                            <div className={'flex flex-col items-center justify-center w-2/3 '}>
+                                <label form={'gameId'} className={'text-xl md:text-4xl text-white'}>Game ID: </label>
+                                <input defaultValue={gameId || undefined} name={'gameId'} onChange={handleGameChange}
+                                       className={'text-center text-xl md:text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}
+                                       placeholder={'Existing or new game'}/>
+                            </div>
+                            <div className={'flex flex-col items-center justify-center'}>
+                                <label form={'teamId'} className={'text-xl md:text-4xl text-white'}>Team</label>
+                                <select defaultValue={teamId || "team1"} name="teamId" id="teamId"
+                                        onChange={handleTeamChange}
+                                        className={'text-center text-xl md:text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}>
+                                    <option value="team1">Team 1</option>
+                                    <option value="team2">Team 2</option>
+                                </select>
+                            </div>
+                            <div className={'flex flex-col items-center justify-center'}>
+                                <label form={'playerId'} className={'text-xl md:text-4xl text-white'}>Player Name: </label>
+                                <input name={'playerId'} onChange={handlePlayerChange}
+                                       className={'text-center text-xl md:text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}/>
+                            </div>
+                            <Button label={'Enter the Game!'} onClickFunc={handleSubmit}/>
                         </div>
-                        <div className={'flex flex-col items-center justify-center'}>
-                            <label form={'teamId'} className={'text-4xl text-white'}>Team</label>
-                            <select defaultValue={teamId || "team1"} name="teamId" id="teamId"
-                                    onChange={handleTeamChange}
-                                    className={'text-center text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}>
-                                <option value="team1">Team 1</option>
-                                <option value="team2">Team 2</option>
-                            </select>
-                        </div>
-                        <div className={'flex flex-col items-center justify-center'}>
-                            <label form={'playerId'} className={'text-4xl text-white'}>Player Name: </label>
-                            <input name={'playerId'} onChange={handlePlayerChange}
-                                   className={'text-center text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}/>
-                        </div>
-                        <Button label={'Enter the Game!'} onClickFunc={handleSubmit}/>
-
-                    </div>
-                </form>
+                    </form>
+                </div>
             </main>
             <footer className="">
             </footer>

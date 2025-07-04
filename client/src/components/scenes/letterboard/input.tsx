@@ -3,12 +3,13 @@ import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
 
-const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'timer' | 'gameData'> & {
+const Input: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'timer' > & {
     inputEnabled: boolean
-}> = ({gameData, playerId, inputEnabled, sendMessage, timer}) => {
+    gameId: string
+    controlling: boolean
+}> = ({gameId, playerId, inputEnabled, sendMessage, timer, controlling}) => {
     const sceneId = "letterboard"
     const [inputValue, setInputValue] = useState('')
-    const {gameId} = gameData
 
     const standardMessageAttributes = {
         gameId,
@@ -51,22 +52,17 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'tim
 
     return (
         <div className="flex w-full bottom-2">
-            <div className={"w-full grid grid-cols-8 gap-1 " + (timer && timer > 0 ? "" : "hidden")}>
-                <div className={"col-start-1 col-span-2 flex align-center justify-center items-center"}>
-                    {timer && timer > 0 &&
-                        <Button label={"Cancel"} onClickFunc={cancelTimer}></Button>
-                    }
-                </div>
-                <div className={"col-start-3 col-span-4 flex align-middle justify-center"}>
+            <div className={"w-full " + (timer && timer > 0 ? "" : "hidden")}>
+                <div className={"flex align-middle justify-center"}>
                     <form id="form" onSubmit={preventSubmit}>
-                        <div className="flex flex-col items-center p-5">
+                        <div className="flex flex-col items-center p-1 md:p-5">
                             <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{
                                 borderRadius: ".5em",
                                 borderBottom: "none",
                                 padding: ".25em .5em 1.25rem .5em",
                                 marginBottom: "-1rem"
                             }}>
-                                <h1 className=" text-xl text-center text-white">Type Your Answer Here: </h1>
+                                <h1 className="text-md lg:text-xl text-center text-white">Type Your Answer Here: </h1>
                             </div>
                             <div style={{zIndex: 10}}>
                                 <ButtonWrapper>
@@ -78,20 +74,24 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'tim
                                         value={inputValue}/>
                                 </ButtonWrapper>
                             </div>
-                            <div className={"w-2/3 border-4 bg-burnham-500 bg-opacity-50"} style={{
-                                borderRadius: ".5em",
-                                borderTop: "none",
-                                padding: "1.25em .5em .25rem .5em",
-                                marginTop: "-1rem"
-                            }}>
-                                <h1 className=" text-xl text-center text-white">Your answer will automatically submit<br/> after the timer has completed. </h1>
+                            <div className={"w-10/12 md:w-2/3 bg-burnham-500 bg-opacity-50"}>
+                                <h1 className="text-xs lg:text-lg text-center text-white italic">
+                                    Your answer submits automatically once the timer is done.
+                                </h1>
                             </div>
                         </div>
                     </form>
                 </div>
+                {controlling && (
+                    <div className={"align-center justify-center items-center hidden md:flex"}>
+                        {timer && timer > 0 &&
+                            <Button label={"Cancel"} onClickFunc={cancelTimer}></Button>
+                        }
+                    </div>
+                )}
             </div>
         </div>
     )
 }
 
-export default Actions
+export default Input

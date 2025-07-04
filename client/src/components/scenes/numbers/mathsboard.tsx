@@ -1,8 +1,8 @@
-import {EmptyTeamPlacard, TeamPlacard} from "@/components/team-placard";
+import {TeamPlacard} from "@/components/team-placard";
 import {GameData, Player} from "@/models/letterboard";
 import Draw from "@/components/scenes/numbers/draw";
 import Actions from "@/components/scenes/numbers/actions";
-import {useMemo} from "react";
+import React, {useMemo} from "react";
 import {Number, Numbers} from "@/components/scenes/numbers/numbers";
 import DrawTarget from "@/components/scenes/numbers/drawtarget";
 import {TimerOrCode} from "@/components/scenes/timer";
@@ -80,8 +80,8 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, se
 
     return (
         <>
-            <div className="flex justify-center w-full">
-                <div className={"w-3/4"}>
+            <div className="flex justify-center w-full h-36">
+                <div className={"w-1/2 md:w-3/4"}>
                     {teams?.at(0)?.at(0) ? (
                         <TeamPlacard
                             playerId={playerId}
@@ -90,21 +90,24 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, se
                             players={teams?.at(0)?.at(1) as Player[]}
                             position={'left'}
                         />
-                    ) : <EmptyTeamPlacard/>
-                    }
+                    ) : <div className={"flex flex-col"} style={{
+                        aspectRatio: "2 / 1",
+                    }}/>}
                 </div>
-                <div className="flex flex-col items-center justify-center content-center flex-grow">
-                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4"} style={{
+                <div className="flex flex-col items-center justify-baseline content-center flex-grow w-1/3 h-full">
+                    <div className={"flex w-full h-full content-center text-center justify-center items-center mt-2"}>
+                        <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
+                    </div>
+                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4 absolute top-0 flex-nowrap"} style={{
                         borderRadius: ".5em",
                         borderTop: "none",
                         padding: "1em .5em .25rem .5em",
-                        marginTop: "-2em"
+                        marginTop: "-1em",
                     }}>
-                        <h1 className=" text-xl text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
+                        <h1 className="text-nowrap lg:text-xl text-md text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
                     </div>
-                    <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
                 </div>
-                <div className={"w-3/4 flex justify-end"}>
+                <div className={"w-1/2 md:w-3/4 flex justify-end"}>
                     {teams?.at(1)?.at(0) ? (
                         <TeamPlacard
                             playerId={playerId}
@@ -112,19 +115,18 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, se
                             teamName={String(teams?.at(1)?.at(0))}
                             players={teams?.at(1)?.at(1) as Player[]}
                             position={'right'}/>
-                    ) : <EmptyTeamPlacard />
-                    }
+                    ) : <div className={"flex flex-col"} style={{
+                        aspectRatio: "2 / 1",
+                    }}/>}
                 </div>
             </div>
-            <div className="flex gap-10 align-center justify-center align-middle">
-                <div className="w-5/6 flex align-center justify-center align-middle my-8">
-                    <Numbers numbers={padArray(gameData.scenes[gameData.currentScene].numbers, 6, 0)}/>
-                </div>
-                <div className="w-1/6 flex my-8">
-                    <Number number={gameData.scenes[gameData.currentScene].targetNumber} header={'Target Number'}/>
+            <div className="flex md:gap-10 flex-col md:flex-row items-center mt-4 justify-center flex-grow">
+                <Numbers numbers={padArray(gameData.scenes[gameData.currentScene].numbers, 6, 0)}/>
+                <div className="w-auto mt-8 md:-mt-8 md:w-1/6 flex">
+                    <Number number={gameData.scenes[gameData.currentScene].targetNumber} header={'Target'}/>
                 </div>
             </div>
-            <div className="flex flex-col items-center justify-center content-center flex-grow">
+            <div className="flex flex-col items-center justify-center content-center">
                 {isControlling && canDraw && (
                     <Draw gameId={gameId} playerId={playerId} sendMessage={sendMessage}
                           drawn={gameData.scenes[gameData.currentScene].numbers}/>
@@ -132,12 +134,19 @@ export const MathsboardScene: React.FC<MathsboardProps> = ({gameId, playerId, se
                 {isControlling && (!canDraw && canPickTarget) && (
                     <DrawTarget gameId={gameId} playerId={playerId} sendMessage={sendMessage}/>
                 )}
-                {isControlling && (!canDraw && !canPickTarget) && (
+                {isControlling && (!canDraw && !canPickTarget) && gameData.scenes[gameData.currentScene].timer < 0 && (
                     <Actions playerId={playerId} sendMessage={sendMessage} show={!canDraw && !canPickTarget && isControlling}
                              timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
                 )}
+                {gameData.scenes[gameData.currentScene].timer === -1 && !isControlling && (
+                    <div className={"z-0 -mt-4 p-0.5 lg:p-2 border-4 bg-burnham-500 bg-opacity-50 col-start-2 col-span-1 help rounded-lg mb-2 p-4"}>
+                        <h1 className={'text-md lg:text-4xl text-center text-white'}>
+                            {gameData.controllingTeam} is controlling the game...
+                        </h1>
+                    </div>
+                )}
                 {!canDraw && !canPickTarget && gameData.scenes[gameData.currentScene].timer > 0 && (
-                    <Input playerId={playerId} sendMessage={sendMessage} timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData} />
+                    <Input controlling={isControlling} playerId={playerId} sendMessage={sendMessage} timer={gameData.scenes[gameData.currentScene].timer} gameId={gameData.gameId} />
                 )}
             </div>
         </>

@@ -26,26 +26,27 @@ func NewGameScene(gameRepo *repo.GameRepo) *GameScene {
 
 // StartTimer starts a timer for the given game and broadcasts updates.
 func (g *GameScene) StartTimer(game *models.GameData, m *melody.Melody, duration int, onDone func(game *models.GameData)) {
-	g.Timers[game.GameID] = services.NewCountdowner(services.CountdownerOptions{
+	g.SetTimer(game, m, duration+1, true)
+	updatedGame := g.GameRepo.GetGame(game.GameID)
+
+	g.Timers[updatedGame.GameID] = services.NewCountdowner(services.CountdownerOptions{
 		Duration:       time.Duration(duration) * time.Second,
 		TickerInternal: 1 * time.Second,
-		OnRun: func(started bool) {
-			g.SetTimer(game, m, duration+1, false)
-		},
-		OnPaused: func(passed, remained time.Duration) {},
+		OnPaused:       func(passed, remained time.Duration) {},
+		OnRun:          func(started bool) {},
 		OnDone: func(stopped bool) {
-			updatedGame := g.GameRepo.GetGame(game.GameID)
-			onDone(updatedGame)
-			g.SetTimer(updatedGame, m, -1, true)
-			delete(g.Timers, game.GameID)
-			data, _ := json.Marshal(updatedGame)
+			thisGame := g.GameRepo.GetGame(updatedGame.GameID)
+			onDone(thisGame)
+			g.SetTimer(thisGame, m, -1, true)
+			delete(g.Timers, updatedGame.GameID)
+			data, _ := json.Marshal(thisGame)
 			m.Broadcast(data)
 		},
 		OnTick: func(passed, remained time.Duration) {
 			g.IncrementTimer(game, m, -1)
 		},
 	})
-	go g.Timers[game.GameID].Run()
+	go g.Timers[updatedGame.GameID].Run()
 }
 
 // CancelTimer stops and removes the timer for the given game.
@@ -62,11 +63,14 @@ func (g *GameScene) CancelTimer(game *models.GameData) *models.GameData {
 
 // IncrementTimer increments the timer for the given game and broadcasts updates.
 func (g *GameScene) IncrementTimer(game *models.GameData, m *melody.Melody, increment int) {
-	scene := game.Scenes[game.CurrentScene]
+
+	retrievedGame := g.GameRepo.GetGame(game.GameID)
+
+	scene := retrievedGame.Scenes[retrievedGame.CurrentScene]
 	scene.Timer += increment
-	game.Scenes[game.CurrentScene] = scene
-	g.GameRepo.UpdateGame(*game)
-	data, _ := json.Marshal(game)
+	retrievedGame.Scenes[retrievedGame.CurrentScene] = scene
+	g.GameRepo.UpdateGame(*retrievedGame)
+	data, _ := json.Marshal(retrievedGame)
 	m.Broadcast(data)
 }
 

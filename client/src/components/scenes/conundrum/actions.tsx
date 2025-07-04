@@ -1,21 +1,14 @@
-import React, {ChangeEvent, FormEvent, useEffect, useMemo, useState} from "react";
+import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
 
 const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 'sendMessage' | 'show' | 'timer' | 'gameData'> & {
     inputEnabled: boolean
-}> = ({gameId, playerId, gameData, inputEnabled, sendMessage, show, timer}) => {
+    controlling: boolean
+}> = ({gameId, playerId, gameData, inputEnabled, sendMessage, show, timer, controlling}) => {
     const sceneId = "conundrum"
     const [inputValue, setInputValue] = useState('')
-
-    const isControlling = useMemo(() => {
-        const allTeams = Object.values(gameData?.players).map((p) => p.team)
-        if (allTeams.length <= 1) {
-            return true
-        }
-        return gameData?.players[playerId].team === gameData.controllingTeam;
-    }, [gameData.controllingTeam, gameData?.players, playerId])
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value)
@@ -89,54 +82,51 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
         <div className="flex w-full bottom-2">
             <h1>test</h1>
             {timer && timer > 0 ? (
-                <div className={"w-full grid grid-cols-8 gap-1"}>
-                    <div className={"col-start-1 col-span-2 flex align-center justify-center items-center"}>
-                        {timer && timer > 0 &&
-                            <Button label={"Cancel"} onClickFunc={cancelTimer}></Button>
-                        }
-                    </div>
-                    <div className={"col-start-3 col-span-4 flex align-middle justify-center"}>
-                        <form id="form" onSubmit={preventSubmit}>
-                            <div className="flex flex-col items-center p-5">
-                                <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{
-                                    borderRadius: ".5em",
-                                    borderBottom: "none",
-                                    padding: ".25em .5em 1.25rem .5em",
-                                    marginBottom: "-1rem"
-                                }}>
-                                    <h1 className=" text-xl text-center text-white">Type Your Answer Here: </h1>
+                <div className={'flex flex-col'}>
+                    <div className={"w-full grid grid-cols-8 gap-1"}>
+                        <div className={"col-start-3 col-span-4 flex align-middle justify-center"}>
+                            <form id="form" onSubmit={preventSubmit}>
+                                <div className="flex flex-col items-center p-5">
+                                    <div className={"border-4 bg-burnham-500 bg-opacity-50 rounded-r-lg border-b-none -mb-4"} style={{
+                                            padding: ".25em .5em 1.25rem .5em",
+                                        }}>
+                                        <h1 className="text-md lg:text-xl text-center text-white">Type Your Answer Here: </h1>
+                                    </div>
+                                    <ButtonWrapper>
+                                        <input
+                                            maxLength={9}
+                                            className="text-center text-xl lg:text-4xl flex items-center p-2 uppercase"
+                                            style={{outline: "none", background: "none"}}
+                                            name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
+                                            value={inputValue}/>
+                                    </ButtonWrapper>
+                                    <div className={"w-10/12 md:w-2/3 bg-burnham-500 bg-opacity-50"}>
+                                        <h1 className="text-xs lg:text-lg text-center text-white italic">
+                                            Your answer submits automatically once the timer is done.
+                                        </h1>
+                                    </div>
                                 </div>
-                                <ButtonWrapper>
-                                    <input
-                                        maxLength={9}
-                                        className="text-center text-4xl flex items-center p-2 uppercase"
-                                        style={{outline: "none", background: "none"}}
-                                        name="letters" id="letters" disabled={inputEnabled} onChange={handleChange}
-                                        value={inputValue}/>
-                                </ButtonWrapper>
-                                <div className={"border-4 bg-burnham-500 bg-opacity-50"} style={{
-                                    borderRadius: ".5em",
-                                    borderTop: "none",
-                                    padding: "1.25em .5em .25rem .5em",
-                                    marginTop: "-1rem"
-                                }}>
-                                    <h1 className=" text-xl text-center text-white">Your answer will automatically
-                                        submit after the timer has completed. </h1>
-                                </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
+                    {controlling && (
+                        <div className={"flex justify-center"}>
+                            {timer && timer > 0 &&
+                                <Button label={"Cancel"} onClickFunc={cancelTimer}></Button>
+                            }
+                        </div>
+                    )}
                 </div>
             ) : (
                 <>
-                    {isControlling && (
-                        <div className={"w-full grid grid-cols-6 gap-1"}>
-                            <div className={"col-start-1 col-span-3 flex justify-center "}>
+                    {controlling && (
+                        <div className={"w-full flex gap-1"}>
+                            <div className={"flex justify-center"}>
                                 <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
                             </div>
-                            <div className={"col-start-4 col-span-3 flex align-center justify-center "}>
+                            <div className={"flex align-center justify-center"}>
                                 {!timerRun &&
-                                    <TimedControllerButton label={'Timer'} onClickFunc={startTimer} timer={timer || -1}/>}
+                                    <TimedControllerButton label={'Start'} onClickFunc={startTimer} timer={timer || -1}/>}
                                 {timerRun && (
                                     <Button label={"Next"} onClickFunc={nextScene}></Button>
                                 )}

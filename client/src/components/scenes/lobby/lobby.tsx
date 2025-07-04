@@ -41,7 +41,7 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, se
 
     return (
         <div className={'h-full'}>
-            <div className="flex justify-left w-full h-1/6 min-h-[15vh]">
+            <div className="flex justify-left w-full min-h-[15vh]">
                 <div className={'w-1/2'}>
                     {teams?.at(0)?.at(0) ? (
                         <TeamPlacard

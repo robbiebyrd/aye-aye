@@ -34,24 +34,22 @@ const Draw: React.FC<DrawProps> = ({gameId, playerId, sendMessage, drawn}) => {
     }
 
     return (
-        <div className="grid grid-cols-3 w-full ">
-            <div className={"border-4 bg-burnham-500 bg-opacity-50 col-start-2 col-span-1 help"} style={{
-                borderRadius: ".5em",
-                padding: ".5em",
-                marginBottom: '1em'
-            }}>
-                <h1 className={'text-4xl text-center text-white'}>
-                    Draw {6 - (drawn?.filter((a) => a != 0).length || 0)} More Numbers
+        <div className="w-full md:w-2/3">
+            <div className={"z-0 -mt-4 p-0.5 lg:p-2 border-4 bg-burnham-500 bg-opacity-50 col-start-2 col-span-1 help rounded-lg mb-2"}>
+                <h1 className={'text-md lg:text-4xl text-center text-white'}>
+                    Draw {9 - (drawn?.filter((a) => a != 0).length || 0)} More Numbers
                 </h1>
             </div>
-            <div className="col-start-1 col-span-1 flex align-middle justify-center">
-                <Button label={'Draw Big'} onClickFunc={drawBig}/>
-            </div>
-            <div className="col-start-2 col-span-1 flex flex-col items-center align-middle justify-center">
-                <Button label={'Draw Random'} onClickFunc={drawRandom}/>
-            </div>
-            <div className="col-start-3 col-span-1 flex align-middle justify-center">
-                <Button label={'Draw Little'} onClickFunc={drawLittle}/>
+            <div className={"flex flex-col md:flex-row justify-center"}>
+                <div className="flex align-middle justify-center">
+                    <Button label={'Draw Big'} onClickFunc={drawBig}/>
+                </div>
+                <div className="flex flex-col items-center align-middle justify-center">
+                    <Button label={'Draw Random'} onClickFunc={drawRandom}/>
+                </div>
+                <div className="flex align-middle justify-center">
+                    <Button label={'Draw Little'} onClickFunc={drawLittle}/>
+                </div>
             </div>
         </div>
     )

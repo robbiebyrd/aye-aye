@@ -1,4 +1,4 @@
-import {TeamPlacard} from "@/components/team-placard";
+import {EmptyTeamPlacard, TeamPlacard} from "@/components/team-placard";
 import {GameData, Player} from "@/models/letterboard";
 import {useMemo} from "react";
 import {Button} from "@/components/button";
@@ -52,7 +52,7 @@ export const EndScene: React.FC<EndProps> = ({gameData, gameId, playerId, sendMe
                                 players={teams?.at(0)?.at(1) as Player[]}
                                 position={'left'}
                             />
-                        ) : <div className={"flex flex-col flex-grow"}>WAITING FOR PLAYERS</div>}
+                        ) : <EmptyTeamPlacard />}
                     </div>
                     <div className={"w-1/2 flex justify-end"}>
                         {teams?.at(1)?.at(0) ? (

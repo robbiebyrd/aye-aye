@@ -61,8 +61,8 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
 
     return (
         <>
-            <div className="flex justify-center w-full">
-                <div className={"w-3/4"}>
+            <div className="flex justify-center w-full h-40">
+                <div className={"w-1/2 md:w-3/4"}>
                     {teams?.at(0)?.at(0) ? (
                         <TeamPlacard
                             playerId={playerId}
@@ -76,17 +76,14 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                     }}/>}
                 </div>
                 <div className="flex flex-col items-center justify-baseline content-center flex-grow w-1/3 h-full">
-                    <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
-                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4 absolute top-0 flex-nowrap"} style={{
-                        borderRadius: ".5em",
-                        borderTop: "none",
-                        padding: "1em .5em .25rem .5em",
-                        marginTop: "-1em",
-                    }}>
+                    <div className={"flex w-full h-full content-center text-center justify-center items-center mt-2"}>
+                        <TimerOrCode count={gameData.scenes[gameData.currentScene].timer} gameId={gameId}/>
+                    </div>
+                    <div className={"border-4 bg-burnham-500 bg-opacity-50 mb-4 top-0 h-12 absolute -top-1 md:-top-2 p-2 rounded-lg border-t-0"}>
                         <h1 className="text-nowrap lg:text-xl text-md text-center text-white">{gameData.scenes[gameData.currentScene].title}</h1>
                     </div>
                 </div>
-                <div className={"w-3/4 flex justify-end"}>
+                <div className={"w-1/2 md:w-3/4 flex justify-end"}>
                     {teams?.at(1)?.at(0) ? (
                         <TeamPlacard
                             playerId={playerId}
@@ -100,7 +97,7 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                 </div>
             </div>
             <Letters letters={gameData.scenes[gameData.currentScene].board}/>
-            <div className="flex flex-col items-center justify-center content-center flex-grow">
+            <div className="flex flex-col items-center justify-center content-center flex-grow md:min-h-96">
                 {isControlling && canDraw && (
                     <Draw gameId={gameId} playerId={playerId} sendMessage={sendMessage} drawn={gameData.scenes[gameData.currentScene].board[0]}/>
                 )}
@@ -108,8 +105,21 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                     <Actions playerId={playerId} sendMessage={sendMessage} inputEnabled={canInput}
                              timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
                 )}
-                <Input playerId={playerId} sendMessage={sendMessage} inputEnabled={canInput}
-                       timer={gameData.scenes[gameData.currentScene].timer} gameData={gameData}/>
+                {gameData.scenes[gameData.currentScene].timer === -1 && !canInput && !isControlling && (
+                    <div className={"z-0 -mt-4 p-0.5 lg:p-2 border-4 bg-burnham-500 bg-opacity-50 col-start-2 col-span-1 help rounded-lg mb-2 p-4"}>
+                        <h1 className={'text-md lg:text-4xl text-center text-white'}>
+                            {gameData.controllingTeam} is controlling the game...
+                        </h1>
+                    </div>
+                )}
+                <Input
+                    controlling={isControlling}
+                    playerId={playerId}
+                    sendMessage={sendMessage}
+                    inputEnabled={canInput}
+                    timer={gameData.scenes[gameData.currentScene].timer}
+                    gameId={gameData.gameId}
+                />
             </div>
         </>
 

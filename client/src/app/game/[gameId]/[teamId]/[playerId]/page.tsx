@@ -1,6 +1,6 @@
 "use client"
 
-import {use, useMemo, useState} from "react"
+import {use, useEffect, useRef, useState} from "react"
 import {GameData} from "@/models/letterboard"
 import invariant from 'tiny-invariant'
 import {LetterboardScene} from "@/components/scenes/letterboard/letterboard";
@@ -8,7 +8,6 @@ import {LobbyScene} from "@/components/scenes/lobby/lobby";
 import {ConundrumScene} from "@/components/scenes/conundrum/conundrum";
 import {MathsboardScene} from "@/components/scenes/numbers/mathsboard";
 import {EndScene} from "@/components/scenes/end/end";
-
 
 export default function Page({params}: {
     params: Promise<{ gameId: string, teamId: string; playerId: string }>
@@ -20,49 +19,61 @@ export default function Page({params}: {
     invariant(teamId, 'A Team ID must be provided.')
     invariant(gameId, 'A Game ID must be provided.')
 
+    const ws = useRef<WebSocket>(null);
+
     const wsHost = process.env.NEXT_PUBLIC_WS_SERVER_HOST || "localhost"
     const wsPort = process.env.NEXT_PUBLIC_WS_SERVER_PORT ? parseInt(process.env.NEXT_PUBLIC_WS_SERVER_PORT, 10) : 5002
     const wsProtocol = process.env.NEXT_PUBLIC_WS_SERVER_PROTOCOL || "ws"
 
-    const ws = useMemo(() => {
-        const ws = new WebSocket(`${wsProtocol}://${wsHost}:${wsPort}/ws/${gameId}/${teamId}/${playerId}`)
-        ws.onmessage = function (event) {
-            const json = JSON.parse(event.data) as GameData
-            try {
-                setGameData(json)
-            } catch (err) {
-                console.log(err)
+    useEffect(() => {
+        if (!ws.current) {
+            ws.current = new WebSocket(`${wsProtocol}://${wsHost}:${wsPort}/ws/${gameId}/${teamId}/${playerId}`);
+            ws.current.onmessage = function (event) {
+                const json = JSON.parse(event.data) as GameData
+                try {
+                    setGameData(json)
+                } catch (err) {
+                    console.log(err)
+                }
             }
         }
-        return ws
-    }, [gameId, playerId, teamId, wsHost, wsPort, wsProtocol])
+
+        return () => {
+            if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+                ws.current.close()
+            }
+        }
+    }, [])
 
     const sendMessage = (payload: string) => {
-        ws.send(payload)
+        ws.current?.send(payload)
     }
+
 
     return (
         <div>
-            <main className="w-svw h-svh" style={{
+            <main className="w-svw h-svh bg-cover bg-no-repeat p-4 flex flex-col" style={{
                 backgroundImage: `url('/img/bgletterboard@2x.png')`,
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                padding: "1em"
             }}>
                 {gameData?.scenes[gameData?.currentScene].scene == "letterboard" && (
-                    <LetterboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
+                    <LetterboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
+                                      sendMessage={sendMessage}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "mathsboard" && (
-                    <MathsboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
+                    <MathsboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
+                                     sendMessage={sendMessage}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "lobby" && (
-                    <LobbyScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
+                    <LobbyScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
+                                sendMessage={sendMessage}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "end" && (
-                    <EndScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
+                    <EndScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
+                              sendMessage={sendMessage}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "conundrum" && (
-                    <ConundrumScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId} sendMessage={sendMessage}/>
+                    <ConundrumScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
+                                    sendMessage={sendMessage}/>
                 )}
             </main>
             <footer></footer>
