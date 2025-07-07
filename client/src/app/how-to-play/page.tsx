@@ -19,13 +19,6 @@ export default function Home() {
         setCurrentScene(currentScene -1);
     }
 
-    const jumpToScene = (scene: number) => {
-        if (scene > scenes.length || scene < 1) {
-            return
-        }
-        setCurrentScene(scene - 1);
-    }
-
     const scenes = [
         <div key={1} className={"flex flex-col items-center justify-center gap-2 md:gap-8"}>
             <div className={"w-8 md:w-16 aspect-square relative"} style={{mask: "url(/img/lembers.svg)", maskSize: "cover", backgroundColor: "white"}}>
