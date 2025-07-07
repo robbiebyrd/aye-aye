@@ -157,8 +157,12 @@ export default function Home() {
                 <h1 className={"text-lg md:text-4xl text-center text-white"}>Keeping Score</h1>
                 <h3 className={"text-md md:text-2xl text-center text-white"}>
                     Letters Rounds: Players receive 1 point for every letter in their word.
+                </h3>
+                <h3 className={"text-md md:text-2xl text-center text-white"}>
                     Numbers Rounds: Players get 10 points for reaching the target number exactly; if they are
                     within 10 of the target, they are deducted 1 point for each number they are off.
+                </h3>
+                <h3 className={"text-md md:text-2xl text-center text-white"}>
                     Conundrum Rounds: Each player receives 10 points for correctly answering the Conundrum.
                 </h3>
             </div>
