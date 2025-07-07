@@ -21,7 +21,7 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
             <title>Aye-Aye! A Word Game</title>
         </head>
         <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-sherwood-green-700`}
         >
         <Suspense>
             {children}

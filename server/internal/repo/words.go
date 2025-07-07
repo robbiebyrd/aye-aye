@@ -53,6 +53,18 @@ func (s *WordsRepo) GetMatchingWordsOfLengths(letters string, minimumLength int,
 	return sortWordLists(matchingWords)
 }
 
+func (s *WordsRepo) GetWordsOfLengths(minimumLength int, maximumLength int) []string {
+	var matchingWords []string
+
+	for _, word := range s.Words {
+		if len(word) >= minimumLength && len(word) <= maximumLength {
+			matchingWords = append(matchingWords, word)
+		}
+	}
+
+	return sortWordLists(matchingWords)
+}
+
 func sortWordLists(words []string) []string {
 	sort.Strings(words)
 

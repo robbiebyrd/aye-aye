@@ -69,7 +69,7 @@ export const EndScene: React.FC<EndProps> = ({gameData, gameId, playerId, sendMe
                     </div>
                 </div>
                 <h1>Thanks for Playing!</h1>
-                <Button label={"Play Again"} onClickFunc={nextScene}></Button>
+                <Button onClickFunc={nextScene}>Play Again</Button>
             </div>
         </>
 

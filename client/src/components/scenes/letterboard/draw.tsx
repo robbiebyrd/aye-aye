@@ -43,13 +43,13 @@ const Draw: React.FC<DrawProps> = ({gameId, playerId, sendMessage, drawn}) => {
             </div>
             <div className={"flex flex-col md:flex-row justify-center gap-1 md:gap-4 lg:gap-16"}>
                 <div className="col-start-1 col-span-1 flex align-middle justify-center">
-                    <Button label={'Draw Vowel'} onClickFunc={drawVowel}/>
+                    <Button onClickFunc={drawVowel}>Draw Vowel</Button>
                 </div>
                 <div className="col-start-2 col-span-1 flex flex-col items-center align-middle justify-center">
-                    <Button label={'Draw Random'} onClickFunc={drawRandom}/>
+                    <Button onClickFunc={drawRandom}>Draw Random</Button>
                 </div>
                 <div className="col-start-3 col-span-1 flex align-middle justify-center">
-                    <Button label={'Draw Consonant'} onClickFunc={drawConsonant}/>
+                    <Button onClickFunc={drawConsonant}>Draw Consonant</Button>
                 </div>
             </div>
         </div>

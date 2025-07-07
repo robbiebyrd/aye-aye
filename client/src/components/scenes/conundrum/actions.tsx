@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, useEffect, useState} from "react";
+import React, {ChangeEvent, FormEvent, ReactNode, useEffect, useState} from "react";
 import {Button, ButtonWrapper} from "@/components/button";
 import {LetterboardProps} from "@/components/scenes/letterboard/letterboard";
 import '@/app/globals.css'
@@ -112,7 +112,7 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
                     {controlling && (
                         <div className={"flex justify-center"}>
                             {timer && timer > 0 &&
-                                <Button label={"Cancel"} onClickFunc={cancelTimer}></Button>
+                                <Button onClickFunc={cancelTimer}>Cancel</Button>
                             }
                         </div>
                     )}
@@ -122,13 +122,13 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
                     {controlling && (
                         <div className={"w-full flex gap-1"}>
                             <div className={"flex justify-center"}>
-                                <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
+                                <TimedControllerButton onClickFunc={resetBoard} timer={timer || -1}>Reset</TimedControllerButton>
                             </div>
                             <div className={"flex align-center justify-center"}>
                                 {!timerRun &&
-                                    <TimedControllerButton label={'Start'} onClickFunc={startTimer} timer={timer || -1}/>}
+                                    <TimedControllerButton  onClickFunc={startTimer} timer={timer || -1}>Start</TimedControllerButton>}
                                 {timerRun && (
-                                    <Button label={"Next"} onClickFunc={nextScene}></Button>
+                                    <Button onClickFunc={nextScene}>Next</Button>
                                 )}
                             </div>
                         </div>
@@ -141,13 +141,13 @@ const ConundrumActions: React.FC<Pick<LetterboardProps, 'gameId' | 'playerId' | 
 }
 
 export type TimedControllerButtonProps = {
-    label: string
+    children?: ReactNode
     onClickFunc?: () => void
     timer: number
 }
 
-export const TimedControllerButton: React.FC<TimedControllerButtonProps> = ({label, onClickFunc, timer}) => {
-    return timer < 0 && <Button label={label} onClickFunc={onClickFunc}/>
+export const TimedControllerButton: React.FC<TimedControllerButtonProps> = ({children, onClickFunc, timer}) => {
+    return timer < 0 && <Button onClickFunc={onClickFunc}>{children}</Button>
 }
 
 export default ConundrumActions

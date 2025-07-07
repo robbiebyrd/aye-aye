@@ -2,7 +2,7 @@
 
 import {useState} from "react";
 import {redirect, useSearchParams} from 'next/navigation'
-import {Button} from "@/components/button";
+import {Button, ButtonWrapper} from "@/components/button";
 
 export default function Home() {
     const searchParams = useSearchParams();
@@ -12,8 +12,20 @@ export default function Home() {
     const [gameId, setGameId] = useState(searchParams.get("game"))
     const [playerId, setPlayerId] = useState("")
 
+    const wsHost = process.env.NEXT_PUBLIC_WS_SERVER_HOST || "localhost"
+    const wsPort = process.env.NEXT_PUBLIC_WS_SERVER_PORT ? parseInt(process.env.NEXT_PUBLIC_WS_SERVER_PORT, 10) : 5002
+
+    async function fetchUnusedGameCode() {
+        const res = await fetch(`//${wsHost}:${wsPort}/gc`);
+        const result = await res.json();
+        return result?.gameCode
+    }
+
+    const handleAutoGameCode = async () => {
+        fetchUnusedGameCode().then((gc) => setGameId(gc))
+    };
+
     const handleTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(event.target.value)
         setTeamId(event.target.value);
     };
 
@@ -31,23 +43,33 @@ export default function Home() {
 
     return (
         <div>
-            <main className="w-svw h-svh flex content-center items-center justify-center">
-                <div className={"w-2/3"}>
+            <main
+                className="w-svw h-svh flex flex-col md:flex-row gap-4 md:gap-16 p-8 content-center items-center justify-center text-center bg-no-repeat bg-cover"
+                style={{backgroundImage: "url('/img/bgletterboard@2x.png')"}}>
+                <div className="w-full md:w-1/2 flex flex-col items-center">
+                    <h4 className={"text-md text-white"}>Let&#39;s Play</h4>
+                    <h1 className={"text-6xl md:text-8xl text-white mb-8"}>Aye-Aye!</h1>
+                    <a href={"/how-to-play"}>
+                        <ButtonWrapper className={""}>What is it?</ButtonWrapper>
+                    </a>
+                </div>
+                <div className={"w-full md:w-1/2 border-2 p-4 rounded-lg bg-sherwood-green-700 bg-opacity-80"}>
                     <form>
-                        <div className={'flex flex-col content-center items-center justify-center gap-8'}>
-                            <div className={'flex flex-col items-center justify-center w-2/3 '}>
-                                <label form={'gameId'} className={'text-xl md:text-4xl text-white'}>Game ID: </label>
+                        <div className={'flex flex-col content-center items-center justify-center gap-2 md:gap-8'}>
+                            <div className={'flex flex-col items-center justify-center '}>
+                                <label form={'gameId'} className={'text-xl md:text-4xl text-white'}>Game Code: </label>
                                 <input defaultValue={gameId || undefined} name={'gameId'} onChange={handleGameChange}
                                        className={'text-center text-xl md:text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}
                                        placeholder={'Existing or new game'}/>
+                                <Button onClickFunc={handleAutoGameCode} disabled={false}>Generate</Button>
                             </div>
                             <div className={'flex flex-col items-center justify-center'}>
                                 <label form={'teamId'} className={'text-xl md:text-4xl text-white'}>Team</label>
                                 <select defaultValue={teamId || "team1"} name="teamId" id="teamId"
                                         onChange={handleTeamChange}
-                                        className={'text-center text-xl md:text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}>
-                                    <option value="team1">Team 1</option>
-                                    <option value="team2">Team 2</option>
+                                        className={'text-center text-xl md:text-4xl border-4 border-sherwood-green-300 border-solid outline-0 flex items-center p-2 uppercase'}>
+                                    <option value="Team 1">Team 1</option>
+                                    <option value="Team 2">Team 2</option>
                                 </select>
                             </div>
                             <div className={'flex flex-col items-center justify-center'}>
@@ -55,7 +77,7 @@ export default function Home() {
                                 <input name={'playerId'} onChange={handlePlayerChange}
                                        className={'text-center text-xl md:text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}/>
                             </div>
-                            <Button label={'Enter the Game!'} onClickFunc={handleSubmit}/>
+                            <Button onClickFunc={handleSubmit} disabled={false}>Enter the Game!</Button>
                         </div>
                     </form>
                 </div>

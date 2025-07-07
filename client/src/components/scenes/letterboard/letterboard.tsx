@@ -97,7 +97,7 @@ export const LetterboardScene: React.FC<LetterboardProps> = ({gameId, playerId, 
                 </div>
             </div>
             <Letters letters={gameData.scenes[gameData.currentScene].board}/>
-            <div className="flex flex-col items-center justify-center content-center flex-grow md:min-h-96">
+            <div className="flex flex-col items-center justify-center content-center flex-grow">
                 {isControlling && canDraw && (
                     <Draw gameId={gameId} playerId={playerId} sendMessage={sendMessage} drawn={gameData.scenes[gameData.currentScene].board[0]}/>
                 )}

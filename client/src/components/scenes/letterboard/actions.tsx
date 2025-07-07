@@ -84,19 +84,19 @@ const Actions: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'tim
                     <div className={"flex gap-1 justify-center"}>
                         <div className={"flex justify-center"}>
                             {!timerRun &&
-                                <TimedControllerButton label={'Reset'} onClickFunc={resetBoard} timer={timer || -1}/>
+                                <TimedControllerButton onClickFunc={resetBoard} timer={timer || -1}>Reset</TimedControllerButton>
                             }
                         </div>
                         <div className={"flex align-center justify-center "}>
-                            {!timerRun && <TimedControllerButton label={'Start Timer'} onClickFunc={startTimer}
-                                                                 timer={timer || -1}/>}
+                            {!timerRun && <TimedControllerButton onClickFunc={startTimer}
+                                                                 timer={timer || -1}>Start Timer</TimedControllerButton>}
                             {timerRun && (
-                                <Button label={"Next"} onClickFunc={nextScene}></Button>
+                                <Button onClickFunc={nextScene}>Next</Button>
                             )}
                         </div>
                         <div className={"flex align-center justify-center"}>
                             {timerRun &&
-                                <TimedControllerButton label={'Solve'} onClickFunc={solve} timer={timer || -1}/>}
+                                <TimedControllerButton onClickFunc={solve} timer={timer || -1}>Solve</TimedControllerButton>}
                         </div>
                     </div>
                 </>

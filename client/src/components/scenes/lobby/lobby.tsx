@@ -77,7 +77,7 @@ export const LobbyScene: React.FC<LobbyProps> = ({gameData, gameId, playerId, se
                     <h2 className={"text-2xl text-center text-white"}>
                         An online, multiplayer, letters-and-numbers game.
                     </h2>
-                    <Button label={"Start"} onClickFunc={nextScene} className={'justify-center'}></Button>
+                    <Button onClickFunc={nextScene} className={'justify-center'}>Start</Button>
                 </div>
             </div>
         </div>

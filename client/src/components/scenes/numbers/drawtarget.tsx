@@ -31,7 +31,7 @@ const DrawTarget: React.FC<DrawTargetProps> = ({gameId, playerId, sendMessage}) 
                 </h1>
             </div>
             <div className="flex flex-col items-center align-middle justify-center">
-                <Button label={'Draw Target'} onClickFunc={drawTarget}/>
+                <Button onClickFunc={drawTarget}>Draw Target</Button>
             </div>
         </div>
     )

@@ -12,6 +12,7 @@ export interface GameData {
 export interface SceneData {
     title: string
     scene: string
+    background?: string
     timer: number
     timerRun: boolean
     letters: letterRow

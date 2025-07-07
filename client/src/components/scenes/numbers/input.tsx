@@ -97,7 +97,7 @@ const Input: React.FC<Pick<LetterboardProps, 'playerId' | 'sendMessage' | 'timer
                 {controlling && (
                     <div className={"hidden md:flex align-center justify-center items-center"}>
                         {timer && timer > 0 &&
-                            <Button label={"Cancel"} onClickFunc={cancelTimer}></Button>
+                            <Button onClickFunc={cancelTimer}>Cancel</Button>
                         }
                     </div>
                 )}

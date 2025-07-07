@@ -42,13 +42,13 @@ const Draw: React.FC<DrawProps> = ({gameId, playerId, sendMessage, drawn}) => {
             </div>
             <div className={"flex flex-col md:flex-row justify-center"}>
                 <div className="flex align-middle justify-center">
-                    <Button label={'Draw Big'} onClickFunc={drawBig}/>
+                    <Button onClickFunc={drawBig}>Draw Big</Button>
                 </div>
                 <div className="flex flex-col items-center align-middle justify-center">
-                    <Button label={'Draw Random'} onClickFunc={drawRandom}/>
+                    <Button onClickFunc={drawRandom}>Draw Random</Button>
                 </div>
                 <div className="flex align-middle justify-center">
-                    <Button label={'Draw Little'} onClickFunc={drawLittle}/>
+                    <Button onClickFunc={drawLittle}>Draw Little</Button>
                 </div>
             </div>
         </div>

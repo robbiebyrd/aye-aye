@@ -49,12 +49,15 @@ export default function Page({params}: {
         ws.current?.send(payload)
     }
 
-
     return (
         <div>
             <main className="w-svw h-svh bg-cover bg-no-repeat p-4 flex flex-col" style={{
-                backgroundImage: `url('/img/bgletterboard@2x.png')`,
+                backgroundImage: `url('${gameData?.scenes[gameData?.currentScene].background || '/img/bgletterboard@2x.png'}')`
             }}>
+                {gameData?.scenes[gameData?.currentScene].scene == "lobby" && (
+                    <LobbyScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
+                                sendMessage={sendMessage}/>
+                )}
                 {gameData?.scenes[gameData?.currentScene].scene == "letterboard" && (
                     <LetterboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
                                       sendMessage={sendMessage}/>
@@ -63,17 +66,13 @@ export default function Page({params}: {
                     <MathsboardScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
                                      sendMessage={sendMessage}/>
                 )}
-                {gameData?.scenes[gameData?.currentScene].scene == "lobby" && (
-                    <LobbyScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
-                                sendMessage={sendMessage}/>
+                {gameData?.scenes[gameData?.currentScene].scene == "conundrum" && (
+                    <ConundrumScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
+                                    sendMessage={sendMessage}/>
                 )}
                 {gameData?.scenes[gameData?.currentScene].scene == "end" && (
                     <EndScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
                               sendMessage={sendMessage}/>
-                )}
-                {gameData?.scenes[gameData?.currentScene].scene == "conundrum" && (
-                    <ConundrumScene teamId={teamId} gameId={gameId} gameData={gameData} playerId={playerId}
-                                    sendMessage={sendMessage}/>
                 )}
             </main>
             <footer></footer>
