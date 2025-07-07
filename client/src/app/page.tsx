@@ -42,10 +42,10 @@ export default function Home() {
     };
 
     return (
-        <div>
-            <main
-                className="w-svw h-svh flex flex-col md:flex-row gap-4 md:gap-16 p-8 content-center items-center justify-center text-center bg-no-repeat bg-cover"
-                style={{backgroundImage: "url('/img/bgletterboard@2x.png')"}}>
+        <main className={"bg-no-repeat bg-cover w-svw h-svh flex flex-col justify-center"} style={{backgroundImage: "url('/img/bgletterboard@2x.png')"}}>
+            <div
+                className="flex flex-col md:flex-row gap-4 md:gap-16 p-8 content-center items-center justify-center text-center "
+            >
                 <div className="w-full md:w-1/2 flex flex-col items-center">
                     <div className={"w-8 md:w-16 aspect-square relative mb-4"} style={{mask: "url(/img/lembers.svg)", maskSize: "cover", backgroundColor: "white"}}>&nbsp;
                     </div>
@@ -83,9 +83,10 @@ export default function Home() {
                         </div>
                     </form>
                 </div>
-            </main>
-            <footer className="">
-            </footer>
-        </div>
+            </div>
+            <div className={"flex items-center text-center w-full justify-center"}>
+                <h1 className={"text-white text-2xl"}>Developed by <a href={"https://robbiebyrd.com"} target={"_blank"}>Robbie Byrd</a></h1>
+            </div>
+        </main>
     );
 }
