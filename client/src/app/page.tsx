@@ -1,6 +1,6 @@
 "use client"
 
-import {useState} from "react";
+import React, {useState} from "react";
 import {redirect, useSearchParams} from 'next/navigation'
 import {Button, ButtonWrapper} from "@/components/button";
 
@@ -47,10 +47,12 @@ export default function Home() {
                 className="w-svw h-svh flex flex-col md:flex-row gap-4 md:gap-16 p-8 content-center items-center justify-center text-center bg-no-repeat bg-cover"
                 style={{backgroundImage: "url('/img/bgletterboard@2x.png')"}}>
                 <div className="w-full md:w-1/2 flex flex-col items-center">
+                    <div className={"w-8 md:w-16 aspect-square relative mb-4"} style={{mask: "url(/img/lembers.svg)", maskSize: "cover", backgroundColor: "white"}}>&nbsp;
+                    </div>
                     <h4 className={"text-md text-white"}>Let&#39;s Play</h4>
                     <h1 className={"text-6xl md:text-8xl text-white mb-8"}>Aye-Aye!</h1>
                     <a href={"/how-to-play"}>
-                        <ButtonWrapper className={""}>What is it?</ButtonWrapper>
+                        <ButtonWrapper className={""}><h1 className={"text-2xl md:text-4xl"}>How to Play</h1></ButtonWrapper>
                     </a>
                 </div>
                 <div className={"w-full md:w-1/2 border-2 p-4 rounded-lg bg-sherwood-green-700 bg-opacity-80"}>
