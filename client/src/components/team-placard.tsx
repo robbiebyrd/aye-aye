@@ -28,7 +28,7 @@ const teamColors = {
 }
 
 const getColors = (teamName?: string) => {
-    if (teamName == "Red Team") {
+    if (teamName == "Red") {
         return teamColors['red']
     }
     return teamColors["blue"]
