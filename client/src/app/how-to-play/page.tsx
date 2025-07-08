@@ -161,6 +161,22 @@ export default function Home() {
                 </h3>
             </div>
         </div>,
+        <div key={12}>
+            <div key={1} className={"flex flex-col items-center justify-center gap-4"}>
+                <h1 className={"text-lg md:text-4xl text-center text-white"}>The Creator</h1>
+                <h3 className={"text-md md:text-2xl text-center text-white"}>
+                    I&#39;m Robbie Byrd, a Software Engineer based in Austin, TX.
+                </h3>
+                <h3 className={"text-md md:text-2xl text-center text-white"}>(<a href={"https://robbiebyrd.com/in"} className={"underline"} target={"_blank"}>I&#39;m for hire!</a>)</h3>
+                <img className={"max-h-64 border-4"} src={"https://robbiebyrd.com/img/mini_me.jpg"}/>
+                <h3 className={"text-md md:text-2xl text-center text-white"}>
+                    I&#39;m interested in event-driven architectures, emulation and virtualization, embedded/IoT systems and web applications. I work mostly in Go(lang), Python and Typescript. In my spare time, I dabble with online games.</h3>
+                <h3 className={"text-md md:text-2xl text-center text-white"}>
+                    You can learn more about me <a href={"https://robbiebyrd.com"} target={"_blank"} className={"underline"}>at my website</a>, <a href={"https://github.com/robbiebyrd"} target={"_blank"} className={"underline"}>at my Github</a> or email me at <a href={"mailto:me@robbiebyrd.com"} className={"underline"}>me@robbiebyrd.com</a>.
+                </h3>
+
+            </div>
+        </div>,
     ]
 
     return (
