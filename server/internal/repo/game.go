@@ -87,8 +87,8 @@ func (s *GameRepo) UpdateGame(game models.GameData) {
 
 // NewGame creates a new game, given an ID
 func (s *GameRepo) NewGame(id string) *models.GameData {
-	team1 := "team1"
-	team2 := "team2"
+	team1 := "Red Team"
+	team2 := "Blue Team"
 	showInput := false
 
 	game := models.GameData{

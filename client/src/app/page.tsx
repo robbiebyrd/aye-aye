@@ -8,7 +8,7 @@ export default function Home() {
     const searchParams = useSearchParams();
     console.log(searchParams.get("game"))
 
-    const [teamId, setTeamId] = useState(searchParams.get("team") ?? "team1")
+    const [teamId, setTeamId] = useState(searchParams.get("team") ?? "Red Team")
     const [gameId, setGameId] = useState(searchParams.get("game"))
     const [playerId, setPlayerId] = useState("")
 
@@ -79,11 +79,11 @@ export default function Home() {
                             </div>
                             <div className={'flex flex-col items-center justify-center'}>
                                 <label form={'teamId'} className={'text-xl md:text-4xl text-white'}>Team</label>
-                                <select defaultValue={teamId || "team1"} name="teamId" id="teamId"
+                                <select defaultValue={teamId || "Red Team"} name="teamId" id="teamId"
                                         onChange={handleTeamChange}
                                         className={'text-center text-xl md:text-4xl border-4 border-sherwood-green-300 border-solid outline-0 flex items-center p-2 uppercase'}>
-                                    <option value="Team 1">Team 1</option>
-                                    <option value="Team 2">Team 2</option>
+                                    <option value="Red Team">Red Team</option>
+                                    <option value="Blue Team">Blue Team</option>
                                 </select>
                             </div>
                             <div className={'flex flex-col items-center justify-center'}>
