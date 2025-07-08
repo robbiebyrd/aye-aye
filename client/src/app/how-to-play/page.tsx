@@ -191,7 +191,7 @@ export default function Home() {
                                             className={'justify-center w-1/2'}>
                                         Next
                                     </Button>
-                                ) : <ButtonWrapper>
+                                ) : <ButtonWrapper className={'justify-center w-1/2'}>
                                     <a href={"/"}>
                                     <h1 className={"text-2xl text-center min-w-16 text-burnham-500"}>Let&#39;s Play</h1>
                                         </a>
