@@ -26,7 +26,7 @@ func NewGameScene(gameRepo *repo.GameRepo) *GameScene {
 
 // StartTimer starts a timer for the given game and broadcasts updates.
 func (g *GameScene) StartTimer(game *models.GameData, m *melody.Melody, duration int, onDone func(game *models.GameData)) {
-	g.SetTimer(game, m, duration+1, true)
+	g.SetTimer(game, m, duration, true)
 	updatedGame := g.GameRepo.GetGame(game.GameID)
 
 	g.Timers[updatedGame.GameID] = services.NewCountdowner(services.CountdownerOptions{

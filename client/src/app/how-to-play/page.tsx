@@ -118,6 +118,7 @@ export default function Home() {
                     Once 6 numbers have been chosen, the
                     controlling team will then draw a random Target Number.
                 </h3>
+                <img className={"max-h-32 border-4"}  src={"/img/how-to-play/numbersboard.png"} />
             </div>
         </div>,
         <div key={9}>
