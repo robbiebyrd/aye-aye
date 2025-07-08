@@ -42,7 +42,7 @@ export default function Home() {
                     <div className={"text-white flex flex-col items-center md:w-1/2 text-center"}>
                         <details className={""}>
                             <summary className={" text-lg md:text-2xl text-white"}>I&#39;m starting a new game.</summary>
-                            <img src={"/img/how-to-play/click.gif"} width={"70%"} alt="" className={"border-4"}/>
+                            <img src={"/img/how-to-play/click.gif"} width={"70%"} alt="" className={"border-2 md:border-4"} style={{margin: "0 auto"}}/>
                             <p>Click the &#34;Generate&#34; button to create a new game code.</p>
                             <p>Or, you can choose your own.</p>
                         </details>
@@ -50,7 +50,7 @@ export default function Home() {
                     <div className={"text-white flex flex-col items-center md:w-1/2"}>
                         <details>
                             <summary className={"text-center text-lg md:text-2xl text-white mb-4"}>I&#39;m joining a friend&#39;s game.</summary>
-                            <img src={"/img/how-to-play/type.gif"} width={"70%"} alt="" className={"border-4"}/>
+                            <img src={"/img/how-to-play/type.gif"} width={"70%"} alt="" className={"border-2 md:border-4"} style={{margin: "0 auto"}}/>
                             <p>Enter the Game Code you received into the Game Code box.</p>
                         </details>
                     </div>
