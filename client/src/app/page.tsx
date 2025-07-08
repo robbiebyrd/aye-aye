@@ -38,6 +38,18 @@ export default function Home() {
     };
 
     const handleSubmit = () => {
+        if (!gameId) {
+            alert("Please enter a game code");
+            return;
+        }
+        if (!teamId) {
+            alert("Please select a team");
+            return;
+        }
+        if (!playerId) {
+            alert("Please enter a player name");
+            return;
+        }
         redirect(`/game/${gameId}/${teamId}/${playerId}`) // Navigate to the new post page
     };
 
