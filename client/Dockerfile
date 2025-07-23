@@ -14,16 +14,6 @@ RUN npm install
 COPY .env .env
 COPY . .
 
-# Copy the .env file from the example if no .env file exists
-#RUN mv .env.example .env 2>/dev/null
-
-ENV NEXT_PUBLIC_SERVER_HOST=aye-aye.robbiebyrd.com
-ENV NEXT_PUBLIC_SERVER_PORT=443
-ENV NEXT_PUBLIC_SERVER_PROTOCOL=https
-ENV NEXT_PUBLIC_WS_SERVER_HOST=aye-aye.robbiebyrd.com
-ENV NEXT_PUBLIC_WS_SERVER_PORT=443
-ENV NEXT_PUBLIC_WS_SERVER_PROTOCOL=wss
-
 # Build the Next.js app
 RUN npm run build
 
