@@ -72,7 +72,8 @@ export default function Home() {
                         <div className={'flex flex-col content-center items-center justify-center gap-2 md:gap-8'}>
                             <div className={'flex flex-col items-center justify-center '}>
                                 <label form={'gameId'} className={'text-xl md:text-4xl text-white'}>Game Code: </label>
-                                <input defaultValue={gameId || undefined} name={'gameId'} onChange={handleGameChange}
+                                <input name={'gameId'} onChange={handleGameChange}
+                                       value={gameId || ""}
                                        className={'text-center text-xl md:text-4xl border-4 border-sherwood-green-300 border-solid flex items-center p-2 uppercase'}
                                        placeholder={'Existing or new game'}/>
                                 <Button onClickFunc={handleAutoGameCode} disabled={false}>Generate</Button>
