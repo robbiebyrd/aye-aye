@@ -6,7 +6,6 @@ import {Button, ButtonWrapper} from "@/components/button";
 
 export default function Home() {
     const searchParams = useSearchParams();
-    console.log(searchParams.get("game"))
 
     const [teamId, setTeamId] = useState(searchParams.get("team") ?? "Red")
     const [gameId, setGameId] = useState(searchParams.get("game"))

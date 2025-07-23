@@ -33,7 +33,7 @@ export default function Page({params}: {
                 try {
                     setGameData(json)
                 } catch (err) {
-                    console.log(err)
+                    console.log("error", err)
                 }
             }
         }
