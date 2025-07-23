@@ -13,8 +13,10 @@ RUN go mod download
 # Copy the application source code
 COPY . .
 
+COPY .env .env
+
 # Build the Go application
-RUN go build -o main .
+RUN go build -o main /app/cmd/server/main.go
 
 # Expose the port your app listens on (if necessary)
 EXPOSE 5002

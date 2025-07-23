@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"fmt"
+	"net"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 
@@ -17,13 +20,25 @@ type GameRepo struct {
 
 // NewGameRepo creates a new repository for accessing game data
 func NewGameRepo() *GameRepo {
+	domain := "redis"
+	ips, err := net.LookupIP(domain)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not get IPs for %s: %v\n", domain, err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("IP addresses for %s:\n", domain)
+	for _, ip := range ips {
+		fmt.Println(ip.String())
+	}
+
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     "redis:6379",
 		Password: "",
 		DB:       0,
 	})
 
-	err := rdb.Ping(context.Background()).Err()
+	err = rdb.Ping(context.Background()).Err()
 	if err != nil {
 		panic(err)
 	}
