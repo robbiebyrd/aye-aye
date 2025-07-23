@@ -14,7 +14,7 @@
     "classnames": "^2.5.1",
     "gsap": "npm:@gsap/shockingly@^3.12.7",
     "mendoza": "^3.0.8",
-    "next": "^15.3.3",
+    "next": "15.3.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-mathquill": "^1.0.3",
